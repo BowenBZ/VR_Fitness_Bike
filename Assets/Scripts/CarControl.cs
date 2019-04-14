@@ -7,7 +7,7 @@ public class CarControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -21,6 +21,10 @@ public class CarControl : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.W))
         {
+            if (speed <= 0.3333)
+            {
+                speed += 0.01f / 50;
+            }
             transform.Translate(new Vector3(0, 0, speed), Space.Self);
         }
 
