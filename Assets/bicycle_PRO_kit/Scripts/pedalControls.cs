@@ -97,7 +97,8 @@ public class pedalControls : MonoBehaviour
                 //(sometimes looks strange on bicycles with high seat. So, you might just disable it when needed)
             }
             var tmpCoM01 = CoM.transform.localPosition;
-            tmpCoM01.x = -0.02f + (Mathf.Abs(this.transform.localRotation.x) / 25);//leaning bicycle when pedaling
+            //tmpCoM01.x = -0.02f + (Mathf.Abs(this.transform.localRotation.x) / 25);//leaning bicycle when pedaling
+            tmpCoM01.x = 0;
             CoM.transform.localPosition = tmpCoM01;
 
         }
