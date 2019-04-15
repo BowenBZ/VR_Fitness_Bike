@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CarControl : MonoBehaviour
 {
+    public float maxSpeed = 0.3333f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +23,7 @@ public class CarControl : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.W))
         {
-            if (speed <= 0.3333)
+            if (speed <= maxSpeed)
             {
                 speed += 0.01f / 50;
             }
