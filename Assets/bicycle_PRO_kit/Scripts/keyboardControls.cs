@@ -1,4 +1,4 @@
-﻿// Writen by Boris Chuprin smokerr@mail.ru
+// Writen by Boris Chuprin smokerr@mail.ru
 using UnityEngine;
 using System.Collections;
 
@@ -22,12 +22,14 @@ public class keyboardControls : MonoBehaviour {
 		//////////////////////////////////// ACCELERATE, braking & 'full throttle - manual trick' //////////////////////////////////////////////
 		//Alpha2 is key "2". Used to make manual. Also, it can be achived by 100% "throtle on mobile joystick"
 		if (!Input.GetKey (KeyCode.Alpha2)) {
-			outsideControls.Vertical = Input.GetAxis ("Vertical") / 1.112f;//to get less than 0.9 as acceleration to prevent wheelie(wheelie begins at >0.9)
-			if(Input.GetAxis ("Vertical") <0) outsideControls.Vertical = outsideControls.Vertical * 1.112f;//need to get 1(full power) for front brake
+            outsideControls.Vertical = Input.GetAxis ("Vertical") / 1.112f;//to get less than 0.9 as acceleration to prevent wheelie(wheelie begins at >0.9)
+            //outsideControls.Vertical = 0.9f;
+            if (Input.GetAxis ("Vertical") <0) outsideControls.Vertical = outsideControls.Vertical * 1.112f;//need to get 1(full power) for front brake
 		}
 
 		//////////////////////////////////// STEERING /////////////////////////////////////////////////////////////////////////
 		outsideControls.Horizontal = Input.GetAxis("Horizontal");
+
 		if (Input.GetKey (KeyCode.Alpha2)) outsideControls.Vertical = 1;
 		//}
 

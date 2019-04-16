@@ -235,6 +235,7 @@ public class bicycle_code : MonoBehaviour
         {//case with acceleration from 0.0f to 0.9f throttle
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
             coll_rearWheel.motorTorque = LegsPower * outsideControls.Vertical;
+            //GetComponent<Rigidbody>().velocity = 5f * transform.forward;
 
             // debug - rear wheel is green when accelerate
             meshRearWheel.GetComponent<Renderer>().material.color = Color.green;
@@ -321,7 +322,8 @@ public class bicycle_code : MonoBehaviour
         {
 
             coll_frontWheel.brakeTorque = frontBrakePower * -outsideControls.Vertical;
-            coll_rearWheel.motorTorque = 0; // you can't do accelerate and braking same time.
+            //coll_rearWheel.motorTorque = 0; // you can't do accelerate and braking same time.
+            GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
 
             //more user firendly gomeotric progession braking. But less stoppie and fun :( Boring...
 
