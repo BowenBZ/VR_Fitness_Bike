@@ -74,28 +74,23 @@ public class DuplicateRoads : MonoBehaviour
             {
                 
                 float DegChange2 = Mathf.Abs(DegList[index]) - 0;
+                float DegChange1 = 0 - Mathf.Abs(DegList[index - 1]);
+
                 Debug.Log("Degree change:  " + DegChange2);
-                DisList.Insert(index, DisList[index] - 10);
+                DisList.Insert(index, DisList[index] - 18);
                 DisList.RemoveAt(index + 1);
                 DisList.Insert(index, 2);
                 DisList.Insert(index, 2);
                 DisList.Insert(index, 2);
                 DisList.Insert(index, 2);
-                //DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
 
-                DegList.Insert(index, DegChange2);
                 DegList.Insert(index, 4 * DegChange2 / 5);
                 DegList.Insert(index, 3 * DegChange2 / 5);
                 DegList.Insert(index, 2 * DegChange2 / 5);
                 DegList.Insert(index, 1 * DegChange2 / 5);
-                DisList.Insert(index, 0);
+                DegList.Insert(index, 0);
 
-
-
-                float DegChange1 = 0 - Mathf.Abs(DegList[index-1]);
-                Debug.Log("Degree change:  " + DegChange1);
-                DisList.Insert(index, DisList[index] - 8);
-                DisList.RemoveAt(index + 1);
                 DisList.Insert(index, 2);
                 DisList.Insert(index, 2);
                 DisList.Insert(index, 2);
@@ -152,6 +147,20 @@ public class DuplicateRoads : MonoBehaviour
 
             
             
+        }
+    }
+
+    void RoadSmoother(List<float> DisList, List<float> DegList)
+    {
+        int index = 1;
+        while (true)
+        {
+            if (index + 9 > DisList.Count - 1)
+                break;
+
+
+            float DegChange = DegList[index] - DegList[index -1];
+
         }
     }
 }
