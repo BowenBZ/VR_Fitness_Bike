@@ -39,19 +39,22 @@ public class camSwitcher : MonoBehaviour
 	
 	private GameObject ctrlHub;// gameobject with script control variables 
 	private controlHub outsideControls;// making a link to corresponding bike's script
+
+    Vector3 firstViewStartPos;
 	
 	// Use this for initialization
 	void Start ()
 	{
-		ctrlHub = GameObject.Find("Manager");//link to GameObject with script "controlHub"
+		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-		backCamera.enabled = true;
+        firstViewStartPos = firstViewCamera.transform.position;
+        backCamera.enabled = true;
 		aroundCamera.enabled = false;
 		currentCamera = backCamera;
         firstViewCamera.enabled = false;
-		
-		if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
+
+        if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
 	
 		currentTargetAngle = cameraTarget.transform.eulerAngles.z;
 	}
@@ -166,8 +169,8 @@ public class camSwitcher : MonoBehaviour
                 firstViewCamera.gameObject.SetActive(true);
                 currentCamera = firstViewCamera;
 
-                //firstViewCamera.transform.position = GameObject.Find("rigid_bike").transform.position +
-                  //                                  new Vector3(0, 0.8f, 0f);
+                //firstViewCamera.transform.position = GameObject.FindGameObjectWithTag("bike").transform.position +
+                                                    //firstViewStartPos;
             }
 #if UNITY_STANDALONE || UNITY_WEBPLAYER// turn camera rotaion ONLY for mobile for free touch screen anywhere
         }
