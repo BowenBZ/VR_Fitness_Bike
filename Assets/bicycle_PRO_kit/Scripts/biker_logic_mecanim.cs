@@ -65,7 +65,7 @@ public class biker_logic_mecanim : MonoBehaviour
     void Start()
     {
 
-        ctrlHub = GameObject.Find("Manager");//link to GameObject with script "controlHub"
+        ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
 

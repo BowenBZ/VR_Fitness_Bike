@@ -149,10 +149,10 @@ public class bicycle_code : MonoBehaviour
         //bicycle code
         frontWheelAPD = coll_frontWheel.forceAppPointDistance;
 
-        ctrlHub = GameObject.Find("Manager");//link to GameObject with script "controlHub"
+        ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        pedals = GameObject.Find("bicycle_pedals");
+        pedals = GameObject.FindGameObjectWithTag("pedals");
         linkToStunt = pedals.GetComponent<pedalControls>();
 
         Vector3 setInitialTensor = GetComponent<Rigidbody>().inertiaTensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
