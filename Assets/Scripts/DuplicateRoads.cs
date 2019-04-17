@@ -6,19 +6,28 @@ public class DuplicateRoads : MonoBehaviour
 {
     public GameObject roadPrefab;
     int cnt = 1;
-    float AbsAngle = 360;
-    float RoadLength = 2f;
+    float AbsAngle = 0;
+    float RoadLength = 1f;
+    int PreAngle = 0;
+
     Vector3 AbsLocation = new Vector3(0,0,0);
-    int[] DistanceArray = new int[29] { 10, 2, 2, 2, 2, 2, 2, 2, 200, 200,
+    List<float> DistanceList = new List<float>{ 440, 250, 190, 200, 250, 190, 200, 250, 190, 200,
      250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 750};
-    int[] DegreeArray = new int[29] { 360, 30/4, 30/4*2, 30/4*3, 30/4*4, 30/4*3, 30/4*2, 30/4, 360, -5, 15, 360, -5, 15, 360, -5,
-     15, 360, -5, 15, 360, -5, 15, 360, -5, 15, 360, -5, 360};
+    List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
+     15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
+
+
+    //List<float> List1 = new List<float> { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 };
+    //List<float> List2 = new List<float>{ 10, 10, 10, 10, 8, 6, 4,2,0,2,4,6,8,10,10,10,10,10,10,10  };
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i<DistanceArray.Length;i++)
+        SmoothDegChange(DistanceList, DegreeList);
+        for (int i = 0; i<DistanceList.Count-1;i++)
         {
-            GenerateRoad(DistanceArray[i], DegreeArray[i]);
+            Debug.Log( "distance:    " + DistanceList[i] + "    degree:     " + DegreeList[i]);
+            GenerateRoad(DistanceList[i], DegreeList[i]);
+            //GenerateRoad(List1[i], List2[i]);
         }
 
     }
@@ -36,13 +45,13 @@ public class DuplicateRoads : MonoBehaviour
         }
     }
 
-    void GenerateRoad(int length, int angle)// For level road use 360 degree instead of 0
+    void GenerateRoad(float length, float angle)// For level road use 360 degree instead of 0
     {
-        float slope = 2f * Mathf.PI / (float)(360 / angle);
+        float slope = 2f * Mathf.PI * angle /360f;
         float AbsSlope;
         for (int i = 0; i < length / RoadLength; i++)
         {
-            AbsSlope = 2f * Mathf.PI / (float)(360 / (90-AbsAngle));
+            AbsSlope = 2f * Mathf.PI / (360f / (90-AbsAngle));
             GameObject obj = GameObject.Instantiate(roadPrefab);
             AbsLocation = AbsLocation + new Vector3(0, 1 / 2f * RoadLength * (Mathf.Sin(slope) + Mathf.Cos(AbsSlope)),
                 1 / 2f * RoadLength * (Mathf.Cos(slope) + Mathf.Sin(AbsSlope)));
@@ -50,6 +59,99 @@ public class DuplicateRoads : MonoBehaviour
             obj.transform.Rotate(-1f * angle, 0, 0);
             AbsAngle = angle;
         }
-        
+    }
+
+    void SmoothDegChange(List<float>DisList, List<float>DegList)
+    {
+        float DegChange = 0;
+        int index = 1;
+        while (true)
+        {
+            if (index + 4 > DisList.Count - 1)
+                break;
+
+            if (DegList[index] * DegList[index - 1] < 0)
+            {
+                
+                float DegChange2 = Mathf.Abs(DegList[index]) - 0;
+                Debug.Log("Degree change:  " + DegChange2);
+                DisList.Insert(index, DisList[index] - 10);
+                DisList.RemoveAt(index + 1);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+                //DisList.Insert(index, 2);
+
+                DegList.Insert(index, DegChange2);
+                DegList.Insert(index, 4 * DegChange2 / 5);
+                DegList.Insert(index, 3 * DegChange2 / 5);
+                DegList.Insert(index, 2 * DegChange2 / 5);
+                DegList.Insert(index, 1 * DegChange2 / 5);
+                DisList.Insert(index, 0);
+
+
+
+                float DegChange1 = 0 - Mathf.Abs(DegList[index-1]);
+                Debug.Log("Degree change:  " + DegChange1);
+                DisList.Insert(index, DisList[index] - 8);
+                DisList.RemoveAt(index + 1);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+                DisList.Insert(index, 2);
+
+                DegList.Insert(index,  1 * DegChange1 / 5);
+                DegList.Insert(index,  2 * DegChange1 / 5);
+                DegList.Insert(index,  3 * DegChange1 / 5);
+                DegList.Insert(index,  4 * DegChange1 / 5);
+                index = index + 10;
+            }
+            else
+            {
+                if (Mathf.Abs(DegList[index]) - Mathf.Abs(DegList[index - 1]) < 0)
+                {
+                    DegChange = Mathf.Abs(DegList[index] - DegList[index - 1]);
+                    Debug.Log("Degree change:  " + DegChange);
+                    DisList.Insert(index, DisList[index] - 8);
+                    DisList.RemoveAt(index + 1);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+
+                    DegList.Insert(index, 1 * DegChange / 5);
+                    DegList.Insert(index, 2 * DegChange / 5);
+                    DegList.Insert(index, 3 * DegChange / 5);
+                    DegList.Insert(index, 4 * DegChange / 5);
+                }
+                else
+                {
+                    DegChange = DegList[index] - Mathf.Abs(DegList[index - 1]);
+                    
+                    DisList.Insert(index, DisList[index] - 8);
+                    DisList.RemoveAt(index + 1);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+                    DisList.Insert(index, 2);
+
+                    DegList.Insert(index, 4 * DegChange / 5);
+                    DegList.Insert(index, 3 * DegChange / 5);
+                    DegList.Insert(index, 2 * DegChange / 5);
+                    DegList.Insert(index, 1 * DegChange / 5);
+                }
+                index = index + 5;
+            }
+            //if (DegChange < 0)
+            //{
+            //    DegChange = DegChange + 360;
+            //}
+            //Take the First 10 meter of the road with new degree to make the transfer more smooth
+            
+
+            
+            
+        }
     }
 }
