@@ -33,21 +33,27 @@ public class keyboardControls : MonoBehaviour {
 
 		if (Input.GetKey (KeyCode.Alpha2)) outsideControls.Vertical = 1;
 
-        if (Input.GetKey(KeyCode.W))
-        { 
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = true;
-        }
+        //if (Input.GetKey(KeyCode.W))
+        //{ 
+        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = true;
+        //}
 
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = false;
-        }
+        //if (Input.GetKeyUp(KeyCode.W))
+        //{
+        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = false;
+        //}
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
             GameObject.Find("rigid_bike").GetComponent<bicycle_code>().velocityKMSet += 1;
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
             GameObject.Find("rigid_bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().wheelAngle -= 5;
+
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().wheelAngle += 5;
 
         //////////////////////////////////// Rider's mass translate ////////////////////////////////////////////////////////////
         //this strings controls pilot's mass shift along bike(vertical)

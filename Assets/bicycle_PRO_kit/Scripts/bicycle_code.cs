@@ -53,9 +53,6 @@ public class bicycle_code : MonoBehaviour
     // we need to clamp wheelbar angle according the speed. it means - the faster bike rides the less angle you can rotate wheel bar
     public AnimationCurve wheelbarRestrictCurve = new AnimationCurve(new Keyframe(0f, 20f), new Keyframe(100f, 1f));//first number in Keyframe is speed, second is max wheelbar degree
 
-    // This is used for to transfer the speed to motorTorque
-    public AnimationCurve torqueCurve = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(10f, 10000f));
-
     // temporary variable to restrict wheel angle according speed
     private float tempMaxWheelAngle;
 
@@ -70,8 +67,9 @@ public class bicycle_code : MonoBehaviour
     public float frontBrakePower; //brake power absract - 100 is good brakes																		
 
     public float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...	
-    public float initialForce;
-    public float velocityKMSet;
+    public float initialForce; // The initial torque added to the wheel when start
+    public float velocityKMSet;  // The fixed speed of the bike travels (KM/h)
+    public float wheelAngle;
 
     // airRes is for wind resistance to large bikes more than small ones
     public float airRes; //Air resistant 																										// 1 is neutral
@@ -87,7 +85,8 @@ public class bicycle_code : MonoBehaviour
     [HideInInspector]
     public float bikeSpeed; //to know bike speed km/h
     public bool isReverseOn = false; //to turn On and Off reverse speed
-    public bool moving = false;
+    public bool moving = false; // to control wether the bike is moving
+    public bool turning = false; // to control wether the bike is moving
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void OnGUI()
@@ -115,25 +114,25 @@ public class bicycle_code : MonoBehaviour
         }
 
         // user info help lines
-        GUI.color = Color.white;
-        GUI.Box(new Rect(10, 10, 180, 20), "A,W,S,D - main control", smallerText);
+        //GUI.color = Color.white;
+        //GUI.Box(new Rect(10, 10, 180, 20), "A,W,S,D - main control", smallerText);
 
-        GUI.Box(new Rect(10, 40, 120, 20), "X - rear brake", smallerText);
-        GUI.Box(new Rect(10, 55, 320, 20), "Q,E,F,V - shift center of mass of biker", smallerText);
-        GUI.Box(new Rect(10, 70, 320, 20), "R - restart / RightShift+R - full restart", smallerText);
-        GUI.Box(new Rect(10, 85, 180, 20), "RMB - rotate camera around", smallerText);
-        GUI.Box(new Rect(10, 115, 320, 20), "C - toggle reverse", smallerText);
+        //GUI.Box(new Rect(10, 40, 120, 20), "X - rear brake", smallerText);
+        //GUI.Box(new Rect(10, 55, 320, 20), "Q,E,F,V - shift center of mass of biker", smallerText);
+        //GUI.Box(new Rect(10, 70, 320, 20), "R - restart / RightShift+R - full restart", smallerText);
+        //GUI.Box(new Rect(10, 85, 180, 20), "RMB - rotate camera around", smallerText);
+        //GUI.Box(new Rect(10, 115, 320, 20), "C - toggle reverse", smallerText);
 
-        GUI.Box(new Rect(10, 130, 320, 20), "Space - bunnyhop", smallerText);
-        GUI.Box(new Rect(10, 145, 320, 20), "M - turn left 180", smallerText);
-        GUI.Box(new Rect(10, 160, 320, 20), "N - backflip 360", smallerText);
-        GUI.Box(new Rect(10, 175, 220, 20), "2 - manual", smallerText);
-        GUI.Box(new Rect(10, 190, 220, 20), "B - bunny jump right", smallerText);
-        GUI.Box(new Rect(10, 205, 220, 20), "/ - 1 hard clutch for half second", smallerText);
+        //GUI.Box(new Rect(10, 130, 320, 20), "Space - bunnyhop", smallerText);
+        //GUI.Box(new Rect(10, 145, 320, 20), "M - turn left 180", smallerText);
+        //GUI.Box(new Rect(10, 160, 320, 20), "N - backflip 360", smallerText);
+        //GUI.Box(new Rect(10, 175, 220, 20), "2 - manual", smallerText);
+        //GUI.Box(new Rect(10, 190, 220, 20), "B - bunny jump right", smallerText);
+        //GUI.Box(new Rect(10, 205, 220, 20), "/ - 1 hard clutch for half second", smallerText);
 
 
-        GUI.Box(new Rect(10, 220, 320, 20), "Esc - return to main menu", smallerText);
-        GUI.color = Color.black;
+        //GUI.Box(new Rect(10, 220, 320, 20), "Esc - return to main menu", smallerText);
+        //GUI.color = Color.black;
 
 
     }
@@ -191,6 +190,20 @@ public class bicycle_code : MonoBehaviour
 
     }
 
+    // This is used for out control, the speed is KM/h
+    public void Ride(float speed)
+    {
+        velocityKMSet = speed;
+        moving = true;
+    }
+
+    // This is used for out control, the angle is from -90~+90
+    public void Turn(float angle)
+    {
+        wheelAngle = angle;
+        turning = true;
+    }
+
     void FixedUpdate()
     {
         ApplyLocalPositionToVisuals(coll_frontWheel);
@@ -237,8 +250,12 @@ public class bicycle_code : MonoBehaviour
 
         //////////////////////////////////// acceleration & brake /////////////////////////////////////////////////////////////
         //////////////////////////////////// ACCELERATE /////////////////////////////////////////////////////////////
-        //if (!crashed && outsideControls.Vertical > 0 && !isReverseOn)
-        if(!crashed && moving)
+
+        // Don't let the bike lean
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+
+        if (!crashed && outsideControls.Vertical > 0 && !isReverseOn)
+        //if(!crashed && moving)
         {//case with acceleration from 0.0f to 0.9f throttle
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
             // Solution0: Add force to the pedal
@@ -508,6 +525,13 @@ public class bicycle_code : MonoBehaviour
             // while speed is high, wheelbar is restricted 
             coll_frontWheel.steerAngle = tempMaxWheelAngle * outsideControls.Horizontal;
             steeringWheel.rotation = coll_frontWheel.transform.rotation * Quaternion.Euler(0, coll_frontWheel.steerAngle, coll_frontWheel.transform.rotation.z);
+        }
+        else if(!crashed && turning)
+        {
+            //[Interface of Angle] Below is the code used for connecting with outside
+            coll_frontWheel.steerAngle = wheelAngle;
+            steeringWheel.rotation = coll_frontWheel.transform.rotation * Quaternion.Euler(0, coll_frontWheel.steerAngle, coll_frontWheel.transform.rotation.z);
+
         }
         else coll_frontWheel.steerAngle = 0;
 
