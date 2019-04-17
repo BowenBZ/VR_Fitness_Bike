@@ -13,7 +13,7 @@ public class keyboardControls : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		ctrlHub = GameObject.Find("Manager");//link to GameObject with script "controlHub"
+		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();// making a link to corresponding bike's script
 	}
 	
@@ -44,16 +44,16 @@ public class keyboardControls : MonoBehaviour {
         //}
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().velocityKMSet += 1;
+            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet += 1;
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
+            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().wheelAngle -= 5;
+            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().wheelAngle -= 5;
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
-            GameObject.Find("rigid_bike").GetComponent<bicycle_code>().wheelAngle += 5;
+            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().wheelAngle += 5;
 
         //////////////////////////////////// Rider's mass translate ////////////////////////////////////////////////////////////
         //this strings controls pilot's mass shift along bike(vertical)

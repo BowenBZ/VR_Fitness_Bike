@@ -33,11 +33,11 @@ public class pedalControls : MonoBehaviour
     void Start()
     {
 
-        ctrlHub = GameObject.Find("Manager");//link to GameObject with script "controlHub"
+        ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        linkToBike = GameObject.Find("rigid_bike").GetComponent<bicycle_code>();
-        linkToRider = GameObject.Find("char_anim").GetComponent<biker_logic_mecanim>();
+        linkToBike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
+        linkToRider = GameObject.FindGameObjectWithTag("character").GetComponent<biker_logic_mecanim>();
 
     }
 
