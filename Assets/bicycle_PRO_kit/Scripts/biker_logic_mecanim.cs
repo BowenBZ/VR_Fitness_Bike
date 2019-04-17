@@ -199,7 +199,7 @@ public class biker_logic_mecanim : MonoBehaviour
         bikerComeback();
 
         //in case of crashed call ragdoll
-        if (bikeRideOn.transform.name == "rigid_bike")
+        if (bikeRideOn.transform.tag == "bike")
         {
             if (bikeStatusCrashed.crashed && !ragdollLaunched)
             {
