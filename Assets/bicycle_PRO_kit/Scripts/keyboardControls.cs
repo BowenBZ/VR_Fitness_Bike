@@ -44,11 +44,11 @@ public class keyboardControls : MonoBehaviour {
         if (Input.GetKey(KeyCode.I))
             bike.Ride(50);
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-            bike.velocityKMSet += 1;
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
+            bike.velocityKMSet += 0.1f;
 
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-            bike.velocityKMSet -= 1;
+        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Joystick1Button0))
+            bike.velocityKMSet -= 0.1f;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
             bike.wheelAngle -= 5;
@@ -92,21 +92,44 @@ public class keyboardControls : MonoBehaviour {
 		//////////////////////////////////// Restart ////////////////////////////////////////////////////////////////
 		// Restart & full restart
 		if (Input.GetKey (KeyCode.R)) {
-			outsideControls.restartBike = true;
+            bike.velocityKMSet = 25;
+            outsideControls.restartBike = true;
 		} else
 			outsideControls.restartBike = false;
 
 		// RightShift for full restart
 		if (Input.GetKey (KeyCode.RightShift)) {
-			outsideControls.fullRestartBike = true;
+            bike.velocityKMSet = 25;
+            outsideControls.fullRestartBike = true;
 		} else
 			outsideControls.fullRestartBike = false;
 
-		//////////////////////////////////// Reverse ////////////////////////////////////////////////////////////////
-		// Restart & full restart
-		if(Input.GetKeyDown(KeyCode.C)){
+        // RightShift for full restart
+        if (Input.GetKeyDown(KeyCode.Joystick1Button2))
+        {
+            bike.velocityKMSet = 25;
+            outsideControls.restartBike = true;
+            outsideControls.fullRestartBike = true;
+        }
+        else
+            outsideControls.fullRestartBike = false;
+
+        //////////////////////////////////// Reverse ////////////////////////////////////////////////////////////////
+        // Restart & full restart
+        if (Input.GetKeyDown(KeyCode.C)){
 				outsideControls.reverse = true;
 		} else outsideControls.reverse = false;
-		///
-	}
+        ///
+
+        if (Input.GetKeyUp(KeyCode.F1))
+            GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView = true;
+
+        if (Input.GetKeyDown(KeyCode.F2))
+            GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView = false;
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+            GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView = 
+                !GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView;
+
+    }
 }
