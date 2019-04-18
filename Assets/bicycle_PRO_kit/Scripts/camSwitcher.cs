@@ -11,6 +11,7 @@ public class camSwitcher : MonoBehaviour
 	private Camera currentCamera;
     public Camera firstViewCamera;
     public Camera thridViewCamera;
+    public GameObject head;
 	//////////////////// for back Camera 
 	float dist = 3.0f;
 	float height = 1.0f;
@@ -55,7 +56,9 @@ public class camSwitcher : MonoBehaviour
         firstViewCamera.enabled = true;
         thridViewCamera.enabled = false;
         currentCamera = firstViewCamera;
-        
+        head.SetActive(false);
+
+
         if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
 	
 		currentTargetAngle = cameraTarget.transform.eulerAngles.z;
@@ -114,6 +117,7 @@ public class camSwitcher : MonoBehaviour
                 aroundCamera.gameObject.SetActive(false);
                 firstViewCamera.gameObject.SetActive(false);
                 thridViewCamera.gameObject.SetActive(true);
+                head.SetActive(true);
                 currentCamera = firstViewCamera;
                 //backCamera.enabled = true;
                 //aroundCamera.enabled = false;
@@ -183,6 +187,7 @@ public class camSwitcher : MonoBehaviour
                 aroundCamera.gameObject.SetActive(false);
                 firstViewCamera.gameObject.SetActive(true);
                 thridViewCamera.gameObject.SetActive(false);
+                head.SetActive(false);
                 currentCamera = firstViewCamera;
 
                 //firstViewCamera.transform.position = GameObject.FindGameObjectWithTag("bike").transform.position +

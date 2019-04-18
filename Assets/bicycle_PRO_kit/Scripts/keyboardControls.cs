@@ -45,11 +45,17 @@ public class keyboardControls : MonoBehaviour {
 
         Debug.Log(Input.GetKeyDown(KeyCode.Joystick1Button1));
 
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Joystick1Button1))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet += 1;
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
+            if (GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet > 50)
+                GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet = 50;
+            else
+                GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet += 0.1f;
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Joystick1Button0))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.Joystick1Button0))
+            if (GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet <= 5)
+                GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet = 5;
+            else
+                GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet -= 0.1f;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
             GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().wheelAngle -= 5;
@@ -103,9 +109,23 @@ public class keyboardControls : MonoBehaviour {
 		} else
 			outsideControls.fullRestartBike = false;
 
-		//////////////////////////////////// Reverse ////////////////////////////////////////////////////////////////
-		// Restart & full restart
-		if(Input.GetKeyDown(KeyCode.C)){
+        // RightShift for full restart
+        if (Input.GetKey(KeyCode.Joystick1Button2))
+        {
+            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet = 25;
+            outsideControls.restartBike = true;
+            outsideControls.fullRestartBike = true;
+        }
+        else
+        {
+            outsideControls.restartBike = false;
+            outsideControls.fullRestartBike = false;
+        }
+            
+
+        //////////////////////////////////// Reverse ////////////////////////////////////////////////////////////////
+        // Restart & full restart
+        if (Input.GetKeyDown(KeyCode.C)){
 				outsideControls.reverse = true;
 		} else outsideControls.reverse = false;
 		///
