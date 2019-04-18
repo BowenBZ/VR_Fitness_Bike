@@ -102,7 +102,6 @@ public class camSwitcher : MonoBehaviour
 
 		} else {
 #endif
-            Debug.Log(firstView);
             if (!firstView)
             {
                 backCamera.enabled = false;
