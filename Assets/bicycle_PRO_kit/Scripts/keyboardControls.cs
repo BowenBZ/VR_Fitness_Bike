@@ -8,52 +8,53 @@ public class keyboardControls : MonoBehaviour {
 
 	private GameObject ctrlHub;// making a link to corresponding bike's script
 	private controlHub outsideControls;// making a link to corresponding bike's script
-	
+    bicycle_code bike; 
+    
 
 
 	// Use this for initialization
 	void Start () {
 		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();// making a link to corresponding bike's script
-	}
+        bike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
         //////////////////////////////////// ACCELERATE, braking & 'full throttle - manual trick' //////////////////////////////////////////////
         // Alpha2 is key "2".Used to make manual.Also, it can be achived by 100 % "throtle on mobile joystick"
 
-        if (!Input.GetKey(KeyCode.Alpha2))
-        {
-            outsideControls.Vertical = Input.GetAxis("Vertical") / 1.112f;//to get less than 0.9 as acceleration to prevent wheelie(wheelie begins at >0.9
-            if (Input.GetAxis("Vertical") < 0) outsideControls.Vertical = outsideControls.Vertical * 1.112f;//need to get 1(full power) for front brake
-        }
+        //if (!Input.GetKey(KeyCode.Alpha2))
+        //{
+        //    outsideControls.Vertical = Input.GetAxis("Vertical") / 1.112f;//to get less than 0.9 as acceleration to prevent wheelie(wheelie begins at >0.9
+        //    if (Input.GetAxis("Vertical") < 0) outsideControls.Vertical = outsideControls.Vertical * 1.112f;//need to get 1(full power) for front brake
+        //}
+
+        // Accerelate
+        if (!bike.rideByOutInput)
+            outsideControls.Vertical = Input.GetAxis("Vertical");
 
         //////////////////////////////////// STEERING /////////////////////////////////////////////////////////////////////////
-        outsideControls.Horizontal = Input.GetAxis("Horizontal");
+        if (!bike.turnByOutInput)
+            outsideControls.Horizontal = Input.GetAxis("Horizontal");
 
-		if (Input.GetKey (KeyCode.Alpha2)) outsideControls.Vertical = 1;
+        if (Input.GetKey(KeyCode.P))
+            bike.Turn(30);
 
-        //if (Input.GetKey(KeyCode.W))
-        //{ 
-        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = true;
-        //}
-
-        //if (Input.GetKeyUp(KeyCode.W))
-        //{
-        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = false;
-        //}
+        if (Input.GetKey(KeyCode.I))
+            bike.Ride(50);
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet += 1;
+            bike.velocityKMSet += 1;
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
+            bike.velocityKMSet -= 1;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().wheelAngle -= 5;
+            bike.wheelAngle -= 5;
 
         if (Input.GetKeyDown(KeyCode.RightArrow))
-            GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().wheelAngle += 5;
+            bike.wheelAngle += 5;
 
         //////////////////////////////////// Rider's mass translate ////////////////////////////////////////////////////////////
         //this strings controls pilot's mass shift along bike(vertical)
