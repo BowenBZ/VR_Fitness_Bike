@@ -6,6 +6,8 @@
 [Ll]ogs/
 [Pp]ackages/
 Assets/AssetStoreTools*
+char_ragDoll.prefab
+Build.meta
 
 # Visual Studio cache directory
 .vs/
