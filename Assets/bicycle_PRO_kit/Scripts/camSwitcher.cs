@@ -10,6 +10,7 @@ public class camSwitcher : MonoBehaviour
 	public Transform cameraTarget;
 	private Camera currentCamera;
     public Camera firstViewCamera;
+    public Camera thridViewCamera;
 	//////////////////// for back Camera 
 	float dist = 3.0f;
 	float height = 1.0f;
@@ -49,17 +50,18 @@ public class camSwitcher : MonoBehaviour
 		outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
         firstViewStartPos = firstViewCamera.transform.position;
-        backCamera.enabled = true;
+        backCamera.enabled = false;
 		aroundCamera.enabled = false;
-		currentCamera = backCamera;
-        firstViewCamera.enabled = false;
-
+        firstViewCamera.enabled = true;
+        thridViewCamera.enabled = false;
+        currentCamera = firstViewCamera;
+        
         if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
 	
 		currentTargetAngle = cameraTarget.transform.eulerAngles.z;
 	}
 
-    bool firstView = false;
+    bool firstView = true;
 	// Update is called once per frame
 	void LateUpdate ()
 	{
@@ -101,72 +103,83 @@ public class camSwitcher : MonoBehaviour
 
             if (!firstView)
             {
-                backCamera.enabled = true;
+                backCamera.enabled = false;
                 aroundCamera.enabled = false;
                 firstViewCamera.enabled = false;
-                backCamera.gameObject.SetActive(true);
+                thridViewCamera.enabled = true;
+                backCamera.gameObject.SetActive(false);
                 aroundCamera.gameObject.SetActive(false);
                 firstViewCamera.gameObject.SetActive(false);
-                currentCamera = backCamera;
+                thridViewCamera.gameObject.SetActive(true);
+                currentCamera = firstViewCamera;
+                //backCamera.enabled = true;
+                //aroundCamera.enabled = false;
+                //firstViewCamera.enabled = false;
+                //backCamera.gameObject.SetActive(true);
+                //aroundCamera.gameObject.SetActive(false);
+                //firstViewCamera.gameObject.SetActive(false);
+                //currentCamera = backCamera;
 
-                //////////////////// code for back Camera
-                backCamera.fieldOfView = backCamera.fieldOfView + outsideControls.Vertical * 20f * Time.deltaTime;
-                if (backCamera.fieldOfView > 85)
-                {
-                    backCamera.fieldOfView = 85;
-                }
-                if (backCamera.fieldOfView < 50)
-                {
-                    backCamera.fieldOfView = 50;
-                }
-                if (backCamera.fieldOfView < 60)
-                {
-                    backCamera.fieldOfView = backCamera.fieldOfView += 10f * Time.deltaTime;
-                }
-                if (backCamera.fieldOfView > 60)
-                {
-                    backCamera.fieldOfView = backCamera.fieldOfView -= 10f * Time.deltaTime;
-                }
+                ////////////////////// code for back Camera
+                //backCamera.fieldOfView = backCamera.fieldOfView + outsideControls.Vertical * 20f * Time.deltaTime;
+                //if (backCamera.fieldOfView > 85)
+                //{
+                //    backCamera.fieldOfView = 85;
+                //}
+                //if (backCamera.fieldOfView < 50)
+                //{
+                //    backCamera.fieldOfView = 50;
+                //}
+                //if (backCamera.fieldOfView < 60)
+                //{
+                //    backCamera.fieldOfView = backCamera.fieldOfView += 10f * Time.deltaTime;
+                //}
+                //if (backCamera.fieldOfView > 60)
+                //{
+                //    backCamera.fieldOfView = backCamera.fieldOfView -= 10f * Time.deltaTime;
+                //}
 
-                float wantedRotationAngle = cameraTarget.eulerAngles.y;
-                float wantedHeight = cameraTarget.position.y + height;
-                float currentRotationAngle = currentCamera.transform.eulerAngles.y;
-                float currentHeight = currentCamera.transform.position.y;
+                //float wantedRotationAngle = cameraTarget.eulerAngles.y;
+                //float wantedHeight = cameraTarget.position.y + height;
+                //float currentRotationAngle = currentCamera.transform.eulerAngles.y;
+                //float currentHeight = currentCamera.transform.position.y;
 
-                currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, 3 * Time.deltaTime);
-                currentHeight = Mathf.Lerp(currentHeight, wantedHeight, 2 * Time.deltaTime);
+                //currentRotationAngle = Mathf.LerpAngle(currentRotationAngle, wantedRotationAngle, 3 * Time.deltaTime);
+                //currentHeight = Mathf.Lerp(currentHeight, wantedHeight, 2 * Time.deltaTime);
 
-                Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
-                currentCamera.transform.position = cameraTarget.position;
-                currentCamera.transform.position -= currentRotation * Vector3.forward * dist;
-                currentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentHeight, currentCamera.transform.position.z);
-                currentCamera.transform.LookAt(cameraTarget);
+                //Quaternion currentRotation = Quaternion.Euler(0, currentRotationAngle, 0);
+                //currentCamera.transform.position = cameraTarget.position;
+                //currentCamera.transform.position -= currentRotation * Vector3.forward * dist;
+                //currentCamera.transform.position = new Vector3(currentCamera.transform.position.x, currentHeight, currentCamera.transform.position.z);
+                //currentCamera.transform.LookAt(cameraTarget);
 
-                //New camera features.
-                //Now camera leaning with biker, so horizon is not always horizontal :)
-                //If you don't like it, just disable
-                //from this -----------------------------------------------------------------------
+                ////New camera features.
+                ////Now camera leaning with biker, so horizon is not always horizontal :)
+                ////If you don't like it, just disable
+                ////from this -----------------------------------------------------------------------
 
-                // rotate camera according with bike leaning
-                if (cameraTarget.transform.eulerAngles.z > 0 && cameraTarget.transform.eulerAngles.z < 180)
-                {
-                    currentTargetAngle = cameraTarget.transform.eulerAngles.z / 10;
-                }
-                if (cameraTarget.transform.eulerAngles.z > 180)
-                {
-                    currentTargetAngle = -(360 - cameraTarget.transform.eulerAngles.z) / 10;
-                }
-                currentCamera.transform.rotation = Quaternion.Euler(height * 10, currentRotationAngle, currentTargetAngle);
-                //to this -------------------------------------------------------------------------
+                //// rotate camera according with bike leaning
+                //if (cameraTarget.transform.eulerAngles.z > 0 && cameraTarget.transform.eulerAngles.z < 180)
+                //{
+                //    currentTargetAngle = cameraTarget.transform.eulerAngles.z / 10;
+                //}
+                //if (cameraTarget.transform.eulerAngles.z > 180)
+                //{
+                //    currentTargetAngle = -(360 - cameraTarget.transform.eulerAngles.z) / 10;
+                //}
+                //currentCamera.transform.rotation = Quaternion.Euler(height * 10, currentRotationAngle, currentTargetAngle);
+                ////to this -------------------------------------------------------------------------
             }
             else
             {
                 backCamera.enabled = false;
                 aroundCamera.enabled = false;
                 firstViewCamera.enabled = true;
+                thridViewCamera.enabled = false;
                 backCamera.gameObject.SetActive(false);
                 aroundCamera.gameObject.SetActive(false);
                 firstViewCamera.gameObject.SetActive(true);
+                thridViewCamera.gameObject.SetActive(false);
                 currentCamera = firstViewCamera;
 
                 //firstViewCamera.transform.position = GameObject.FindGameObjectWithTag("bike").transform.position +
