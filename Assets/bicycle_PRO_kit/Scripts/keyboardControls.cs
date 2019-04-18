@@ -121,7 +121,7 @@ public class keyboardControls : MonoBehaviour {
 		} else outsideControls.reverse = false;
         ///
 
-        if (Input.GetKeyUp(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F1))
             GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView = true;
 
         if (Input.GetKeyDown(KeyCode.F2))

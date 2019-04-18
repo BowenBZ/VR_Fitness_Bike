@@ -1,4 +1,4 @@
-﻿// Writen by Boris Chuprin smokerr@mail.ru
+// Writen by Boris Chuprin smokerr@mail.ru
 using UnityEngine;
 using System.Collections;
 
@@ -7,18 +7,28 @@ using System.Collections;
 //mobile/keyboard scripts sends nums(float, int, bools) to this one
 
 public class controlHub : MonoBehaviour  {//need that for mobile controls
-	
 
-	public float Vertical;//variable translated to bike script for bike accelerate/stop and leaning
-	public float Horizontal;//variable translated to bike script for pilot's mass shift
-	
-	public float VerticalMassShift;//variable for pilot's mass translate along bike
-	public float HorizontalMassShift;//variable for pilot's mass translate across bike
+    [HideInInspector]
+    public float Vertical;//variable translated to bike script for bike accelerate/stop and leaning
 
-	public bool rearBrakeOn;//this variable says to bike's script to use rear brake
-	public bool restartBike;//this variable says to bike's script restart
-	public bool fullRestartBike; //this variable says to bike's script to full restart
+    [HideInInspector]
+    public float Horizontal;//variable translated to bike script for pilot's mass shift
 
-	public bool reverse;//for reverse speed
+    [HideInInspector]
+    public float VerticalMassShift;//variable for pilot's mass translate along bike
 
+    [HideInInspector]
+    public float HorizontalMassShift;//variable for pilot's mass translate across bike
+
+    [HideInInspector]
+    public bool rearBrakeOn;//this variable says to bike's script to use rear brake
+
+    [HideInInspector]
+    public bool restartBike;//this variable says to bike's script restart
+
+    [HideInInspector]
+    public bool fullRestartBike; //this variable says to bike's script to full restart
+
+    [HideInInspector]
+    public bool reverse;//for reverse speed
 }

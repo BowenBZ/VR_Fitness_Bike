@@ -84,8 +84,14 @@ public class bicycle_code : MonoBehaviour
 
     [HideInInspector]
     public float bikeSpeed; //to know bike speed km/h
+
+    [HideInInspector]
     public bool isReverseOn = false; //to turn On and Off reverse speed
+
+    [HideInInspector]
     public bool rideByOutInput = false; // to detect wether the bike is controled by out input
+
+    [HideInInspector]
     public bool turnByOutInput = false; // to detect wether the bike is controled by out input
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
