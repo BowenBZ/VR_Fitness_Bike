@@ -293,7 +293,7 @@ public class bicycle_code : MonoBehaviour
             CoM.localPosition = tmp_cs5;
             GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
         }
-        else if(!crashed && !moving)
+        else if(!crashed && outsideControls.Vertical == 0)
         {
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }

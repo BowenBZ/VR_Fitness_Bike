@@ -34,19 +34,21 @@ public class keyboardControls : MonoBehaviour {
 		if (Input.GetKey (KeyCode.Alpha2)) outsideControls.Vertical = 1;
 
         //if (Input.GetKey(KeyCode.W))
-        //{ 
-        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = true;
+        //{
+        //    GameObject.FindWithTag("bike").GetComponent<bicycle_code>().moving = true;
         //}
 
         //if (Input.GetKeyUp(KeyCode.W))
         //{
-        //    GameObject.Find("rigid_bike").GetComponent<bicycle_code>().moving = false;
+        //    GameObject.FindWithTag("bike").GetComponent<bicycle_code>().moving = false;
         //}
 
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        Debug.Log(Input.GetKeyDown(KeyCode.Joystick1Button1));
+
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Joystick1Button1))
             GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet += 1;
 
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Joystick1Button0))
             GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>().velocityKMSet -= 1;
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))

@@ -101,6 +101,9 @@ public class camSwitcher : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F2))
                 firstView = false;
 
+            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
+                firstView = !firstView;
+
             if (!firstView)
             {
                 backCamera.enabled = false;
