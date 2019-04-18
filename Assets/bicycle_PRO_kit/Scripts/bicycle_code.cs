@@ -614,7 +614,7 @@ public class bicycle_code : MonoBehaviour
         {
             if (outsideControls.fullRestartBike)
             {
-                transform.position = new Vector3(0, 1, -11);
+                transform.position = new Vector3(0, 0.5f, -11);
                 transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             }
             crashed = false;
