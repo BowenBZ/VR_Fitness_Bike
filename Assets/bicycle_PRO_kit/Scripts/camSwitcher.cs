@@ -43,9 +43,12 @@ public class camSwitcher : MonoBehaviour
 	private controlHub outsideControls;// making a link to corresponding bike's script
 
     Vector3 firstViewStartPos;
-	
-	// Use this for initialization
-	void Start ()
+
+    [HideInInspector]
+    public bool firstView;
+
+    // Use this for initialization
+    void Start ()
 	{
 		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
@@ -58,13 +61,14 @@ public class camSwitcher : MonoBehaviour
         currentCamera = firstViewCamera;
         head.SetActive(false);
 
-
         if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
 	
 		currentTargetAngle = cameraTarget.transform.eulerAngles.z;
-	}
 
-    bool firstView = true;
+        firstView = true;
+
+    }
+
 	// Update is called once per frame
 	void LateUpdate ()
 	{
@@ -98,15 +102,7 @@ public class camSwitcher : MonoBehaviour
 
 		} else {
 #endif
-            if (Input.GetKeyUp(KeyCode.F1))
-                firstView = true;
-
-            if (Input.GetKeyDown(KeyCode.F2))
-                firstView = false;
-
-            if (Input.GetKeyDown(KeyCode.Joystick1Button5))
-                firstView = !firstView;
-
+            Debug.Log(firstView);
             if (!firstView)
             {
                 backCamera.enabled = false;
