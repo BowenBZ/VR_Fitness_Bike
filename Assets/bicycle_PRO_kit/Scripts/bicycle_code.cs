@@ -38,6 +38,7 @@ public class bicycle_code : MonoBehaviour
     float normalCoM = -0.84f; //normalCoM is for situation when script need to return CoM in starting position										
     float CoMWhenCrahsed = -0.2f; //we beed lift CoM for funny bike turning around when crahsed													
 
+
     //////////////////// "beauties" of visuals - some meshes for display visual parts of bike ////////////////////////////////////////////
     public Transform rearPendulumn; //rear pendulumn
     public Transform steeringWheel; //wheel bar
@@ -71,17 +72,13 @@ public class bicycle_code : MonoBehaviour
     [HideInInspector]
     public float frontBrakePower = 25; //brake power absract - 100 is good brakes																		
 
-    float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...
+    //float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...
     
-    [HideInInspector]
-    public float wheelAngle; // The fixed angle turns
-
     // airRes is for wind resistance to large bikes more than small ones
     float airRes; //Air resistant 																										// 1 is neutral
-
-    private GameObject ctrlHub;// gameobject with script control variables 
     private controlHub outsideControls;// making a link to corresponding bike's script
-                                       /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
+    
+    /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
     [HideInInspector]
     public float frontWheelAPD;// usualy 0.05f
 
@@ -95,15 +92,20 @@ public class bicycle_code : MonoBehaviour
     [HideInInspector]
     public bool isReverseOn = false; //to turn On and Off reverse speed
 
-    [HideInInspector]
-    public bool rideByOutInput = false; // to detect wether the bike is controled by out input
-
-    [HideInInspector]
-    public bool turnByOutInput = false; // to detect wether the bike is controled by out input
-
+    /// <summary>
+    /// Below are those key control elements that will influence the movement of bikes
+    /// </summary>
     // Key control
+    GameObject ctrlHub;// gameobject with script control variables 
+
     public float initialForce; // The initial torque added to the wheel when start
     public float velocityKMSet;  // The fixed speed of the bike travels (KM/h)
+    [HideInInspector]
+    public float wheelAngle; // The fixed angle turns
+    [HideInInspector]
+    public bool rideByOutInput = false; // to detect wether the bike is controled by out input
+    [HideInInspector]
+    public bool turnByOutInput = false; // to detect wether the bike is controled by out input
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void OnGUI()
@@ -184,8 +186,8 @@ public class bicycle_code : MonoBehaviour
         GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
 
         // too keep LegsPower variable like "real" horse powers
-        LegsPower = 20;
-        LegsPower = LegsPower * 20;
+        //LegsPower = 20;
+        //LegsPower = LegsPower * 20;
 
         //*30 is for good braking to keep frontBrakePower = 100 for good brakes. So, 100 is like sportsbike's Brembo
         frontBrakePower = 25;
@@ -276,9 +278,9 @@ public class bicycle_code : MonoBehaviour
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
         if (!crashed && outsideControls.Vertical > 0)
-        //if(!crashed && moving)
-        {//case with acceleration from 0.0f to 0.9f throttle
+        {
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
+            
             // Solution0: Add force to the pedal
             // coll_rearWheel.motorTorque = LegsPower * outsideControls.Vertical;
 
@@ -291,18 +293,9 @@ public class bicycle_code : MonoBehaviour
             else
             {
                 Vector3 velocity = GetComponent<Rigidbody>().velocity /
-                                                    GetComponent<Rigidbody>().velocity.magnitude * velocityMeterSet;
+                                    GetComponent<Rigidbody>().velocity.magnitude * velocityMeterSet;
                 GetComponent<Rigidbody>().velocity = velocity;
             }
-
-
-            // Solution2: Automatci control(PID)
-            /*
-            coll_rearWheel.motorTorque = initialForce;
-            if (GetComponent<Rigidbody>().velocity.magnitude > velocity)
-                initialForce -= 1.0f;
-            else if (GetComponent<Rigidbody>().velocity.magnitude < velocity)
-                initialForce += 1.0f;*/
 
             // debug - rear wheel is green when accelerate
             meshRearWheel.GetComponent<Renderer>().material.color = Color.green;
@@ -323,6 +316,7 @@ public class bicycle_code : MonoBehaviour
             RearSuspensionRestoration();
         }
 
+        /*
         ////case for reverse
         //if (!crashed && outsideControls.Vertical > 0 && isReverseOn)
         //{
@@ -388,6 +382,7 @@ public class bicycle_code : MonoBehaviour
         //    coll_rearWheel.suspensionSpring = tmpSpsSprg01;
 
         //}
+        */
 
         //////////////////////////////////// BRAKING /////////////////////////////////////////////////////////////
         //////////////////////////////////// front brake /////////////////////////////////////////////////////////
