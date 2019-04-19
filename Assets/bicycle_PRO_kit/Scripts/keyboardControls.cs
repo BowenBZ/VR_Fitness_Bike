@@ -38,11 +38,8 @@ public class keyboardControls : MonoBehaviour {
         if (!bike.turnByOutInput)
             outsideControls.Horizontal = Input.GetAxis("Horizontal");
 
-        if (Input.GetKey(KeyCode.P))
-            bike.Turn(30);
-
-        if (Input.GetKey(KeyCode.I))
-            bike.Ride(50);
+        if (Input.GetKeyDown(KeyCode.P))
+            gameObject.GetComponent<UdpControl>().SendData(5);
 
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
             bike.velocityKMSet += 0.1f;

@@ -9,17 +9,20 @@ using System.Threading;
 
 public class UdpControl : MonoBehaviour
 {
-    // receiving Thread
-    Thread receiveThread;
-
-    // udpclient object
-    UdpClient client;
-
-    bicycle_code bike;
-
-    // public
+    // Receive 
+    Thread receiveThread; // receiving 
+    UdpClient receiveClient;  // udpclient object
     // public string IP = "127.0.0.1"; default local
-    public int vrPort; // define > init
+    public int vrPort; // receive port
+
+    // Send
+    public string piIP;  // define in init
+    public int piPort;  // define in init
+    IPEndPoint remoteEndPoint;
+    UdpClient sendClient;
+
+    // Bike
+    bicycle_code bike;
 
     class PiData
     {
@@ -27,33 +30,43 @@ public class UdpControl : MonoBehaviour
         public float angle;
     }
 
-
-    // start from unity3d
-    public void Start()
+    class VrData
     {
-        init();
+        public int resistanceLevel;
+    }
+
+
+    void Start()
+    {
         bike = GameObject.FindWithTag("bike").GetComponent<bicycle_code>();
+        init();
     }
 
     // init
     private void init()
-    { 
+    {
+        // Receive
+        receiveClient = new UdpClient(vrPort);
         receiveThread = new Thread(new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
         receiveThread.Start();
+
+        // Send
+        remoteEndPoint = new IPEndPoint(IPAddress.Parse(piIP), piPort);
+        sendClient = new UdpClient();
     }
 
     // receive thread
     void ReceiveData()
     {
-        client = new UdpClient(vrPort);
+        //receiveClient = new UdpClient(vrPort);
         while (true)
         {
             try
             {
                 // Bytes empfangen.
                 IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-                byte[] data = client.Receive(ref anyIP);
+                byte[] data = receiveClient.Receive(ref anyIP);
 
                 // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
                 string text = Encoding.UTF8.GetString(data);
@@ -72,6 +85,27 @@ public class UdpControl : MonoBehaviour
             {
                 print(err.ToString());
             }
+        }
+    }
+
+    // send data
+    public void SendData(int level)
+    {
+        try
+        {
+            VrData vrData = new VrData();
+            vrData.resistanceLevel = level;
+            string text = JsonUtility.ToJson(vrData);
+            byte[] data = Encoding.UTF8.GetBytes(text);
+               
+            // Send it
+            sendClient.Send(data, data.Length, remoteEndPoint);
+
+            //Debug.Log("send");
+        }
+        catch (Exception err)
+        {
+            print(err.ToString());
         }
     }
 }
