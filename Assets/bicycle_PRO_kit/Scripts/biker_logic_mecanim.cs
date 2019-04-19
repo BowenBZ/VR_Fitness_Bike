@@ -43,7 +43,7 @@ public class biker_logic_mecanim : MonoBehaviour
     public Transform IK_leftLegTarget;
 
     //ragdoll define
-    public GameObject ragDoll;
+    public GameObject ragDollPrefab;
 
     //variable for only one ragdoll create when crashed
     private bool ragdollLaunched = false;
@@ -342,7 +342,7 @@ public class biker_logic_mecanim : MonoBehaviour
             Quaternion currentPilotRotation = this.transform.rotation;
             riderBodyVis.gameObject.SetActive(false);
             // creating ragdoll
-            Instantiate(ragDoll, currentPilotPosition, currentPilotRotation);
+            GameObject ragDoll = Instantiate(ragDollPrefab, currentPilotPosition, currentPilotRotation);
             // new empty varables to fill it with learned angles later
             Transform RDpilotHips = ragDoll.transform.Find("root/Hips");
             Transform RDpilotChest = ragDoll.transform.Find("root/Hips/Spine/Chest");
