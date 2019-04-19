@@ -247,7 +247,7 @@ public class bicycle_code : MonoBehaviour
         }
 
         //determinate the bike speed in km/h
-        bikeSpeed = Mathf.Round((GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f; //from m/s to km/h
+        bikeSpeed = Mathf.Round((GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10.0f) * 0.1f; //from m/s to km/h
 
         ///bicycle code
         coll_frontWheel.forceAppPointDistance = frontWheelAPD - bikeSpeed / 1000;
@@ -270,7 +270,7 @@ public class bicycle_code : MonoBehaviour
             // coll_rearWheel.motorTorque = LegsPower * outsideControls.Vertical;
 
             // Solution1: Get the direction of the road
-            float velocityMeterSet = velocityKMSet / 0.1f / 10 / 3.6f;
+            float velocityMeterSet = velocityKMSet / 0.1f / 10.0f / 3.6f;
             if (GetComponent<Rigidbody>().velocity.magnitude < 0.5f)
             {
                 coll_rearWheel.motorTorque = initialForce;
