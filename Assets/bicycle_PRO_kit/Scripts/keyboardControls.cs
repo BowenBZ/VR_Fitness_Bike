@@ -83,23 +83,37 @@ public class keyboardControls : MonoBehaviour {
 		// Rear Brake
 		if (Input.GetKey (KeyCode.X)) {
 			outsideControls.rearBrakeOn = true;
-		} else
-			outsideControls.rearBrakeOn = false;
+		}
+        else
+        {
+            outsideControls.rearBrakeOn = false;
+        }
 
-		//////////////////////////////////// Restart ////////////////////////////////////////////////////////////////
-		// Restart & full restart
-		if (Input.GetKey (KeyCode.R)) {
+        //////////////////////////////////// Restart ////////////////////////////////////////////////////////////////
+        // Restart & full restart
+        if (Input.GetKeyDown (KeyCode.R)) {
             bike.velocityKMSet = 25;
             outsideControls.restartBike = true;
-		} else
-			outsideControls.restartBike = false;
+		}
+        
+        if(Input.GetKeyUp(KeyCode.R))
+        {
+            outsideControls.restartBike = false;
+        }
 
-		// RightShift for full restart
-		if (Input.GetKey (KeyCode.RightShift)) {
+        // RightShift for full restart
+        if (Input.GetKeyDown (KeyCode.RightShift)) {
             bike.velocityKMSet = 25;
+            outsideControls.restartBike = true;
             outsideControls.fullRestartBike = true;
-		} else
-			outsideControls.fullRestartBike = false;
+		}
+        
+        if (Input.GetKeyUp(KeyCode.RightShift))
+        {
+            outsideControls.restartBike = false;
+            outsideControls.fullRestartBike = false;
+        }
+
 
         // RightShift for full restart
         if (Input.GetKeyDown(KeyCode.Joystick1Button2))
@@ -108,8 +122,13 @@ public class keyboardControls : MonoBehaviour {
             outsideControls.restartBike = true;
             outsideControls.fullRestartBike = true;
         }
-        else
+        
+        if(Input.GetKeyUp(KeyCode.Joystick1Button2))
+        {
+            outsideControls.restartBike = false;
             outsideControls.fullRestartBike = false;
+        }
+
 
         //////////////////////////////////// Reverse ////////////////////////////////////////////////////////////////
         // Restart & full restart

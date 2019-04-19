@@ -74,7 +74,7 @@ public class UdpControl : MonoBehaviour
                 PiData piData = new PiData();
                 piData = JsonUtility.FromJson<PiData>(text);
 
-                // Show the result
+                //Show the result
                 //Debug.Log("speed: " + piData.speed);
                 //Debug.Log("angle: " + piData.angle);
 
