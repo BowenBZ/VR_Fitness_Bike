@@ -21,18 +21,22 @@ public class bicycle_code : MonoBehaviour
     float stiffPowerGain = 0.0f;
     //for CoM moving along and across bike. Pilot's CoM.
     float tmpMassShift = 0.0f;
+
     // crashed status. To know when we need to desable controls because bike is too leaned.
+    [HideInInspector]
     public bool crashed = false;
+
     // there is angles when bike takes status crashed(too much lean, or too much stoppie/wheelie)
-    public float crashAngle01;//crashed status is on if bike have more Z(side fall) angle than this												
-    public float crashAngle02;//crashed status is on if bike have less Z(side fall) angle than this 												
-    public float crashAngle03;//crashed status is on if bike have more X(front fall) angle than this 												
-    public float crashAngle04;//crashed status is on if bike have more X(back fall) angle than this												
+    float crashAngle01 = 60;//crashed status is on if bike have more Z(side fall) angle than this												
+    float crashAngle02 = 300;//crashed status is on if bike have less Z(side fall) angle than this 												
+    float crashAngle03 = 60;//crashed status is on if bike have more X(front fall) angle than this 												
+    float crashAngle04 = 280;//crashed status is on if bike have more X(back fall) angle than this												
 
     // define CoM of bike
     public Transform CoM; //CoM object
-    public float normalCoM; //normalCoM is for situation when script need to return CoM in starting position										
-    public float CoMWhenCrahsed; //we beed lift CoM for funny bike turning around when crahsed													
+
+    float normalCoM = -0.84f; //normalCoM is for situation when script need to return CoM in starting position										
+    float CoMWhenCrahsed = -0.2f; //we beed lift CoM for funny bike turning around when crahsed													
 
     //////////////////// "beauties" of visuals - some meshes for display visual parts of bike ////////////////////////////////////////////
     public Transform rearPendulumn; //rear pendulumn
@@ -64,20 +68,23 @@ public class bicycle_code : MonoBehaviour
     private RaycastHit hit;
 
     /////////////////////////////////////////// technical variables ///////////////////////////////////////////////////////
-    public float frontBrakePower; //brake power absract - 100 is good brakes																		
+    [HideInInspector]
+    public float frontBrakePower = 25; //brake power absract - 100 is good brakes																		
 
-    public float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...	
-    public float initialForce; // The initial torque added to the wheel when start
-    public float velocityKMSet;  // The fixed speed of the bike travels (KM/h)
-    public float wheelAngle;
+    float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...
+    
+    [HideInInspector]
+    public float wheelAngle; // The fixed angle turns
 
     // airRes is for wind resistance to large bikes more than small ones
-    public float airRes; //Air resistant 																										// 1 is neutral
+    float airRes; //Air resistant 																										// 1 is neutral
 
     private GameObject ctrlHub;// gameobject with script control variables 
     private controlHub outsideControls;// making a link to corresponding bike's script
                                        /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
-    private float frontWheelAPD;// usualy 0.05f
+    [HideInInspector]
+    public float frontWheelAPD;// usualy 0.05f
+
     private GameObject pedals;
     private pedalControls linkToStunt;
     private bool rearPend;
@@ -93,6 +100,10 @@ public class bicycle_code : MonoBehaviour
 
     [HideInInspector]
     public bool turnByOutInput = false; // to detect wether the bike is controled by out input
+
+    // Key control
+    public float initialForce; // The initial torque added to the wheel when start
+    public float velocityKMSet;  // The fixed speed of the bike travels (KM/h)
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void OnGUI()
@@ -173,9 +184,11 @@ public class bicycle_code : MonoBehaviour
         GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
 
         // too keep LegsPower variable like "real" horse powers
+        LegsPower = 20;
         LegsPower = LegsPower * 20;
 
         //*30 is for good braking to keep frontBrakePower = 100 for good brakes. So, 100 is like sportsbike's Brembo
+        frontBrakePower = 25;
         frontBrakePower = frontBrakePower * 30;//30 is abstract but necessary for Unity5
 
         //tehcnical variables
