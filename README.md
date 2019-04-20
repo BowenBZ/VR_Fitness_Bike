@@ -11,9 +11,8 @@ The control method and type are as follows.
 * Turn right: `D` / right X axis in handle
 * Increase the speed: Up arrow / button `A` in handle
 * Decrease the speed: Down arrow / button `B` in handle
-* Switch to first person view: `F1` / button `R2` in handle
-* Switch to thrid person view: `F2` / button `R2` in handle
-* Restart: Right `Shift` + `R` / button `Y` in handle
+* Switch to first / third person view: `F2` / button `R2` in handle
+* Restart: Right `Shift` / button `Y` in handle
 
 When the bike go forward, the speed is fixed, whatever terrain you are in.
 
@@ -28,6 +27,7 @@ When the bike go forward, the speed is fixed, whatever terrain you are in.
 	* DuplicateTerrains.cs: Duplicate terrains according to the parameters
 	* KeyboardControls.cs: Detect the input
 	* ControlHub.cs: Contains all the variable related to the movement of bike
+	* UdpControl.cs: Control the receive and send functions of UDP
 * Road: Unit of road
 * Terrain: Unit of terrain
 * Bike
@@ -46,4 +46,3 @@ When the bike go forward, the speed is fixed, whatever terrain you are in.
 ## Adopted Assets
 * bicycle_pro_kit
 * Mapbox
-* 
