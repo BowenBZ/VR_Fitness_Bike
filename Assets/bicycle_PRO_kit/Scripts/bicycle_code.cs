@@ -227,10 +227,19 @@ public class bicycle_code : MonoBehaviour
         outsideControls.Horizontal = (angle > 0) ? 0.9f : 0;
     }
 
+    void Update()
+    {
+        // Don't let the bike lean
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+    }
+
     void FixedUpdate()
     {
         ApplyLocalPositionToVisuals(coll_frontWheel);
         ApplyLocalPositionToVisuals(coll_rearWheel);
+
+        // Don't let the bike lean
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
         //////////////////////////////////// part where rear pendulum, wheelbar and wheels meshes matched to wheelsColliers and so on
         //beauty - rear pendulumn is looking at rear wheel(if you have both suspension bike)
@@ -273,10 +282,6 @@ public class bicycle_code : MonoBehaviour
 
         //////////////////////////////////// acceleration & brake /////////////////////////////////////////////////////////////
         //////////////////////////////////// ACCELERATE /////////////////////////////////////////////////////////////
-
-        // Don't let the bike lean
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
-
         if (!crashed && outsideControls.Vertical > 0)
         {
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
@@ -316,6 +321,7 @@ public class bicycle_code : MonoBehaviour
             RearSuspensionRestoration();
         }
 
+        #region
         /*
         ////case for reverse
         //if (!crashed && outsideControls.Vertical > 0 && isReverseOn)
@@ -386,158 +392,157 @@ public class bicycle_code : MonoBehaviour
 
         //////////////////////////////////// BRAKING /////////////////////////////////////////////////////////////
         //////////////////////////////////// front brake /////////////////////////////////////////////////////////
-        int springWeakness = 0;
-        if (!crashed && outsideControls.Vertical < 0 && !isFrontWheelInAir)
-        {
+        //int springWeakness = 0;
+        //if (!crashed && outsideControls.Vertical < 0 && !isFrontWheelInAir)
+        //{
 
-            coll_frontWheel.brakeTorque = frontBrakePower * -outsideControls.Vertical;
-            //coll_rearWheel.motorTorque = 0; // you can't do accelerate and braking same time.
-            GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        //    coll_frontWheel.brakeTorque = frontBrakePower * -outsideControls.Vertical;
+        //    //coll_rearWheel.motorTorque = 0; // you can't do accelerate and braking same time.
+        //    GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
 
-            //more user firendly gomeotric progession braking. But less stoppie and fun :( Boring...
+        //    //more user firendly gomeotric progession braking. But less stoppie and fun :( Boring...
 
-            if (bikeSpeed > 1)
-            {// no CoM pull up when speed is zero
+        //    if (bikeSpeed > 1)
+        //    {// no CoM pull up when speed is zero
 
-                //when rear brake is used it helps a little to prevent stoppie. Because in real life bike "stretch" a little when you using rear brake just moment before front.
-                float rearBrakeAddon = 0.0f;
-                if (outsideControls.rearBrakeOn)
-                {
-                    rearBrakeAddon = 0.0025f;
-                }
-                var tmp_cs11 = CoM.localPosition;
-                tmp_cs11.y += (frontBrakePower / 200000) + tmpMassShift / 50f - rearBrakeAddon;
-                tmp_cs11.z += 0.0025f;
-                CoM.localPosition = tmp_cs11;
+        //        //when rear brake is used it helps a little to prevent stoppie. Because in real life bike "stretch" a little when you using rear brake just moment before front.
+        //        float rearBrakeAddon = 0.0f;
+        //        if (outsideControls.rearBrakeOn)
+        //        {
+        //            rearBrakeAddon = 0.0025f;
+        //        }
+        //        var tmp_cs11 = CoM.localPosition;
+        //        tmp_cs11.y += (frontBrakePower / 200000) + tmpMassShift / 50f - rearBrakeAddon;
+        //        tmp_cs11.z += 0.0025f;
+        //        CoM.localPosition = tmp_cs11;
 
-            }
-            else if (bikeSpeed <= 1 && !crashed && this.transform.localEulerAngles.z < 45 || bikeSpeed <= 1 && !crashed && this.transform.localEulerAngles.z > 315)
-            {
-                if (this.transform.localEulerAngles.x < 5 || this.transform.localEulerAngles.x > 355)
-                {
-                    var tmp_cs12 = CoM.localPosition;
-                    tmp_cs12.y = normalCoM;
-                    CoM.localPosition = tmp_cs12;
-                }
-            }
+        //    }
+        //    else if (bikeSpeed <= 1 && !crashed && this.transform.localEulerAngles.z < 45 || bikeSpeed <= 1 && !crashed && this.transform.localEulerAngles.z > 315)
+        //    {
+        //        if (this.transform.localEulerAngles.x < 5 || this.transform.localEulerAngles.x > 355)
+        //        {
+        //            var tmp_cs12 = CoM.localPosition;
+        //            tmp_cs12.y = normalCoM;
+        //            CoM.localPosition = tmp_cs12;
+        //        }
+        //    }
 
-            if (CoM.localPosition.y >= -0.2f)
-            {
-                var tmp_cs13 = CoM.localPosition;
-                tmp_cs13.y = -0.2f;
-                CoM.localPosition = tmp_cs13;
-            }
+        //    if (CoM.localPosition.y >= -0.2f)
+        //    {
+        //        var tmp_cs13 = CoM.localPosition;
+        //        tmp_cs13.y = -0.2f;
+        //        CoM.localPosition = tmp_cs13;
+        //    }
 
-            if (CoM.localPosition.z >= 0.2f + (GetComponent<Rigidbody>().mass / 500))
-            {
-                CoM.localPosition = new Vector3(CoM.localPosition.x, 0.2f + (GetComponent<Rigidbody>().mass / 500), CoM.localPosition.z);
-            }
+        //    if (CoM.localPosition.z >= 0.2f + (GetComponent<Rigidbody>().mass / 500))
+        //    {
+        //        CoM.localPosition = new Vector3(CoM.localPosition.x, 0.2f + (GetComponent<Rigidbody>().mass / 500), CoM.localPosition.z);
+        //    }
 
-            //////////// 
-            //this is attenuation for front suspension when forge spring is compressed
-            //I've made it to prevent very strange launch to sky when wheelie in new Phys3
-            //problem is launch bike to sky when spring must expand from compressed state. In real life front forge can't create such force.
-            float maxFrontSuspConstrain;//temporary variable to make constrain for attenuation ususpension(need to make it always ~15% of initial force) 
-            maxFrontSuspConstrain = CoM.localPosition.z;
-            if (maxFrontSuspConstrain >= 0.5f) maxFrontSuspConstrain = 0.5f;
-            springWeakness = (int)(normalFrontSuspSpring - (normalFrontSuspSpring * 1.5f) * maxFrontSuspConstrain);
+        //    //////////// 
+        //    //this is attenuation for front suspension when forge spring is compressed
+        //    //I've made it to prevent very strange launch to sky when wheelie in new Phys3
+        //    //problem is launch bike to sky when spring must expand from compressed state. In real life front forge can't create such force.
+        //    float maxFrontSuspConstrain;//temporary variable to make constrain for attenuation ususpension(need to make it always ~15% of initial force) 
+        //    maxFrontSuspConstrain = CoM.localPosition.z;
+        //    if (maxFrontSuspConstrain >= 0.5f) maxFrontSuspConstrain = 0.5f;
+        //    springWeakness = (int)(normalFrontSuspSpring - (normalFrontSuspSpring * 1.5f) * maxFrontSuspConstrain);
 
 
-            
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-            // debug - wheel is red when braking
-            meshFrontWheel.GetComponent<Renderer>().material.color = Color.red;
 
-            //we need to mark suspension as very compressed to make it weaker
-            forgeBlocked = true;
-        }
-        else FrontSuspensionRestoration(springWeakness);//here is function for weak front spring and return it's force slowly
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //    // debug - wheel is red when braking
+        //    meshFrontWheel.GetComponent<Renderer>().material.color = Color.red;
+
+        //    //we need to mark suspension as very compressed to make it weaker
+        //    forgeBlocked = true;
+        //}
+        //else FrontSuspensionRestoration(springWeakness);//here is function for weak front spring and return it's force slowly
 
 
         //////////////////////////////////// rear brake /////////////////////////////////////////////////////////
         // rear brake - it's all about lose side stiffness more and more till rear brake is pressed
-        if (!crashed && outsideControls.rearBrakeOn)
-        {
-            coll_rearWheel.brakeTorque = frontBrakePower / 2;// rear brake is not so good as front brake
+        //if (!crashed && outsideControls.rearBrakeOn)
+        //{
+        //    coll_rearWheel.brakeTorque = frontBrakePower / 2;// rear brake is not so good as front brake
 
-            if (this.transform.localEulerAngles.x > 180 && this.transform.localEulerAngles.x < 350)
-            {
-                var tmp_cs14 = CoM.localPosition;
-                tmp_cs14.z = 0.0f + tmpMassShift;
-                CoM.localPosition = tmp_cs14;
-            }
+        //    if (this.transform.localEulerAngles.x > 180 && this.transform.localEulerAngles.x < 350)
+        //    {
+        //        var tmp_cs14 = CoM.localPosition;
+        //        tmp_cs14.z = 0.0f + tmpMassShift;
+        //        CoM.localPosition = tmp_cs14;
+        //    }
 
-            coll_frontWheel.forceAppPointDistance = 0.25f;//for better sliding when rear brake is on
+        //    coll_frontWheel.forceAppPointDistance = 0.25f;//for better sliding when rear brake is on
 
-            stiffPowerGain = stiffPowerGain += 0.025f - (bikeSpeed / 10000);
-            if (stiffPowerGain > 0.9f - bikeSpeed / 300) { 
-                stiffPowerGain = 0.9f - bikeSpeed / 300;
-            }
+        //    stiffPowerGain = stiffPowerGain += 0.025f - (bikeSpeed / 10000);
+        //    if (stiffPowerGain > 0.9f - bikeSpeed / 300) { 
+        //        stiffPowerGain = 0.9f - bikeSpeed / 300;
+        //    }
 
-            var tmp_cs15a = CoM.localPosition;
-            tmp_cs15a.z = tmp_cs15a.z += 0.05f;
-            CoM.localPosition = tmp_cs15a;
-
-
-            if (CoM.localPosition.z >= 0.5f)
-            {
-                var tmp_cs15b = CoM.localPosition;
-                tmp_cs15b.z = 0.5f;
-                CoM.localPosition = tmp_cs15b;
-
-            }
-
-            var tmp_cs15z = coll_rearWheel.sidewaysFriction;
-            tmp_cs15z.stiffness = 0.9f - stiffPowerGain;// (2 - for stability, 0.01f - falls in a moment)
-            coll_rearWheel.sidewaysFriction = tmp_cs15z;
+        //    var tmp_cs15a = CoM.localPosition;
+        //    tmp_cs15a.z = tmp_cs15a.z += 0.05f;
+        //    CoM.localPosition = tmp_cs15a;
 
 
-            meshRearWheel.GetComponent<Renderer>().material.color = Color.red;
+        //    if (CoM.localPosition.z >= 0.5f)
+        //    {
+        //        var tmp_cs15b = CoM.localPosition;
+        //        tmp_cs15b.z = 0.5f;
+        //        CoM.localPosition = tmp_cs15b;
 
-        }
-        else
-        {
+        //    }
 
-            coll_rearWheel.brakeTorque = 0;
-
-            stiffPowerGain = stiffPowerGain -= 0.05f;
-            if (stiffPowerGain < 0)
-            {
-                stiffPowerGain = 0;
-            }
-            var tmp_cs17 = coll_rearWheel.sidewaysFriction;
-            tmp_cs17.stiffness = 1.0f - stiffPowerGain;
-            coll_rearWheel.sidewaysFriction = tmp_cs17;// side stiffness is back to 2
-            var tmp_cs18 = coll_frontWheel.sidewaysFriction;
-            tmp_cs18.stiffness = 1.0f - stiffPowerGain;
-            coll_frontWheel.sidewaysFriction = tmp_cs18;// side stiffness is back to 1
-
-        }
+        //    var tmp_cs15z = coll_rearWheel.sidewaysFriction;
+        //    tmp_cs15z.stiffness = 0.9f - stiffPowerGain;// (2 - for stability, 0.01f - falls in a moment)
+        //    coll_rearWheel.sidewaysFriction = tmp_cs15z;
 
 
-        //////////////////////////////////// reverse /////////////////////////////////////////////////////////
-        if (!crashed && outsideControls.reverse && bikeSpeed <= 0)
-        {
-            outsideControls.reverse = false;
-            if (isReverseOn == false)
-            {
-                isReverseOn = true;
-            }
-            else isReverseOn = false;
-        }
+        //    meshRearWheel.GetComponent<Renderer>().material.color = Color.red;
 
+        //}
+        //else
+        //{
+
+        //    coll_rearWheel.brakeTorque = 0;
+
+        //    stiffPowerGain = stiffPowerGain -= 0.05f;
+        //    if (stiffPowerGain < 0)
+        //    {
+        //        stiffPowerGain = 0;
+        //    }
+        //    var tmp_cs17 = coll_rearWheel.sidewaysFriction;
+        //    tmp_cs17.stiffness = 1.0f - stiffPowerGain;
+        //    coll_rearWheel.sidewaysFriction = tmp_cs17;// side stiffness is back to 2
+        //    var tmp_cs18 = coll_frontWheel.sidewaysFriction;
+        //    tmp_cs18.stiffness = 1.0f - stiffPowerGain;
+        //    coll_frontWheel.sidewaysFriction = tmp_cs18;// side stiffness is back to 1
+
+        //}
+
+
+        ////////////////////////////////////// reverse /////////////////////////////////////////////////////////
+        //if (!crashed && outsideControls.reverse && bikeSpeed <= 0)
+        //{
+        //    outsideControls.reverse = false;
+        //    if (isReverseOn == false)
+        //    {
+        //        isReverseOn = true;
+        //    }
+        //    else isReverseOn = false;
+        //}
+        #endregion
 
         //////////////////////////////////// turnning /////////////////////////////////////////////////////////////			
         // there is MOST trick in the code
         // the Unity physics isn't like real life. Wheel collider isn't round as real bike tyre.
         // so, face it - you can't reach accurate and physics correct countersteering effect on wheelCollider
         // For that and many other reasons we restrict front wheel turn angle when when speed is growing
-        //(honestly, there was a time when MotoGP bikes has restricted wheel bar rotation angle by 1.5f degree ! as we got here :)			
+        //(honestly, there was a time when MotoGP bikes has restricted wheel bar rotation angle by 1.5f degree ! as we got here 
         tempMaxWheelAngle = wheelbarRestrictCurve.Evaluate(bikeSpeed);//associate speed with curve which you've tuned in Editor
 
         if (!crashed && outsideControls.Horizontal != 0 && !turnByOutInput)
-        {
-
+        { 
             // while speed is high, wheelbar is restricted 
             coll_frontWheel.steerAngle = tempMaxWheelAngle * outsideControls.Horizontal;
             steeringWheel.rotation = coll_frontWheel.transform.rotation * Quaternion.Euler(0, coll_frontWheel.steerAngle, coll_frontWheel.transform.rotation.z);
