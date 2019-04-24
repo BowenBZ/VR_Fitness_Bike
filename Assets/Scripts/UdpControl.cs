@@ -13,11 +13,11 @@ public class UdpControl : MonoBehaviour
     Thread receiveThread; // receiving 
     UdpClient receiveClient;  // udpclient object
     // public string IP = "127.0.0.1"; default local
-    public int vrPort; // receive port
+    int vrPort = 8888; // receive port
 
     // Send
     public string piIP;  // define in init
-    public int piPort;  // define in init
+    int piPort = 8888;  // define in init
     IPEndPoint remoteEndPoint;
     UdpClient sendClient;
 
@@ -79,7 +79,7 @@ public class UdpControl : MonoBehaviour
                 //Debug.Log("angle: " + piData.angle);
 
                 bike.Ride(piData.speed);
-                bike.Turn(piData.angle);
+                //bike.Turn(piData.angle);
             }
             catch (Exception err)
             {
