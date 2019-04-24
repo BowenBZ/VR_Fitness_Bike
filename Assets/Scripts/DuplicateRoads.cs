@@ -5,11 +5,11 @@ using UnityEngine;
 public class DuplicateRoads : MonoBehaviour
 {
     public GameObject roadPrefab;
-    GameObject LastBlock;
+    GameObject preBlock;
     int cnt = 1;
-    float AbsAngle = 0;
     float RoadLength = 1f;
     int PreAngle = 0;
+    int roadIndex = 0;
 
     Vector3 AbsLocation = new Vector3(0, 0, 0);
     Vector3 AbsRotation = new Vector3(0, 0, 0);
@@ -25,135 +25,88 @@ public class DuplicateRoads : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        LastBlock = GameObject.Instantiate(roadPrefab);
+        // Record the last road obj
+        preBlock = GameObject.Instantiate(roadPrefab);
+        // Smooth the slope slopeAngle changes
         SmoothDegChange(DistanceList, DegreeList);
+        // Add value to turning list
         RoadTurning();
-        for (int i = 0; i < DistanceList.Count - 1; i++)
+        // Iterate the list to generate roads
+        for (int i = 0; i < DistanceList.Count; i++)
         {
+            // Generate road
             GenerateRoad(DistanceList[i], DegreeList[i], TurningList[i]);
-            Debug.Log(LastBlock.transform.position);
+
+            Debug.Log(preBlock.transform.position);
             //GenerateRoad(List1[i], List2[i]);
         }
 
     }
 
-    // Update is called once per frame
-    void Update()
+    // Generate several road obj according to the parameters
+    void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
     {
-        DetectKey();
-    }
-
-    void DetectKey()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-        }
-    }
-
-    void GenerateRoad(float length, float angle, float TurningAngle)// For level road use 360 degree instead of 0
-    {
-        float slope = 2f * Mathf.PI * angle / 360f;
-        float AbsSlope;
-        float Turning;
-        GameObject Temp = GameObject.Instantiate(roadPrefab);
+        // Record the last obj before turning
+        GameObject objBeforeTurn = GameObject.Instantiate(roadPrefab);
         
+        // Every obj turning slopeAngle related to the previous obj
         float unitTurnAngle = TurningAngle / 60;
-        float TA = 0;
 
+        // Accumulated numbers of turning slopeAngle
+        float accTurnAngle = 0;
+
+        // Generate road according to its length
         for (int i = 0; i < length / RoadLength; i++)
         {
-
-            Turning = 1f * i;
-            AbsSlope = 2f * Mathf.PI / (360f / (90 - AbsAngle));
+            // Record the obj index
+            roadIndex++;
+            // Generate a new obj
             GameObject obj = GameObject.Instantiate(roadPrefab);
-            obj.transform.eulerAngles = new Vector3(-1f * angle, 0, 0);
-            //AbsLocation = AbsLocation + new Vector3(0, 1 / 2f * RoadLength * (Mathf.Sin(slope) + Mathf.Cos(AbsSlope)),
-            //   1 / 2f * RoadLength * (Mathf.Cos(slope) + Mathf.Sin(AbsSlope)));
-            obj.transform.position = LastBlock.transform.position + LastBlock.transform.forward.normalized * RoadLength;
-            if (LastBlock.transform.eulerAngles != new Vector3(0,0,0))
+            // Set name
+            obj.name = "Road " + roadIndex;
+            // Generate turning blocks from 20th to 80th
+            if (i > 20 && i <= 80)
             {
-                obj.transform.eulerAngles = LastBlock.transform.eulerAngles;
+                // Calculate the new turning angle
+                accTurnAngle = accTurnAngle + unitTurnAngle;
+                // Reset the obj's position to the position of objBeforeTurn
+                obj.transform.position = objBeforeTurn.transform.position;
+                // Reset the obj's rotation to the rotation of objBeforeTurn
+                obj.transform.rotation = objBeforeTurn.transform.rotation;
+                // Canculate the turning point according to the preset parameters
+                Vector3 turningPoint = objBeforeTurn.transform.position +
+                    objBeforeTurn.transform.right.normalized * 60 * TurningAngle / Mathf.Abs(TurningAngle);
+                // Rotate the block to make turning
+                obj.transform.RotateAround(turningPoint, 
+                                            objBeforeTurn.transform.up.normalized, 
+                                            accTurnAngle);
             }
-            //obj.transform.Rotate(-1f * angle, 0, 0);
-            if (i > 20 && i <= 80)//Start turing When i = 20 end at i =50
+            else if(i == 0)
             {
-                TA = TA + unitTurnAngle;
-                obj.transform.position = Temp.transform.position;
-                obj.transform.rotation = Temp.transform.rotation;
-                obj.transform.RotateAround(Temp.transform.position + Temp.transform.right.normalized * 60, Temp.transform.up.normalized, TA);
-            }
-            LastBlock = obj;          
-            AbsAngle = angle;
-            if (i == 20)
-            {
-                Temp = obj;
-            }
-
-        }
-    }
-
-    void GenerateRoadtest(float length, float angle, float TurningAngle)// For level road use 360 degree instead of 0
-    {
-        float TurningDistance = 60;
-        float TurningStart = 20;//Random.Range(10, length - TurningDistance);
-        float TurningEnd = TurningStart + 60f;
-        float slope = 2f * Mathf.PI * angle / 360f;
-        float AbsSlope;
-        float Turning;
-
-        GameObject TStartBlock = GameObject.Instantiate(roadPrefab);
-        GameObject LastBlock = GameObject.Instantiate(roadPrefab);
-
-        float UnitTurnAngle = TurningAngle / TurningDistance;
-        float AccumulateAngle = 0;
-
-        Vector3 ObRotation = new Vector3(0, 0, 0);
-
-        for (int i = 0; i < length / RoadLength; i++)
-        {
-            GameObject obj = GameObject.Instantiate(roadPrefab);
-            obj.transform.eulerAngles = new Vector3(-1f * angle, 0, 0);
-            if (i == TurningStart - 1)// Store the last block before turning
-            {
-                TStartBlock = obj;
-            }
-
-            if (i >= TurningStart && i <= TurningEnd)//Turning process
-            {
-                AccumulateAngle = AccumulateAngle + UnitTurnAngle;
-                obj.transform.position = TStartBlock.transform.position;
-                obj.transform.rotation = TStartBlock.transform.rotation;
-                obj.transform.RotateAround(TStartBlock.transform.position + TStartBlock.transform.right.normalized * 60,
-                    TStartBlock.transform.up.normalized, AccumulateAngle);
-                LastBlock.transform.position = obj.transform.position;
-                LastBlock.transform.rotation = obj.transform.rotation;
+                // Set the slopeAngle
+                obj.transform.eulerAngles = new Vector3(-slopeAngle, 
+                                                        preBlock.transform.eulerAngles.y, 
+                                                        preBlock.transform.eulerAngles.z);
+                // Set the position according to the previous obj
+                obj.transform.position = preBlock.transform.position +
+                                         preBlock.transform.forward.normalized * RoadLength;
             }
             else
             {
-                Turning = 1f * i;
-                AbsSlope = 2f * Mathf.PI / (360f / (90 - AbsAngle));
-
-                AbsLocation = AbsLocation + new Vector3(0, 1 / 2f * RoadLength * (Mathf.Sin(slope) + Mathf.Cos(AbsSlope)),
-                    1 / 2f * RoadLength * (Mathf.Cos(slope) + Mathf.Sin(AbsSlope)));
-                obj.transform.position = AbsLocation;
-                LastBlock.transform.position = obj.transform.position;
-                LastBlock.transform.rotation = obj.transform.rotation;
+                // Set the slopeAngle 
+                obj.transform.rotation = preBlock.transform.rotation; 
+                // Set the position according to the previous obj
+                obj.transform.position = preBlock.transform.position +
+                                         preBlock.transform.forward.normalized * RoadLength;
             }
 
-
-            AbsLocation = obj.transform.position;
-            ObRotation = obj.transform.eulerAngles;
-            AbsAngle = angle;//To Store the current rotate angle 
-
-
+            // Update the preBlock
+            preBlock = obj;
+            // Record the block before turn
+            if (i == 20)
+                objBeforeTurn = obj;
         }
     }
-
-
-
-
-
-
 
     void SmoothDegChange(List<float> DisList, List<float> DegList)
     {
@@ -229,6 +182,8 @@ public class DuplicateRoads : MonoBehaviour
         }
     }
 
+
+    // Random generate values to the turning list
     void RoadTurning()
     {
         int Turingdegree;
@@ -237,8 +192,8 @@ public class DuplicateRoads : MonoBehaviour
         {
             if (DistanceList[i] > 5 * RoadLength)
             {
-                //Turingdegree = Random.Range(0, 5);
-                Turingdegree = 30;
+                Turingdegree = Random.Range(-30, 30);
+                //Turingdegree = -30;
             }
             else
             {
