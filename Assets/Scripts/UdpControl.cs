@@ -24,6 +24,11 @@ public class UdpControl : MonoBehaviour
     // Bike
     bicycle_code bike;
 
+    // Last receive speed
+    public float LatestSpeed { get; set; }
+    // Last receive angle
+    public float LatestAngle { get; set; }
+
     class PiData
     {
         public float speed;
@@ -38,6 +43,8 @@ public class UdpControl : MonoBehaviour
 
     void Start()
     {
+        LatestSpeed = 0;
+        LatestAngle = 0;
         bike = GameObject.FindWithTag("bike").GetComponent<bicycle_code>();
         init();
     }
@@ -74,12 +81,12 @@ public class UdpControl : MonoBehaviour
                 PiData piData = new PiData();
                 piData = JsonUtility.FromJson<PiData>(text);
 
+                LatestSpeed = piData.speed;
+                LatestAngle = piData.angle;
+
                 //Show the result
                 //Debug.Log("speed: " + piData.speed);
                 //Debug.Log("angle: " + piData.angle);
-
-                bike.Ride(piData.speed);
-                //bike.Turn(piData.angle);
             }
             catch (Exception err)
             {
@@ -101,7 +108,7 @@ public class UdpControl : MonoBehaviour
             // Send it
             sendClient.Send(data, data.Length, remoteEndPoint);
 
-            //Debug.Log("send");
+            Debug.Log("send");
         }
         catch (Exception err)
         {

@@ -6,45 +6,72 @@ public class keyboardControls : MonoBehaviour {
 
 	private GameObject ctrlHub;// making a link to corresponding bike's script
 	private controlHub outsideControls;// making a link to corresponding bike's script
-    bicycle_code bike; 
-    
-	// Use this for initialization
-	void Start () {
+    bicycle_code bike;
+    UdpControl udpControl;
+    camSwitcher cameraSwitch;
+
+    // Use this for initialization
+    void Start () {
 		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();// making a link to corresponding bike's script
         bike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
+        udpControl = GameObject.FindGameObjectWithTag("manager").GetComponent<UdpControl>();
+        cameraSwitch = GameObject.Find("CamSwitch").GetComponent<camSwitcher>();
     }
 	
 	// Update is called once per frame
 	void Update () {
-        // Accerelate
-        if (!bike.rideByOutInput)
+
+        // If haven't been controled by udp
+        if (!outsideControls.MoveByUdp)
+        {
+            // Accerelate
             outsideControls.Vertical = Input.GetAxis("Vertical");
 
-        // Turn
-        if (!bike.turnByOutInput)
+            // Increase max speed
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
+                outsideControls.VelocityKMSet += 0.1f;
+
+            // Decrease max speed
+            if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Joystick1Button0))
+                outsideControls.VelocityKMSet -= 0.1f;
+        }
+
+        if (!outsideControls.TurnByUdp)
+        {
+            // Turn
             outsideControls.Horizontal = Input.GetAxis("Horizontal");
+        }
+
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            // Current is controled by keyboard, then change to udp
+            if (!outsideControls.MoveByUdp)
+            {
+                udpControl.LatestSpeed = 0;
+                udpControl.LatestAngle = 0;
+            }
+            else // Current is controled by udp, then change to keyboard
+            {
+                udpControl.LatestSpeed = outsideControls.initialSpeedKM;
+                outsideControls.VelocityKMSet = outsideControls.initialSpeedKM;
+            }
+
+            outsideControls.MoveByUdp = !outsideControls.MoveByUdp;
+            outsideControls.TurnByUdp = !outsideControls.TurnByUdp;
+        }
 
         // Test udp send
         if (Input.GetKeyDown(KeyCode.P))
             gameObject.GetComponent<UdpControl>().SendData(5);
 
-        // Increase max speed
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
-            bike.velocityKMSet += 0.1f;
-
-        // Decrease max speed
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Joystick1Button0))
-            bike.velocityKMSet -= 0.1f;
-
         // Restart bike
         if (Input.GetKeyDown(KeyCode.R))
         {
-            bike.velocityKMSet = 25;
+            outsideControls.VelocityKMSet = 25;
             outsideControls.restartBike = true;
         }
-
-        if (Input.GetKeyUp(KeyCode.R))
+        else
         {
             outsideControls.restartBike = false;
         }
@@ -52,7 +79,7 @@ public class keyboardControls : MonoBehaviour {
         // RightShift for full restart
         if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
-            bike.velocityKMSet = 25;
+            outsideControls.VelocityKMSet = outsideControls.initialSpeedKM;
             outsideControls.restartBike = true;
             outsideControls.fullRestartBike = true;
         }
@@ -65,8 +92,8 @@ public class keyboardControls : MonoBehaviour {
 
         // Switch view
         if (Input.GetKeyDown(KeyCode.F2) || Input.GetKeyDown(KeyCode.Joystick1Button5))
-            GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView =
-                !GameObject.Find("CamSwitch").GetComponent<camSwitcher>().firstView;
+            cameraSwitch.firstView = !cameraSwitch.firstView;
+
 
         //////////////////////////////////// Rider's mass translate ////////////////////////////////////////////////////////////
         //this strings controls pilot's mass shift along bike(vertical)

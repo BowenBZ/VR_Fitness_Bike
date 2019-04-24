@@ -10,10 +10,13 @@ public class RoadDetect : MonoBehaviour
     [HideInInspector]
     public Vector3 roadDirection;
 
+    controlHub outsideControls;
+
     void Start()
     {
         roadPosition = new Vector3(0, 0, 0);
         roadDirection = new Vector3(0, 0, 0);
+        outsideControls = GameObject.FindGameObjectWithTag("manager").GetComponent<controlHub>();
     }
      
     void OnTriggerEnter(Collider collision)
@@ -22,6 +25,7 @@ public class RoadDetect : MonoBehaviour
         {
             roadPosition = transform.position;
             roadDirection = transform.eulerAngles;
+            outsideControls.CurrentRoad = gameObject.name;
             Debug.Log(gameObject.name);
         }
     }

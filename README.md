@@ -12,7 +12,9 @@ The control method and type are as follows.
 * Increase the speed: Up arrow / button `A` in handle
 * Decrease the speed: Down arrow / button `B` in handle
 * Switch to first / third person view: `F2` / button `R2` in handle
-* Restart: Right `Shift` / button `Y` in handle
+* Switch to keyboard / udp control mode: `F3`
+* Little Restart: `R`
+* Full Restart: Right `Shift` / button `Y` in handle
 
 When the bike go forward, the speed is fixed, whatever terrain you are in.
 

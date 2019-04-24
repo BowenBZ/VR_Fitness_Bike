@@ -76,7 +76,6 @@ public class bicycle_code : MonoBehaviour
     
     // airRes is for wind resistance to large bikes more than small ones
     float airRes; //Air resistant 																										// 1 is neutral
-    private controlHub outsideControls;// making a link to corresponding bike's script
     
     /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
     [HideInInspector]
@@ -97,15 +96,8 @@ public class bicycle_code : MonoBehaviour
     /// </summary>
     // Key control
     GameObject ctrlHub;// gameobject with script control variables 
-
+    private controlHub outsideControls;// making a link to corresponding bike's script
     public float initialForce; // The initial torque added to the wheel when start
-    public float velocityKMSet;  // The fixed speed of the bike travels (KM/h)
-    [HideInInspector]
-    public float wheelAngle; // The fixed angle turns
-    [HideInInspector]
-    public bool rideByOutInput = false; // to detect wether the bike is controled by out input
-    [HideInInspector]
-    public bool turnByOutInput = false; // to detect wether the bike is controled by out input
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void OnGUI()
@@ -133,8 +125,9 @@ public class bicycle_code : MonoBehaviour
         }
 
         // user info help lines
-        //GUI.color = Color.white;
-        //GUI.Box(new Rect(10, 10, 180, 20), "A,W,S,D - main control", smallerText);
+        GUI.color = Color.white;
+        string mode = (outsideControls.MoveByUdp) ? "UDP" : "Keyboard";
+        GUI.Box(new Rect(Screen.width * 0.885f, 10, 180, 40), mode, middleText);
 
         //GUI.Box(new Rect(10, 40, 120, 20), "X - rear brake", smallerText);
         //GUI.Box(new Rect(10, 55, 320, 20), "Q,E,F,V - shift center of mass of biker", smallerText);
@@ -211,22 +204,6 @@ public class bicycle_code : MonoBehaviour
 
     }
 
-    // This is used for out control, the speed is KM/h
-    public void Ride(float speed)
-    {
-        velocityKMSet = speed;
-        rideByOutInput = true;
-        outsideControls.Vertical = (speed > 0) ? 0.9f : 0;
-    }
-
-    // This is used for out control, the angle is from -90~+90
-    public void Turn(float angle)
-    {
-        wheelAngle = angle;
-        turnByOutInput = true;
-        outsideControls.Horizontal = (angle > 0) ? 0.9f : 0;
-    }
-
     void Update()
     {
         // Don't let the bike lean
@@ -280,17 +257,13 @@ public class bicycle_code : MonoBehaviour
             coll_frontWheel.forceAppPointDistance = 0.001f;
         }
 
-        //////////////////////////////////// acceleration & brake /////////////////////////////////////////////////////////////
         //////////////////////////////////// ACCELERATE /////////////////////////////////////////////////////////////
         if (!crashed && outsideControls.Vertical > 0)
         {
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
-            
-            // Solution0: Add force to the pedal
-            // coll_rearWheel.motorTorque = LegsPower * outsideControls.Vertical;
-
-            // Solution1: Get the direction of the road
-            float velocityMeterSet = velocityKMSet / 0.1f / 10.0f / 3.6f;
+ 
+            // Get the direction of the road
+            float velocityMeterSet = outsideControls.VelocityKMSet / 0.1f / 10.0f / 3.6f;
             if (GetComponent<Rigidbody>().velocity.magnitude < 0.5f)
             {
                 coll_rearWheel.motorTorque = initialForce;
@@ -541,18 +514,12 @@ public class bicycle_code : MonoBehaviour
         //(honestly, there was a time when MotoGP bikes has restricted wheel bar rotation angle by 1.5f degree ! as we got here 
         tempMaxWheelAngle = wheelbarRestrictCurve.Evaluate(bikeSpeed);//associate speed with curve which you've tuned in Editor
 
-        if (!crashed && outsideControls.Horizontal != 0 && !turnByOutInput)
+        if (!crashed && outsideControls.Horizontal != 0)
         { 
-            // while speed is high, wheelbar is restricted 
-            coll_frontWheel.steerAngle = tempMaxWheelAngle * outsideControls.Horizontal;
+            coll_frontWheel.steerAngle = (outsideControls.TurnByUdp) ?
+                                            outsideControls.WheelAngle :
+                                            tempMaxWheelAngle * outsideControls.Horizontal;
             steeringWheel.rotation = coll_frontWheel.transform.rotation * Quaternion.Euler(0, coll_frontWheel.steerAngle, coll_frontWheel.transform.rotation.z);
-        }
-        else if(!crashed && turnByOutInput)
-        {
-            //[Interface of Angle] Below is the code used for connecting with outside
-            coll_frontWheel.steerAngle = wheelAngle;
-            steeringWheel.rotation = coll_frontWheel.transform.rotation * Quaternion.Euler(0, coll_frontWheel.steerAngle, coll_frontWheel.transform.rotation.z);
-
         }
         else coll_frontWheel.steerAngle = 0;
 
@@ -635,6 +602,13 @@ public class bicycle_code : MonoBehaviour
             {
                 transform.position = new Vector3(0, 0.5f, -11);
                 transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+            }
+            else
+            {
+                Vector3 currentRoadPos = GameObject.Find(outsideControls.CurrentRoad).transform.position;
+                Vector3 currentRoadDir = GameObject.Find(outsideControls.CurrentRoad).transform.eulerAngles;
+                transform.position = currentRoadPos + new Vector3(0, 0.5f, 0);
+                transform.eulerAngles = new Vector3(currentRoadDir.x, currentRoadDir.y, 0);
             }
             crashed = false;
             transform.position += new Vector3(0, 0.1f, 0);

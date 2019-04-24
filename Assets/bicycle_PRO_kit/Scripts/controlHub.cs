@@ -8,27 +8,45 @@ using System.Collections;
 
 public class controlHub : MonoBehaviour  {//need that for mobile controls
 
-    [HideInInspector]
-    public float Vertical;//variable translated to bike script for bike accelerate/stop and leaning
+    public float Vertical { get; set; }//variable translated to bike script for bike accelerate/stop and 
+    public float Horizontal { get; set; }//variable translated to bike script for pilot's mass 
+    public float VerticalMassShift { get; set; }//variable for pilot's mass translate along     
+    public float HorizontalMassShift { get; set; }//variable for pilot's mass translate across bike
 
-    [HideInInspector]
-    public float Horizontal;//variable translated to bike script for pilot's mass shift
+    public bool rearBrakeOn { get; set; }//this variable says to bike's script to use rear 
+    public bool restartBike { get; set; }//this variable says to bike's script 
+    public bool fullRestartBike { get; set; } //this variable says to bike's script to full 
+    public bool reverse { get; set; }//for reverse speed
 
-    [HideInInspector]
-    public float VerticalMassShift;//variable for pilot's mass translate along bike
+    public float initialSpeedKM;
+    public bool MoveByUdp { get; set; } // to detect wether the bike is controled by out input
+    public bool TurnByUdp { get; set; } // to detect wether the bike is controled by out input
+    public float VelocityKMSet { get; set; } // Variable to control the speed of the bike
+    public float WheelAngle { get; set; }// The fixed angle turns
 
-    [HideInInspector]
-    public float HorizontalMassShift;//variable for pilot's mass translate across bike
+    public string CurrentRoad { get; set; } // The name of current name road
 
-    [HideInInspector]
-    public bool rearBrakeOn;//this variable says to bike's script to use rear brake
+    UdpControl udpControl;
 
-    [HideInInspector]
-    public bool restartBike;//this variable says to bike's script restart
+    void Start()
+    {
+        MoveByUdp = false;
+        TurnByUdp = false;
+        VelocityKMSet = initialSpeedKM;
+        udpControl = GameObject.FindGameObjectWithTag("manager").GetComponent<UdpControl>();
+    }
 
-    [HideInInspector]
-    public bool fullRestartBike; //this variable says to bike's script to full restart
-
-    [HideInInspector]
-    public bool reverse;//for reverse speed
+    void Update()
+    {
+        if (MoveByUdp)
+        {
+            VelocityKMSet = udpControl.LatestSpeed;
+            Vertical = (VelocityKMSet > 0) ? 0.9f : 0;
+        }   
+        if (TurnByUdp)
+        {
+            WheelAngle = udpControl.LatestAngle;
+            Horizontal = (WheelAngle == 0) ? 0 : WheelAngle / Mathf.Abs(WheelAngle);
+        }
+    }
 }
