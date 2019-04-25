@@ -19,9 +19,6 @@ public class DuplicateRoads : MonoBehaviour
      15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
     List<float> TurningList = new List<float> {};
 
-
-    //List<float> List1 = new List<float> { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 };
-    //List<float> List2 = new List<float>{ 10, 10, 10, 10, 8, 6, 4,2,0,2,4,6,8,10,10,10,10,10,10,10  };
     // Start is called before the first frame update
     void Start()
     {
@@ -65,7 +62,7 @@ public class DuplicateRoads : MonoBehaviour
             // Set name
             obj.name = "Road " + roadIndex;
             // Generate turning blocks from 20th to 80th
-            if (i > 20 && i <= 80)
+            if (i > 20 && i <= 80 && TurningAngle!= 0)
             {
                 // Calculate the new turning angle
                 accTurnAngle = accTurnAngle + unitTurnAngle;
@@ -186,18 +183,19 @@ public class DuplicateRoads : MonoBehaviour
     // Random generate values to the turning list
     void RoadTurning()
     {
-        int Turingdegree;
+        int Turingdegree = 0;
 
         for (int i = 0; i < DistanceList.Count; i++)
         {
+            //Decide if there is a turning
+            float booleanTurn = Random.Range(0, 1);
+            
             if (DistanceList[i] > 5 * RoadLength)
             {
-                Turingdegree = Random.Range(-30, 30);
-                //Turingdegree = -30;
-            }
-            else
-            {
-                Turingdegree = 0;
+                if (booleanTurn >= 0.5)
+                {
+                    Turingdegree = Random.Range(-30, 30);
+                }
             }
             TurningList.Add(Turingdegree);
             Debug.Log("Turning Degree:   " + Turingdegree);
