@@ -25,7 +25,8 @@ public class RoadDetect : MonoBehaviour
         {
             roadPosition = transform.position;
             roadDirection = transform.eulerAngles;
-            outsideControls.CurrentRoad = gameObject.name;
+            if(outsideControls != null)
+                outsideControls.CurrentRoad = gameObject.name;
             Debug.Log(gameObject.name);
         }
     }
