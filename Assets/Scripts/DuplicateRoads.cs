@@ -188,11 +188,11 @@ public class DuplicateRoads : MonoBehaviour
         for (int i = 0; i < DistanceList.Count; i++)
         {
             //Decide if there is a turning
-            float booleanTurn = Random.Range(0, 1);
+            float booleanTurn = Random.Range(0f, 1f);
             
             if (DistanceList[i] > 5 * RoadLength)
             {
-                if (booleanTurn >= 0.5)
+                if (booleanTurn >= 0.5f)
                 {
                     Turingdegree = Random.Range(-30, 30);
                 }
