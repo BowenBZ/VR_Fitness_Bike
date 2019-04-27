@@ -18,7 +18,9 @@ public class DuplicateRoads : MonoBehaviour
      250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 750};
     List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
      15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
-    List<float> TurningList = new List<float> {};
+    List<float> TurningList = new List<float> { 0, 15, 15, 15, 15 , 20, 20, 20, 30, 30, 30, 30, 30, 40, 40, 60,
+     30, 30, -40, -45, -50, -20, -50, 30, 0, 10, -40, 20, 20};
+
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +34,7 @@ public class DuplicateRoads : MonoBehaviour
         // Smooth the slope slopeAngle changes
         SmoothDegChange(DistanceList, DegreeList);
         // Add value to turning list
-        RoadTurning();
+        //RoadTurning();
         // Iterate the list to generate roads
         for (int i = 0; i < DistanceList.Count; i++)
         {
@@ -66,6 +68,8 @@ public class DuplicateRoads : MonoBehaviour
             GameObject obj = GameObject.Instantiate(roadPrefab);
             // Set name
             obj.name = "Block_" + roadIndex;
+            // Add obj to the Route object
+            obj.transform.parent = route.transform;
             // Generate turning blocks from 20th to 80th
             if (i > 20 && i <= 80 && TurningAngle!= 0)
             {
@@ -106,7 +110,12 @@ public class DuplicateRoads : MonoBehaviour
             preBlock = obj;
             // Record the block before turn
             if (i == 20)
+            {
+                // Destroy the empty obj
+                DestroyImmediate(objBeforeTurn);
+                // Assign the 20th obj to objBeforeTurn
                 objBeforeTurn = obj;
+            }
         }
     }
 
@@ -136,6 +145,12 @@ public class DuplicateRoads : MonoBehaviour
                 DegList.Insert(index, 2 * DegChange2 / 5);
                 DegList.Insert(index, 1 * DegChange2 / 5);
                 DegList.Insert(index, 0);
+                //Expend turning list
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
 
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
@@ -146,6 +161,13 @@ public class DuplicateRoads : MonoBehaviour
                 DegList.Insert(index, 2 * DegChange1 / 5);
                 DegList.Insert(index, 3 * DegChange1 / 5);
                 DegList.Insert(index, 4 * DegChange1 / 5);
+                //Expend turning list
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                
+
                 index = index + 10;
             }
             else
@@ -163,6 +185,12 @@ public class DuplicateRoads : MonoBehaviour
                     DegList.Insert(index, 2 * DegChange / 5);
                     DegList.Insert(index, 3 * DegChange / 5);
                     DegList.Insert(index, 4 * DegChange / 5);
+
+                    //Expend turning list
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
                 }
                 else
                 {
@@ -177,6 +205,12 @@ public class DuplicateRoads : MonoBehaviour
                     DegList.Insert(index, 3 * DegChange / 5);
                     DegList.Insert(index, 2 * DegChange / 5);
                     DegList.Insert(index, 1 * DegChange / 5);
+
+                    //Expend turning list
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
                 }
                 index = index + 5;
             }
