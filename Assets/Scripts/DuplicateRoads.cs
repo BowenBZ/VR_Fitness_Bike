@@ -30,7 +30,9 @@ public class DuplicateRoads : MonoBehaviour
         // Change name
         route.name = "Route";
         // Record the last road obj
-        preBlock = GameObject.Instantiate(roadPrefab);
+        preBlock = roadPrefab;
+        // Set the parent of preBlock
+        preBlock.transform.parent = route.transform;
         // Smooth the slope slopeAngle changes
         SmoothDegChange(DistanceList, DegreeList);
         // Add value to turning list
@@ -51,7 +53,7 @@ public class DuplicateRoads : MonoBehaviour
     void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
     {
         // Record the last obj before turning
-        GameObject objBeforeTurn = new GameObject();
+        GameObject objBeforeTurn = null;
         
         // Every obj turning slopeAngle related to the previous obj
         float unitTurnAngle = TurningAngle / 60;
@@ -110,9 +112,7 @@ public class DuplicateRoads : MonoBehaviour
             preBlock = obj;
             // Record the block before turn
             if (i == 20)
-            {
-                // Destroy the empty obj
-                DestroyImmediate(objBeforeTurn);
+            { 
                 // Assign the 20th obj to objBeforeTurn
                 objBeforeTurn = obj;
             }
