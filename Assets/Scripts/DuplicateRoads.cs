@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DuplicateRoads : MonoBehaviour
 {
+    GameObject route;
     public GameObject roadPrefab;
     GameObject preBlock;
     int cnt = 1;
@@ -22,6 +23,10 @@ public class DuplicateRoads : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Create a empty obj for the route
+        route = new GameObject();
+        // Change name
+        route.name = "Route";
         // Record the last road obj
         preBlock = GameObject.Instantiate(roadPrefab);
         // Smooth the slope slopeAngle changes
@@ -44,7 +49,7 @@ public class DuplicateRoads : MonoBehaviour
     void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
     {
         // Record the last obj before turning
-        GameObject objBeforeTurn = GameObject.Instantiate(roadPrefab);
+        GameObject objBeforeTurn = new GameObject();
         
         // Every obj turning slopeAngle related to the previous obj
         float unitTurnAngle = TurningAngle / 60;
@@ -60,7 +65,7 @@ public class DuplicateRoads : MonoBehaviour
             // Generate a new obj
             GameObject obj = GameObject.Instantiate(roadPrefab);
             // Set name
-            obj.name = "Road " + roadIndex;
+            obj.name = "Block_" + roadIndex;
             // Generate turning blocks from 20th to 80th
             if (i > 20 && i <= 80 && TurningAngle!= 0)
             {
