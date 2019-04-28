@@ -18,8 +18,8 @@ public class DuplicateRoads : MonoBehaviour
      250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 750};
     List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
      15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
-    List<float> TurningList = new List<float> { 0, 15, 15, 15, 15 , 20, 20, 20, 30, 30, 30, 30, 30, 40, 40, 60,
-     30, 30, -40, -45, -50, -20, -50, 30, 0, 10, -40, 20, 20};
+    List<float> TurningList = new List<float> { 0, 15, 15, 30, 30 , 35, 25, -30 ,-35, -30, 10, 10, 10, -30, 26, 15, 15, -40, -35,
+     0, 0, 0, 40, 15, 15, 15, 15, -15, -35, -30};
 
 
     // Start is called before the first frame update
