@@ -16,7 +16,7 @@ public class keyboardControls : MonoBehaviour {
 		outsideControls = ctrlHub.GetComponent<controlHub>();// making a link to corresponding bike's script
         bike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
         udpControl = GameObject.FindGameObjectWithTag("manager").GetComponent<UdpControl>();
-        cameraSwitch = GameObject.Find("CamSwitch").GetComponent<camSwitcher>();
+        cameraSwitch = GetComponent<camSwitcher>();
     }
 	
 	// Update is called once per frame
