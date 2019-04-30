@@ -5,7 +5,7 @@ using UnityEngine;
 public class DuplicateRoads : MonoBehaviour
 {
     GameObject route;
-    public GameObject roadPrefab;
+    public GameObject blockPrefab;
     GameObject preBlock;
     int cnt = 1;
     float RoadLength = 1f;
@@ -30,7 +30,9 @@ public class DuplicateRoads : MonoBehaviour
         // Change name
         route.name = "Route";
         // Record the last road obj
-        preBlock = roadPrefab;
+        preBlock = Instantiate(blockPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+        // Set the name
+        preBlock.name = "Block_" + roadIndex++;
         // Set the parent of preBlock
         preBlock.transform.parent = route.transform;
         // Smooth the slope slopeAngle changes
@@ -64,12 +66,10 @@ public class DuplicateRoads : MonoBehaviour
         // Generate road according to its length
         for (int i = 0; i < length / RoadLength; i++)
         {
-            // Record the obj index
-            roadIndex++;
             // Generate a new obj
-            GameObject obj = GameObject.Instantiate(roadPrefab);
+            GameObject obj = Instantiate(blockPrefab);
             // Set name
-            obj.name = "Block_" + roadIndex;
+            obj.name = "Block_" + roadIndex++;
             // Add obj to the Route object
             obj.transform.parent = route.transform;
             // Generate turning blocks from 20th to 80th
