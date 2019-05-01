@@ -1,5 +1,6 @@
 // Upgrade NOTE: replaced '_Projector' with 'unity_Projector'
 // Upgrade NOTE: replaced '_ProjectorClip' with 'unity_ProjectorClip'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "Projector/Light" {
 	Properties {
@@ -35,7 +36,7 @@ Shader "Projector/Light" {
 			v2f vert (float4 vertex : POSITION)
 			{
 				v2f o;
-				o.pos = UnityObjectToClipPos(vertex);
+				o.pos = UnityObjectToClipPos (vertex);
 				o.uvShadow = mul (unity_Projector, vertex);
 				o.uvFalloff = mul (unity_ProjectorClip, vertex);
 				UNITY_TRANSFER_FOG(o,o.pos);
@@ -53,7 +54,7 @@ Shader "Projector/Light" {
 				texS.a = 1.0-texS.a;
 	
 				fixed4 texF = tex2Dproj (_FalloffTex, UNITY_PROJ_COORD(i.uvFalloff));
-				fixed4 res = texS * texF.a * 5;
+				fixed4 res = texS * texF.a;
 
 				UNITY_APPLY_FOG_COLOR(i.fogCoord, res, fixed4(0,0,0,0));
 				return res;
