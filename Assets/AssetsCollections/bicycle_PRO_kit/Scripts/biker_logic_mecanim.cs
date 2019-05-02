@@ -186,8 +186,8 @@ public class biker_logic_mecanim : MonoBehaviour
         if (outsideControls.restartBike)
         {
             //delete ragdoll when restarting scene
-            GameObject RGtoDestroy = GameObject.Find("char_ragDoll(Clone)");
-            Destroy(RGtoDestroy);
+            // GameObject RGtoDestroy = GameObject.Find("char_ragDoll(Clone)");
+            // Destroy(RGtoDestroy);
             //make character visible again
             // Transform riderBodyVis = transform.Find("root/Hips");
             // riderBodyVis.gameObject.SetActive(true);
