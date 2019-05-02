@@ -29,10 +29,10 @@ public class biker_logic_mecanim : MonoBehaviour
     public Transform camPoint;
 
     // this point may be throwed to anything you want rider looking at
-    public Transform poi01;//for example now it's a gameObject "car". It means when rider near a "car"(distanceToPoi = 50 meters) he will look at "car" until he move far than 50 meters.
+    Transform poi01 = null;//for example now it's a gameObject "car". It means when rider near a "car"(distanceToPoi = 50 meters) he will look at "car" until he move far than 50 meters.
 
     //the distance rider will look for POI(point of interest)
-    public float distanceToPoi; //in meters = 50 by default
+    float distanceToPoi = 0; //in meters = 50 by default
 
     // variables for hand IK joint points
     public Transform IK_rightHandTarget;
@@ -189,8 +189,8 @@ public class biker_logic_mecanim : MonoBehaviour
             GameObject RGtoDestroy = GameObject.Find("char_ragDoll(Clone)");
             Destroy(RGtoDestroy);
             //make character visible again
-            Transform riderBodyVis = transform.Find("root/Hips");
-            riderBodyVis.gameObject.SetActive(true);
+            // Transform riderBodyVis = transform.Find("root/Hips");
+            // riderBodyVis.gameObject.SetActive(true);
             //now we can crash again
             ragdollLaunched = false;
         }
@@ -208,12 +208,13 @@ public class biker_logic_mecanim : MonoBehaviour
         }
 
         //scan do rider see POI
-        if (poi01.gameObject.activeSelf && distanceToPoi > Vector3.Distance(this.transform.position, poi01.transform.position))
-        {
-            lookPoint = poi01;
-            //if not - still looking forward for a rigidbody POI right before bike
-        }
-        else lookPoint = camPoint;
+        //if (poi01.gameObject.activeSelf && distanceToPoi > Vector3.Distance(this.transform.position, poi01.transform.position))
+        //{
+        //    lookPoint = poi01;
+        //    //if not - still looking forward for a rigidbody POI right before bike
+        //}
+        //else lookPoint = camPoint;
+        lookPoint = camPoint;
 
 
         // pull leg(s) down when bike stopped
