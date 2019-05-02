@@ -189,8 +189,8 @@ public class biker_logic_mecanim : MonoBehaviour
             GameObject RGtoDestroy = GameObject.Find("char_ragDoll(Clone)");
             Destroy(RGtoDestroy);
             //make character visible again
-            Transform riderBodyVis = transform.Find("root/Hips");
-            riderBodyVis.gameObject.SetActive(true);
+            // Transform riderBodyVis = transform.Find("root/Hips");
+            // riderBodyVis.gameObject.SetActive(true);
             //now we can crash again
             ragdollLaunched = false;
         }
