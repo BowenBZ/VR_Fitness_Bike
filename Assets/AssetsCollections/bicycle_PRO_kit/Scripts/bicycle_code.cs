@@ -116,12 +116,12 @@ public class bicycle_code : MonoBehaviour
         if (!isReverseOn)
         {
             GUI.color = Color.grey;
-            GUI.Label(new Rect(Screen.width * 0.885f, Screen.height * 0.96f, 60, 40), "REAR", smallerText);
+            GUI.Label(new Rect(Screen.width * 0.885f, Screen.height * 0.96f, 60, 40), "KM/H", smallerText);
         }
         else
         {
             GUI.color = Color.red;
-            GUI.Label(new Rect(Screen.width * 0.885f, Screen.height * 0.96f, 60, 40), "REAR", smallerText);
+            GUI.Label(new Rect(Screen.width * 0.885f, Screen.height * 0.96f, 60, 40), "KM/H", smallerText);
         }
 
         // user info help lines
@@ -164,8 +164,8 @@ public class bicycle_code : MonoBehaviour
         ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        pedals = GameObject.FindGameObjectWithTag("pedals");
-        linkToStunt = pedals.GetComponent<pedalControls>();
+        linkToStunt = GetComponentInChildren<pedalControls>();
+        pedals = linkToStunt.gameObject;
 
         Vector3 setInitialTensor = GetComponent<Rigidbody>().inertiaTensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
         GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);// now Center of Mass(CoM) is alligned to GameObject "CoM"
@@ -600,7 +600,7 @@ public class bicycle_code : MonoBehaviour
         {
             if (outsideControls.fullRestartBike)
             {
-                transform.position = new Vector3(0, 0.5f, -11);
+                transform.position = new Vector3(0, 0.5f, 2f);
                 transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
             }
             else
