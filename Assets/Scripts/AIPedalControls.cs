@@ -79,10 +79,11 @@ public class AIPedalControls : MonoBehaviour
     void FixedUpdate()
     {
         //pedals rotation part
-        this.transform.rotation = this.transform.rotation * Quaternion.Euler(linkToBike.bikeSpeed / 4, 0, 0);
-        Debug.Log("BikeSpeed:" + linkToBike.bikeSpeed);
-        pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / -4, 0, 0);
-        pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / 4, 0, 0);
+        float bikeSpeed = 25;
+        this.transform.rotation = this.transform.rotation * Quaternion.Euler(bikeSpeed / 4, 0, 0);
+        //Debug.Log("AIBikeSpeed:" + linkToBike.bikeSpeed);
+        pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-bikeSpeed / -4, 0, 0);
+        pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-bikeSpeed / 4, 0, 0);
         if (energy < 10)
         {
             energy = energy + 0.01f;
