@@ -12,10 +12,10 @@ public class keyboardControls : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
+		ctrlHub = gameObject;//link to GameObject with script "controlHub"
 		outsideControls = ctrlHub.GetComponent<controlHub>();// making a link to corresponding bike's script
         bike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
-        udpControl = GameObject.FindGameObjectWithTag("manager").GetComponent<UdpControl>();
+        udpControl = GetComponent<UdpControl>();
         cameraSwitch = GetComponent<camSwitcher>();
     }
 	

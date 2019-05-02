@@ -2,10 +2,10 @@
 using UnityEngine;
 using System.Collections;
 
-public class pedalControls : MonoBehaviour
+public class AIPedalControls : MonoBehaviour
 {
 
-    private bicycle_code linkToBike;// making a link to corresponding bike's script
+    private AIBicycle_code linkToBike;// making a link to corresponding bike's script
     private biker_logic_mecanim linkToRider;//link to rider's script
 
     public GameObject pedalLeft;
@@ -36,7 +36,7 @@ public class pedalControls : MonoBehaviour
         ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        linkToBike = transform.root.GetComponent<bicycle_code>();
+        linkToBike = transform.root.GetComponent<AIBicycle_code>();
         linkToRider = transform.root.GetComponentInChildren<biker_logic_mecanim>();
 
     }
@@ -79,30 +79,28 @@ public class pedalControls : MonoBehaviour
     void FixedUpdate()
     {
         //pedals rotation part
-        if (outsideControls.Vertical > 0)
+        this.transform.rotation = this.transform.rotation * Quaternion.Euler(linkToBike.bikeSpeed / 4, 0, 0);
+        Debug.Log("BikeSpeed:" + linkToBike.bikeSpeed);
+        pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / -4, 0, 0);
+        pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / 4, 0, 0);
+        if (energy < 10)
         {
-            this.transform.rotation = this.transform.rotation * Quaternion.Euler(linkToBike.bikeSpeed / 4, 0, 0);
-            pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / -4, 0, 0);
-            pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / 4, 0, 0);
-            if (energy < 10)
-            {
-                energy = energy + 0.01f;
-            }
-
-            if (Mathf.Abs(CoM.transform.localPosition.x) < 0.1f)
-            {
-                var tmpRidPlvs01 = veloMan.transform.localEulerAngles;
-                tmpRidPlvs01.z = CoM.transform.localPosition.x * 200;
-                veloMan.transform.localEulerAngles = tmpRidPlvs01;
-                //(sometimes looks strange on bicycles with high seat. So, you might just disable it when needed)
-            }
-            var tmpCoM01 = CoM.transform.localPosition;
-            //tmpCoM01.x = -0.02f + (Mathf.Abs(this.transform.localRotation.x) / 25);//leaning bicycle when pedaling
-            tmpCoM01.x = 0;
-            CoM.transform.localPosition = tmpCoM01;
-
+            energy = energy + 0.01f;
         }
-        else EnergyWaste();//need to move pedals some time after stop acceleration
+
+        if (Mathf.Abs(CoM.transform.localPosition.x) < 0.1f)
+        {
+            var tmpRidPlvs01 = veloMan.transform.localEulerAngles;
+            tmpRidPlvs01.z = CoM.transform.localPosition.x * 200;
+            veloMan.transform.localEulerAngles = tmpRidPlvs01;
+            //(sometimes looks strange on bicycles with high seat. So, you might just disable it when needed)
+        }
+        var tmpCoM01 = CoM.transform.localPosition;
+        //tmpCoM01.x = -0.02f + (Mathf.Abs(this.transform.localRotation.x) / 25);//leaning bicycle when pedaling
+        tmpCoM01.x = 0;
+        CoM.transform.localPosition = tmpCoM01;
+
+        //else EnergyWaste();//need to move pedals some time after stop acceleration
 
         //movement body of rider's pelvis when cornering(sometimes looks strange on bicycles with high seat. So, you might just disable it when needed)
         var tmpRidPlvs02 = veloMan.transform.localPosition;

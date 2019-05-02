@@ -82,7 +82,7 @@ public class AIBicycle_code : MonoBehaviour
     public float frontWheelAPD;// usualy 0.05f
 
     private GameObject pedals;
-    private pedalControls linkToStunt;
+    private AIPedalControls linkToStunt;
     private bool rearPend;
 
     [HideInInspector]
@@ -102,7 +102,6 @@ public class AIBicycle_code : MonoBehaviour
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void Start()
     {
-
         //if there is no pendulum linked to script in Editor, it means MTB have no rear suspension, so no movement of rear wheel(pendulum)
         if (rearPendulumn)
         {
@@ -116,8 +115,8 @@ public class AIBicycle_code : MonoBehaviour
         ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        pedals = GameObject.FindGameObjectWithTag("pedals");
-        linkToStunt = pedals.GetComponent<pedalControls>();
+        linkToStunt = GetComponentInChildren<AIPedalControls>();
+        pedals = linkToStunt.gameObject;
 
         Vector3 setInitialTensor = GetComponent<Rigidbody>().inertiaTensor;//this string is necessary for Unity 5.3f with new PhysX feature when Tensor decoupled from center of mass
         GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);// now Center of Mass(CoM) is alligned to GameObject "CoM"
@@ -129,10 +128,6 @@ public class AIBicycle_code : MonoBehaviour
 
         //for better physics of fast moving bodies
         GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
-
-        // too keep LegsPower variable like "real" horse powers
-        //LegsPower = 20;
-        //LegsPower = LegsPower * 20;
 
         //*30 is for good braking to keep frontBrakePower = 100 for good brakes. So, 100 is like sportsbike's Brembo
         frontBrakePower = 25;
@@ -147,7 +142,6 @@ public class AIBicycle_code : MonoBehaviour
         var tmpMeshRWh01 = meshRearWheel.transform.localPosition;
         tmpMeshRWh01.y = meshRearWheel.transform.localPosition.y - coll_rearWheel.suspensionDistance / 4;
         meshRearWheel.transform.localPosition = tmpMeshRWh01;
-
 
         //and bike's frame direction
         var tmpCollRW01 = coll_rearWheel.transform.localPosition;
@@ -293,62 +287,12 @@ public class AIBicycle_code : MonoBehaviour
         }
 
         /////////////////////////////////////////////////////// RESTART KEY ///////////////////////////////////////////////////////////
-        // Restart key - recreate bike few meters above current place
-        if (outsideControls.restartBike)
-        {
-            if (outsideControls.fullRestartBike)
-            {
-                transform.position = new Vector3(0, 0.5f, -11);
-                transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-            }
-            else
-            {
-                Vector3 currentRoadPos = GameObject.Find(outsideControls.CurrentRoad).transform.position;
-                Vector3 currentRoadDir = GameObject.Find(outsideControls.CurrentRoad).transform.eulerAngles;
-                transform.position = currentRoadPos + new Vector3(0, 0.5f, 0);
-                transform.eulerAngles = new Vector3(currentRoadDir.x, currentRoadDir.y, 0);
-            }
-            crashed = false;
-            transform.position += new Vector3(0, 0.1f, 0);
-            transform.rotation = Quaternion.Euler(0.0f, transform.localEulerAngles.y, 0.0f);
-            GetComponent<Rigidbody>().velocity = Vector3.zero;
-            GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-            var tmp_cs26 = CoM.localPosition;
-            tmp_cs26.x = 0.0f;
-            tmp_cs26.y = normalCoM;
-            tmp_cs26.z = 0.0f;
-            CoM.localPosition = tmp_cs26;
-            //for fix bug when front wheel IN ground after restart(sorry, I really don't understand why it happens);
-            coll_frontWheel.motorTorque = 0;
-            coll_frontWheel.brakeTorque = 0;
-            coll_rearWheel.motorTorque = 0;
-            coll_rearWheel.brakeTorque = 0;
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
-
-
-
-        ///////////////////////////////////////// CRASH happens /////////////////////////////////////////////////////////
-        // conditions when crash is happen
-        if ((this.transform.localEulerAngles.z >= crashAngle01 && this.transform.localEulerAngles.z <= crashAngle02) && !linkToStunt.stuntIsOn || (this.transform.localEulerAngles.x >= crashAngle03 && this.transform.localEulerAngles.x <= crashAngle04 && !linkToStunt.stuntIsOn))
-        {
-            GetComponent<Rigidbody>().drag = 0.1f; // when 250 bike can easy beat 200km/h // ~55 m/s
-            GetComponent<Rigidbody>().angularDrag = 0.01f;
-            crashed = true;
-            var tmp_cs27 = CoM.localPosition;
-            tmp_cs27.x = 0.0f;
-            tmp_cs27.y = CoMWhenCrahsed;//move CoM a little bit up for funny bike rotations when fall
-            tmp_cs27.z = 0.0f;
-            CoM.localPosition = tmp_cs27;
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
-
-        if (crashed) coll_rearWheel.motorTorque = 0;//to prevent some bug when bike crashed but still accelerating
+        //// Restart key - recreate bike few meters above current place
+        //if (outsideControls.restartBike && outsideControls.fullRestartBike)
+        //{
+        //}
     }
 
-    //void Update (){
-    //not use that because everything here is about physics
-    //}
     ///////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
     void ApplyLocalPositionToVisuals(WheelCollider collider)
     {
