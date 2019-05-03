@@ -41,40 +41,6 @@ public class AIPedalControls : MonoBehaviour
 
     }
 
-    void Update()
-    {
-     //Pressing "Space" starts bunnyhop stunt
-        if (Input.GetKeyDown("space"))
-        {
-            StartCoroutine(StuntBunnyHope());
-        }
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            StartCoroutine(StuntBackFlip360());
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            StartCoroutine(StuntTurnLeft180());
-        }
-
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            StartCoroutine(StuntBunnyShiftRight());
-        }
-
-        if (Input.GetKeyDown(KeyCode.Slash))
-        {
-            StartCoroutine(StuntHoldForOneSecond());
-        }
-        //"2" for manual
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            StuntManual();
-        }
-
-    }
 
     void FixedUpdate()
     {
@@ -104,9 +70,9 @@ public class AIPedalControls : MonoBehaviour
         //else EnergyWaste();//need to move pedals some time after stop acceleration
 
         //movement body of rider's pelvis when cornering(sometimes looks strange on bicycles with high seat. So, you might just disable it when needed)
-        var tmpRidPlvs02 = veloMan.transform.localPosition;
-        tmpRidPlvs02.x = outsideControls.Horizontal / 10;
-        veloMan.transform.localPosition = tmpRidPlvs02;
+        //var tmpRidPlvs02 = veloMan.transform.localPosition;
+        //tmpRidPlvs02.x = outsideControls.Horizontal / 10;
+        //veloMan.transform.localPosition = tmpRidPlvs02;
 
 
 

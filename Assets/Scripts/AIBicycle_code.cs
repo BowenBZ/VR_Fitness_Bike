@@ -219,72 +219,72 @@ public class AIBicycle_code : MonoBehaviour
         /////////////////////////////////////////////////// PILOT'S MASS //////////////////////////////////////////////////////////
         // it's part about moving of pilot's center of mass. It can be used for wheelie or stoppie control and for motocross section in future
         //not polished yet. For mobile version it should back pilot's mass smooth not in one tick
-        if (outsideControls.VerticalMassShift > 0)
-        {
-            tmpMassShift = outsideControls.VerticalMassShift / 12.5f;//12.5f to get 0.08fm at final
-            var tmp_cs19 = CoM.localPosition;
-            tmp_cs19.z = tmpMassShift;
-            CoM.localPosition = tmp_cs19;
+        //if (outsideControls.VerticalMassShift > 0)
+        //{
+        //    tmpMassShift = outsideControls.VerticalMassShift / 12.5f;//12.5f to get 0.08fm at final
+        //    var tmp_cs19 = CoM.localPosition;
+        //    tmp_cs19.z = tmpMassShift;
+        //    CoM.localPosition = tmp_cs19;
 
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
-        if (outsideControls.VerticalMassShift < 0)
-        {
-            tmpMassShift = outsideControls.VerticalMassShift / 12.5f;//12.5f to get 0.08fm at final
-            var tmp_cs20 = CoM.localPosition;
-            tmp_cs20.z = tmpMassShift;
-            CoM.localPosition = tmp_cs20;
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //}
+        //if (outsideControls.VerticalMassShift < 0)
+        //{
+        //    tmpMassShift = outsideControls.VerticalMassShift / 12.5f;//12.5f to get 0.08fm at final
+        //    var tmp_cs20 = CoM.localPosition;
+        //    tmp_cs20.z = tmpMassShift;
+        //    CoM.localPosition = tmp_cs20;
 
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
-        if (outsideControls.HorizontalMassShift < 0)
-        {
-            var tmp_cs21 = CoM.localPosition;
-            tmp_cs21.x = outsideControls.HorizontalMassShift / 40;
-            CoM.localPosition = tmp_cs21;//40 to get 0.025m at final
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //}
+        //if (outsideControls.HorizontalMassShift < 0)
+        //{
+        //    var tmp_cs21 = CoM.localPosition;
+        //    tmp_cs21.x = outsideControls.HorizontalMassShift / 40;
+        //    CoM.localPosition = tmp_cs21;//40 to get 0.025m at final
 
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
 
-        }
-        if (outsideControls.HorizontalMassShift > 0)
-        {
-            var tmp_cs22 = CoM.localPosition;
-            tmp_cs22.x = outsideControls.HorizontalMassShift / 40;
-            CoM.localPosition = tmp_cs22;//40 to get 0.025m at final
+        //}
+        //if (outsideControls.HorizontalMassShift > 0)
+        //{
+        //    var tmp_cs22 = CoM.localPosition;
+        //    tmp_cs22.x = outsideControls.HorizontalMassShift / 40;
+        //    CoM.localPosition = tmp_cs22;//40 to get 0.025m at final
 
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //}
 
 
-        //auto back CoM when any key not pressed
-        if (!crashed && outsideControls.Vertical == 0 && !outsideControls.rearBrakeOn && !linkToStunt.stuntIsOn || (outsideControls.Vertical < 0 && isFrontWheelInAir))
-        {
-            var tmp_cs23 = CoM.localPosition;
-            tmp_cs23.y = normalCoM;
-            tmp_cs23.z = 0.0f + tmpMassShift;
-            CoM.localPosition = tmp_cs23;
-            coll_frontWheel.motorTorque = 0;
-            coll_frontWheel.brakeTorque = 0;
-            coll_rearWheel.motorTorque = 0;
-            coll_rearWheel.brakeTorque = 0;
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
-        //autoback pilot's CoM along
-        if (outsideControls.VerticalMassShift == 0 && outsideControls.Vertical >= 0 && outsideControls.Vertical <= 0.9f && !outsideControls.rearBrakeOn && !linkToStunt.stuntIsOn)
-        {
-            var tmp_cs24 = CoM.localPosition;
-            tmp_cs24.z = 0.0f;
-            CoM.localPosition = tmp_cs24;
-            tmpMassShift = 0.0f;
-        }
-        //autoback pilot's CoM across
+        ////auto back CoM when any key not pressed
+        //if (!crashed && outsideControls.Vertical == 0 && !outsideControls.rearBrakeOn && !linkToStunt.stuntIsOn || (outsideControls.Vertical < 0 && isFrontWheelInAir))
+        //{
+        //    var tmp_cs23 = CoM.localPosition;
+        //    tmp_cs23.y = normalCoM;
+        //    tmp_cs23.z = 0.0f + tmpMassShift;
+        //    CoM.localPosition = tmp_cs23;
+        //    coll_frontWheel.motorTorque = 0;
+        //    coll_frontWheel.brakeTorque = 0;
+        //    coll_rearWheel.motorTorque = 0;
+        //    coll_rearWheel.brakeTorque = 0;
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //}
+        ////autoback pilot's CoM along
+        //if (outsideControls.VerticalMassShift == 0 && outsideControls.Vertical >= 0 && outsideControls.Vertical <= 0.9f && !outsideControls.rearBrakeOn && !linkToStunt.stuntIsOn)
+        //{
+        //    var tmp_cs24 = CoM.localPosition;
+        //    tmp_cs24.z = 0.0f;
+        //    CoM.localPosition = tmp_cs24;
+        //    tmpMassShift = 0.0f;
+        //}
+        ////autoback pilot's CoM across
 
-        if (outsideControls.HorizontalMassShift == 0 && outsideControls.Vertical <= 0 && !outsideControls.rearBrakeOn)
-        {
-            var tmp_cs25 = CoM.localPosition;
-            tmp_cs25.x = 0.0f;
-            CoM.localPosition = tmp_cs25;
-        }
+        //if (outsideControls.HorizontalMassShift == 0 && outsideControls.Vertical <= 0 && !outsideControls.rearBrakeOn)
+        //{
+        //    var tmp_cs25 = CoM.localPosition;
+        //    tmp_cs25.x = 0.0f;
+        //    CoM.localPosition = tmp_cs25;
+        //}
 
         /////////////////////////////////////////////////////// RESTART KEY ///////////////////////////////////////////////////////////
         //// Restart key - recreate bike few meters above current place
