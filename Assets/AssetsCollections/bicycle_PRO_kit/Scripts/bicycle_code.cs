@@ -272,6 +272,17 @@ public class bicycle_code : MonoBehaviour
             {
                 Vector3 velocity = GetComponent<Rigidbody>().velocity /
                                     GetComponent<Rigidbody>().velocity.magnitude * velocityMeterSet;
+                // Avoid the bike go backward
+                if (Mathf.Abs(Vector3.Angle(velocity, transform.forward)) > 60)
+                {
+                    velocity = new Vector3(0, 0, 0);
+                }
+                // Avoid the bike go up
+                else if (Mathf.Abs(Vector3.Angle(velocity, transform.up)) < 80)
+                {
+                    velocity = new Vector3(0, 0, 0);
+                }
+
                 GetComponent<Rigidbody>().velocity = velocity;
             }
 

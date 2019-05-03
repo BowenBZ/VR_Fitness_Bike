@@ -145,13 +145,13 @@ public class AIBiker_logic_mecanim : MonoBehaviour
         bikerComeback();
 
         //in case of crashed call ragdoll
-        if (bikeRideOn.transform.tag == "bike")
-        {
-            if (bikeStatusCrashed.crashed && !ragdollLaunched)
-            {
-                createRagDoll();
-            }
-        }
+        //if (bikeRideOn.transform.tag == "bike")
+        //{
+        //    if (bikeStatusCrashed.crashed && !ragdollLaunched)
+        //    {
+        //        createRagDoll();
+        //    }
+        //}
 
         //scan do rider see POI
         //if (poi01.gameObject.activeSelf && distanceToPoi > Vector3.Distance(this.transform.position, poi01.transform.position))
@@ -212,7 +212,7 @@ public class AIBiker_logic_mecanim : MonoBehaviour
             myAnimator.speed = reverseSpeed;
         }
         else
-        if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f > 5)
+        if (speedKM > 5)
         {
             reverseSpeed = 0.0f;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);

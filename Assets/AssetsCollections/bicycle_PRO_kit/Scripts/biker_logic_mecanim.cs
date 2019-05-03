@@ -43,7 +43,7 @@ public class biker_logic_mecanim : MonoBehaviour
     public Transform IK_leftLegTarget;
 
     //ragdoll define
-    public GameObject ragDollPrefab;
+    //GameObject ragDollPrefab;
 
     //variable for only one ragdoll create when crashed
     private bool ragdollLaunched = false;
@@ -199,13 +199,13 @@ public class biker_logic_mecanim : MonoBehaviour
         bikerComeback();
 
         //in case of crashed call ragdoll
-        if (bikeRideOn.transform.tag == "bike")
-        {
-            if (bikeStatusCrashed.crashed && !ragdollLaunched)
-            {
-                createRagDoll();
-            }
-        }
+        //if (bikeRideOn.transform.tag == "bike")
+        //{
+        //    if (bikeStatusCrashed.crashed && !ragdollLaunched)
+        //    {
+        //        createRagDoll();
+        //    }
+        //}
 
         //scan do rider see POI
         //if (poi01.gameObject.activeSelf && distanceToPoi > Vector3.Distance(this.transform.position, poi01.transform.position))
@@ -214,6 +214,7 @@ public class biker_logic_mecanim : MonoBehaviour
         //    //if not - still looking forward for a rigidbody POI right before bike
         //}
         //else lookPoint = camPoint;
+        // Character looking point
         lookPoint = camPoint;
 
 
@@ -310,7 +311,7 @@ public class biker_logic_mecanim : MonoBehaviour
         }
     }
     //creating regdoll(we need to scan every bone of character when crashed and copy that preset to created ragdoll)
-    void createRagDoll()
+    /* void createRagDoll()
     {
         if (!ragdollLaunched)
         {
@@ -377,6 +378,7 @@ public class biker_logic_mecanim : MonoBehaviour
             }
         }
     }
+    */
     public void PlayA(string stunt)
     {
         if (stunt == "bannyhope")
