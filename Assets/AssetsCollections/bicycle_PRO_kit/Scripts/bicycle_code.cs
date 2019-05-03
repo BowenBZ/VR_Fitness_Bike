@@ -273,7 +273,7 @@ public class bicycle_code : MonoBehaviour
                 Vector3 velocity = GetComponent<Rigidbody>().velocity /
                                     GetComponent<Rigidbody>().velocity.magnitude * velocityMeterSet;
                 // Avoid the bike go backward
-                if (Mathf.Abs(Vector3.Angle(velocity, transform.forward)) > 60)
+                if (Mathf.Abs(Vector3.Angle(velocity, transform.forward)) > 50)
                 {
                     velocity = new Vector3(0, 0, 0);
                 }
@@ -642,21 +642,21 @@ public class bicycle_code : MonoBehaviour
 
 
         ///////////////////////////////////////// CRASH happens /////////////////////////////////////////////////////////
-        // conditions when crash is happen
-        if ((this.transform.localEulerAngles.z >= crashAngle01 && this.transform.localEulerAngles.z <= crashAngle02) && !linkToStunt.stuntIsOn || (this.transform.localEulerAngles.x >= crashAngle03 && this.transform.localEulerAngles.x <= crashAngle04 && !linkToStunt.stuntIsOn))
-        {
-            GetComponent<Rigidbody>().drag = 0.1f; // when 250 bike can easy beat 200km/h // ~55 m/s
-            GetComponent<Rigidbody>().angularDrag = 0.01f;
-            crashed = true;
-            var tmp_cs27 = CoM.localPosition;
-            tmp_cs27.x = 0.0f;
-            tmp_cs27.y = CoMWhenCrahsed;//move CoM a little bit up for funny bike rotations when fall
-            tmp_cs27.z = 0.0f;
-            CoM.localPosition = tmp_cs27;
-            GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
-        }
+        //// conditions when crash is happen
+        //if ((this.transform.localEulerAngles.z >= crashAngle01 && this.transform.localEulerAngles.z <= crashAngle02) && !linkToStunt.stuntIsOn || (this.transform.localEulerAngles.x >= crashAngle03 && this.transform.localEulerAngles.x <= crashAngle04 && !linkToStunt.stuntIsOn))
+        //{
+        //    GetComponent<Rigidbody>().drag = 0.1f; // when 250 bike can easy beat 200km/h // ~55 m/s
+        //    GetComponent<Rigidbody>().angularDrag = 0.01f;
+        //    crashed = true;
+        //    var tmp_cs27 = CoM.localPosition;
+        //    tmp_cs27.x = 0.0f;
+        //    tmp_cs27.y = CoMWhenCrahsed;//move CoM a little bit up for funny bike rotations when fall
+        //    tmp_cs27.z = 0.0f;
+        //    CoM.localPosition = tmp_cs27;
+        //    GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
+        //}
 
-        if (crashed) coll_rearWheel.motorTorque = 0;//to prevent some bug when bike crashed but still accelerating
+        //if (crashed) coll_rearWheel.motorTorque = 0;//to prevent some bug when bike crashed but still accelerating
     }
 
     //void Update (){

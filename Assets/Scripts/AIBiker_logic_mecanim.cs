@@ -42,9 +42,6 @@ public class AIBiker_logic_mecanim : MonoBehaviour
     public Transform IK_rightLegTarget;
     public Transform IK_leftLegTarget;
 
-    //ragdoll define
-    public GameObject ragDollPrefab;
-
     //variable for only one ragdoll create when crashed
     private bool ragdollLaunched = false;
 
@@ -257,74 +254,7 @@ public class AIBiker_logic_mecanim : MonoBehaviour
             }
         }
     }
-    //creating regdoll(we need to scan every bone of character when crashed and copy that preset to created ragdoll)
-    void createRagDoll()
-    {
-        if (!ragdollLaunched)
-        {
-            Transform pilotHips = transform.Find("root/Hips");
-            Transform pilotChest = transform.Find("root/Hips/Spine/Chest");
-            Transform pilotHead = transform.Find("root/Hips/Spine/Chest/Neck/Head");
-            Transform pilotLeftArm = transform.Find("root/Hips/Spine/Chest/lShoulder/lArm");
-            Transform pilotLeftForeArm = transform.Find("root/Hips/Spine/Chest/lShoulder/lArm/lForearm");
-            Transform pilotRightArm = transform.Find("root/Hips/Spine/Chest/rShoulder/rArm");
-            Transform pilotRightForeArm = transform.Find("root/Hips/Spine/Chest/rShoulder/rArm/rForearm");
-            Transform pilotLeftUpperLeg = transform.Find("root/Hips/lUpperLeg");
-            Transform pilotLeftLeg = transform.Find("root/Hips/lUpperLeg/lLeg");
-            Transform pilotRightUpperLeg = transform.Find("root/Hips/rUpperLeg");
-            Transform pilotRightLeg = transform.Find("root/Hips/rUpperLeg/rLeg");
-            // looking for an current angles of bones rotation
-            Quaternion pilotHipsAngle = pilotHips.transform.localRotation;
-            Quaternion pilotChestAngle = pilotChest.transform.localRotation;
-            Quaternion pilotHeadAngle = pilotHead.transform.localRotation;
-            Quaternion pilotLeftArmAngle = pilotLeftArm.transform.localRotation;
-            Quaternion pilotLeftForeArmAngle = pilotLeftForeArm.transform.localRotation;
-            Quaternion pilotRightArmAngle = pilotRightArm.transform.localRotation;
-            Quaternion pilotRightForeArmAngle = pilotRightForeArm.transform.localRotation;
-            Quaternion pilotLeftUpperLegAngle = pilotLeftUpperLeg.transform.localRotation;
-            Quaternion pilotLeftLegAngle = pilotLeftLeg.transform.localRotation;
-            Quaternion pilotRightUpperLegAngle = pilotRightUpperLeg.transform.localRotation;
-            Quaternion pilotRightLegAngle = pilotRightLeg.transform.localRotation;
-            //hiding the rider
-            Transform riderBodyVis = transform.Find("root/Hips");
-            Vector3 currentPilotPosition = this.transform.position;
-            Quaternion currentPilotRotation = this.transform.rotation;
-            riderBodyVis.gameObject.SetActive(false);
-            // creating ragdoll
-            GameObject ragDoll = Instantiate(ragDollPrefab, currentPilotPosition, currentPilotRotation);
-            // new empty varables to fill it with learned angles later
-            Transform RDpilotHips = ragDoll.transform.Find("root/Hips");
-            Transform RDpilotChest = ragDoll.transform.Find("root/Hips/Spine/Chest");
-            Transform RDpilotHead = ragDoll.transform.Find("root/Hips/Spine/Chest/Neck/Head");
-            Transform RDpilotLeftArm = ragDoll.transform.Find("root/Hips/Spine/Chest/lShoulder/lArm");
-            Transform RDpilotLeftForeArm = ragDoll.transform.Find("root/Hips/Spine/Chest/lShoulder/lArm/lForearm");
-            Transform RDpilotRightArm = ragDoll.transform.Find("root/Hips/Spine/Chest/rShoulder/rArm");
-            Transform RDpilotRightForeArm = ragDoll.transform.Find("root/Hips/Spine/Chest/rShoulder/rArm/rForearm");
-            Transform RDpilotLeftUpperLeg = ragDoll.transform.Find("root/Hips/lUpperLeg");
-            Transform RDpilotLeftLeg = ragDoll.transform.Find("root/Hips/lUpperLeg/lLeg");
-            Transform RDpilotRightUpperLeg = ragDoll.transform.Find("root/Hips/rUpperLeg");
-            Transform RDpilotRightLeg = ragDoll.transform.Find("root/Hips/rUpperLeg/rLeg");
-            // copy known angles to new bones
-            RDpilotHips.localRotation = pilotHipsAngle;
-            RDpilotChest.localRotation = pilotChestAngle;
-            RDpilotHead.localRotation = pilotHeadAngle;
-            RDpilotLeftArm.localRotation = pilotLeftArmAngle;
-            RDpilotLeftForeArm.localRotation = pilotLeftForeArmAngle;
-            RDpilotRightArm.localRotation = pilotRightArmAngle;
-            RDpilotRightForeArm.localRotation = pilotRightForeArmAngle;
-            RDpilotLeftUpperLeg.localRotation = pilotLeftUpperLegAngle;
-            RDpilotLeftLeg.localRotation = pilotLeftLegAngle;
-            RDpilotRightUpperLeg.localRotation = pilotRightUpperLegAngle;
-            RDpilotRightLeg.localRotation = pilotRightLegAngle;
-            ragdollLaunched = true;
 
-            if (bikeRideOn.transform.name == "rigid_bike" && !bikeStatusCrashed.crashed)
-            {//check for crahsed status
-                bikeStatusCrashed.crashed = true;
-                bikeStatusCrashed.GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.2f, 0);
-            }
-        }
-    }
     public void PlayA(string stunt)
     {
         if (stunt == "bannyhope")
