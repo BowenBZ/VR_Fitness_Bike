@@ -79,7 +79,7 @@ public class AIPedalControls : MonoBehaviour
     void FixedUpdate()
     {
         //pedals rotation part
-        float bikeSpeed = 25;
+        float bikeSpeed = transform.root.GetComponent<MoveTo>().speedKM;
         this.transform.rotation = this.transform.rotation * Quaternion.Euler(bikeSpeed / 4, 0, 0);
         //Debug.Log("AIBikeSpeed:" + linkToBike.bikeSpeed);
         pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-bikeSpeed / -4, 0, 0);
