@@ -4,83 +4,122 @@ using UnityEngine;
 
 public class DuplicateRoads : MonoBehaviour
 {
-    public GameObject roadPrefab;
+    GameObject route;
+    public GameObject blockPrefab;
+    GameObject preBlock;
     int cnt = 1;
-    float AbsAngle = 0;
     float RoadLength = 1f;
     int PreAngle = 0;
+    int roadIndex = 0;
 
-    Vector3 AbsLocation = new Vector3(0,0,0);
-    Vector3 AbsRotation = new Vector3(0,0,0);
+    Vector3 AbsLocation = new Vector3(0, 0, 0);
+    Vector3 AbsRotation = new Vector3(0, 0, 0);
     List<float> DistanceList = new List<float>{ 440, 250, 190, 200, 250, 190, 200, 250, 190, 200,
      250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 750};
     List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
      15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
-    List<float> TurningList = new List<float> { };
+    List<float> TurningList = new List<float> { 0, 15, 15, 30, 30 , 35, 25, -30 ,-35, -30, 10, 10, 10, -30, 26, 15, 15, -40, -35,
+     0, 0, 0, 40, 15, 15, 15, 15, -15, -35, -30};
 
 
-    //List<float> List1 = new List<float> { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 };
-    //List<float> List2 = new List<float>{ 10, 10, 10, 10, 8, 6, 4,2,0,2,4,6,8,10,10,10,10,10,10,10  };
     // Start is called before the first frame update
     void Start()
     {
+        // Create a empty obj for the route
+        route = new GameObject();
+        // Change name
+        route.name = "Route";
+        // Record the last road obj
+        preBlock = Instantiate(blockPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+        // Set the name
+        preBlock.name = "Block_" + roadIndex++;
+        // Set the parent of preBlock
+        preBlock.transform.parent = route.transform;
+        // Smooth the slope slopeAngle changes
         SmoothDegChange(DistanceList, DegreeList);
-        RoadTurning();
-        for (int i = 0; i<DistanceList.Count-1;i++)
+        // Add value to turning list
+        //RoadTurning();
+        // Iterate the list to generate roads
+        for (int i = 0; i < DistanceList.Count; i++)
         {
+            // Generate road
             GenerateRoad(DistanceList[i], DegreeList[i], TurningList[i]);
+
+            Debug.Log(preBlock.transform.position);
             //GenerateRoad(List1[i], List2[i]);
         }
 
     }
 
-    // Update is called once per frame
-    void Update()
+    // Generate several road obj according to the parameters
+    void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
     {
-        DetectKey();
-    }
-
-    void DetectKey()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-        }
-    }
-
-    void GenerateRoad(float length, float angle, float TurningAngle)// For level road use 360 degree instead of 0
-    {
-        float slope = 2f * Mathf.PI * angle /360f;
-        float AbsSlope;
-        float Turning;
-        GameObject Temp = GameObject.Instantiate(roadPrefab);
+        // Record the last obj before turning
+        GameObject objBeforeTurn = null;
+        
+        // Every obj turning slopeAngle related to the previous obj
         float unitTurnAngle = TurningAngle / 60;
-        float TA = 0;
 
+        // Accumulated numbers of turning slopeAngle
+        float accTurnAngle = 0;
+
+        // Generate road according to its length
         for (int i = 0; i < length / RoadLength; i++)
         {
+            // Generate a new obj
+            GameObject obj = Instantiate(blockPrefab);
+            // Set name
+            obj.name = "Block_" + roadIndex++;
+            // Add obj to the Route object
+            obj.transform.parent = route.transform;
+            // Generate turning blocks from 20th to 80th
+            if (i > 20 && i <= 80 && TurningAngle!= 0)
+            {
+                // Calculate the new turning angle
+                accTurnAngle = accTurnAngle + unitTurnAngle;
+                // Reset the obj's position to the position of objBeforeTurn
+                obj.transform.position = objBeforeTurn.transform.position;
+                // Reset the obj's rotation to the rotation of objBeforeTurn
+                obj.transform.rotation = objBeforeTurn.transform.rotation;
+                // Canculate the turning point according to the preset parameters
+                Vector3 turningPoint = objBeforeTurn.transform.position +
+                    objBeforeTurn.transform.right.normalized * 60 * TurningAngle / Mathf.Abs(TurningAngle);
+                // Rotate the block to make turning
+                obj.transform.RotateAround(turningPoint, 
+                                            objBeforeTurn.transform.up.normalized, 
+                                            accTurnAngle);
+            }
+            else if(i == 0)
+            {
+                // Set the slopeAngle
+                obj.transform.eulerAngles = new Vector3(-slopeAngle, 
+                                                        preBlock.transform.eulerAngles.y, 
+                                                        preBlock.transform.eulerAngles.z);
+                // Set the position according to the previous obj
+                obj.transform.position = preBlock.transform.position +
+                                         preBlock.transform.forward.normalized * RoadLength;
+            }
+            else
+            {
+                // Set the slopeAngle 
+                obj.transform.rotation = preBlock.transform.rotation; 
+                // Set the position according to the previous obj
+                obj.transform.position = preBlock.transform.position +
+                                         preBlock.transform.forward.normalized * RoadLength;
+            }
 
-            Turning = 1f * i;
-            AbsSlope = 2f * Mathf.PI / (360f / (90-AbsAngle));
-            GameObject obj = GameObject.Instantiate(roadPrefab);
-            AbsLocation = AbsLocation + new Vector3(0, 1 / 2f * RoadLength * (Mathf.Sin(slope) + Mathf.Cos(AbsSlope)),
-                1 / 2f * RoadLength * (Mathf.Cos(slope) + Mathf.Sin(AbsSlope)));
-            obj.transform.position =  AbsLocation;
-            obj.transform.Rotate(-1f * angle, 0, 0);
-            if (i > 20 &&  i<=80 )//Start turing When i = 20 end at i =50
-            {
-                TA = TA + unitTurnAngle;
-                obj.transform.RotateAround(Temp.transform.position + Temp.transform.right.normalized * 60, Temp.transform.up.normalized, TA);       
+            // Update the preBlock
+            preBlock = obj;
+            // Record the block before turn
+            if (i == 20)
+            { 
+                // Assign the 20th obj to objBeforeTurn
+                objBeforeTurn = obj;
             }
-            AbsAngle = angle;
-            if(i == 20)
-            {
-                Temp = obj;
-            }
-                
         }
     }
 
-    void SmoothDegChange(List<float>DisList, List<float>DegList)
+    void SmoothDegChange(List<float> DisList, List<float> DegList)
     {
         float DegChange = 0;
         int index = 1;
@@ -91,14 +130,11 @@ public class DuplicateRoads : MonoBehaviour
 
             if (DegList[index] * DegList[index - 1] < 0)
             {
-                
+
                 float DegChange2 = Mathf.Abs(DegList[index]) - 0;
                 float DegChange1 = 0 - Mathf.Abs(DegList[index - 1]);
 
-                //Debug.Log("Degree change:  " + DegChange2);
-                DisList.Insert(index, DisList[index] - 18);
-                DisList.RemoveAt(index + 1);
-                DisList.Insert(index, 2*RoadLength);
+                DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
@@ -109,16 +145,29 @@ public class DuplicateRoads : MonoBehaviour
                 DegList.Insert(index, 2 * DegChange2 / 5);
                 DegList.Insert(index, 1 * DegChange2 / 5);
                 DegList.Insert(index, 0);
+                //Expend turning list
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
 
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
                 DisList.Insert(index, 2 * RoadLength);
 
-                DegList.Insert(index,  1 * DegChange1 / 5);
-                DegList.Insert(index,  2 * DegChange1 / 5);
-                DegList.Insert(index,  3 * DegChange1 / 5);
-                DegList.Insert(index,  4 * DegChange1 / 5);
+                DegList.Insert(index, 1 * DegChange1 / 5);
+                DegList.Insert(index, 2 * DegChange1 / 5);
+                DegList.Insert(index, 3 * DegChange1 / 5);
+                DegList.Insert(index, 4 * DegChange1 / 5);
+                //Expend turning list
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                TurningList.Insert(index, 0);
+                
+
                 index = index + 10;
             }
             else
@@ -126,9 +175,7 @@ public class DuplicateRoads : MonoBehaviour
                 if (Mathf.Abs(DegList[index]) - Mathf.Abs(DegList[index - 1]) < 0)
                 {
                     DegChange = Mathf.Abs(DegList[index] - DegList[index - 1]);
-                    //Debug.Log("Degree change:  " + DegChange);
-                    DisList.Insert(index, DisList[index] - 8);
-                    DisList.RemoveAt(index + 1);
+
                     DisList.Insert(index, 2 * RoadLength);
                     DisList.Insert(index, 2 * RoadLength);
                     DisList.Insert(index, 2 * RoadLength);
@@ -138,13 +185,17 @@ public class DuplicateRoads : MonoBehaviour
                     DegList.Insert(index, 2 * DegChange / 5);
                     DegList.Insert(index, 3 * DegChange / 5);
                     DegList.Insert(index, 4 * DegChange / 5);
+
+                    //Expend turning list
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
                 }
                 else
                 {
                     DegChange = DegList[index] - Mathf.Abs(DegList[index - 1]);
-                    
-                    DisList.Insert(index, DisList[index] - 8);
-                    DisList.RemoveAt(index + 1);
+
                     DisList.Insert(index, 2 * RoadLength);
                     DisList.Insert(index, 2 * RoadLength);
                     DisList.Insert(index, 2 * RoadLength);
@@ -154,48 +205,36 @@ public class DuplicateRoads : MonoBehaviour
                     DegList.Insert(index, 3 * DegChange / 5);
                     DegList.Insert(index, 2 * DegChange / 5);
                     DegList.Insert(index, 1 * DegChange / 5);
+
+                    //Expend turning list
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
+                    TurningList.Insert(index, 0);
                 }
                 index = index + 5;
             }
-            //if (DegChange < 0)
-            //{
-            //    DegChange = DegChange + 360;
-            //}
-            //Take the First 10 meter of the road with new degree to make the transfer more smooth
-            
 
-            
-            
-        }
-    }
-
-    void RoadSmoother(List<float> DisList, List<float> DegList)
-    {
-        int index = 1;
-        while (true)
-        {
-            if (index + 9 > DisList.Count - 1)
-                break;
-
-
-            float DegChange = DegList[index] - DegList[index -1];
         }
     }
 
 
+    // Random generate values to the turning list
     void RoadTurning()
     {
-        int Turingdegree;
-        
+        int Turingdegree = 0;
+
         for (int i = 0; i < DistanceList.Count; i++)
         {
+            //Decide if there is a turning
+            float booleanTurn = Random.Range(0f, 1f);
+            
             if (DistanceList[i] > 5 * RoadLength)
             {
-                Turingdegree = Random.Range(-30, 30);
-            }
-            else
-            {
-                Turingdegree = 0;
+                if (booleanTurn >= 0.5f)
+                {
+                    Turingdegree = Random.Range(-30, 30);
+                }
             }
             TurningList.Add(Turingdegree);
             Debug.Log("Turning Degree:   " + Turingdegree);
@@ -203,5 +242,4 @@ public class DuplicateRoads : MonoBehaviour
 
     }
 
-    
 }
