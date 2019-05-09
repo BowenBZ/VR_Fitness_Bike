@@ -6,7 +6,7 @@ using UnityEditor;
 public class CreatePrefabs : MonoBehaviour
 {
     //Creates a new menu (Examples) with a menu item (Create Prefab)
-    [MenuItem("CreatePrefab/Create Prefab")]
+    [MenuItem("Tools/Create Prefab")]
     static void CreatePrefab()
     {
         //Keep track of the currently selected GameObject(s)

@@ -265,7 +265,7 @@ public class biker_logic_mecanim : MonoBehaviour
             myAnimator.speed = reverseSpeed;
         }
         else
-        if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f > 5)
+        if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f > 0)
         {
             reverseSpeed = 0.0f;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);
