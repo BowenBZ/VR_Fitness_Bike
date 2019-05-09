@@ -73,10 +73,10 @@ public class bicycle_code : MonoBehaviour
     public float frontBrakePower = 25; //brake power absract - 100 is good brakes																		
 
     //float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...
-    
+
     // airRes is for wind resistance to large bikes more than small ones
     float airRes; //Air resistant 																										// 1 is neutral
-    
+
     /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
     [HideInInspector]
     public float frontWheelAPD;// usualy 0.05f
@@ -145,8 +145,6 @@ public class bicycle_code : MonoBehaviour
 
         //GUI.Box(new Rect(10, 220, 320, 20), "Esc - return to main menu", smallerText);
         //GUI.color = Color.black;
-
-
     }
     void Start()
     {
@@ -261,7 +259,7 @@ public class bicycle_code : MonoBehaviour
         if (!crashed && outsideControls.Vertical > 0)
         {
             coll_frontWheel.brakeTorque = 0;//we need that to fix strange unity bug when bike stucks if you press "accelerate" just after "brake".
- 
+
             // Get the direction of the road
             float velocityMeterSet = outsideControls.VelocityKMSet / 0.1f / 10.0f / 3.6f;
             if (GetComponent<Rigidbody>().velocity.magnitude < 0.5f)
@@ -296,7 +294,7 @@ public class bicycle_code : MonoBehaviour
             CoM.localPosition = tmp_cs5;
             GetComponent<Rigidbody>().centerOfMass = new Vector3(CoM.localPosition.x, CoM.localPosition.y, CoM.localPosition.z);
         }
-        else if(!crashed && outsideControls.Vertical == 0 && !isFrontWheelInAir)
+        else if (!crashed && outsideControls.Vertical == 0 && !isFrontWheelInAir)
         {
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
@@ -526,7 +524,7 @@ public class bicycle_code : MonoBehaviour
         tempMaxWheelAngle = wheelbarRestrictCurve.Evaluate(bikeSpeed);//associate speed with curve which you've tuned in Editor
 
         if (!crashed && outsideControls.Horizontal != 0)
-        { 
+        {
             coll_frontWheel.steerAngle = (outsideControls.TurnByUdp) ?
                                             outsideControls.WheelAngle :
                                             tempMaxWheelAngle * outsideControls.Horizontal;
@@ -721,7 +719,7 @@ public class bicycle_code : MonoBehaviour
     {
         var tmpRearSusp = coll_rearWheel.suspensionSpring;
         tmpRearSusp.spring = normalRearSuspSpring;
-        coll_rearWheel.suspensionSpring = tmpRearSusp;   
+        coll_rearWheel.suspensionSpring = tmpRearSusp;
     }
     //need to restore spring power for front suspension after make it weaker for stoppie
     void FrontSuspensionRestoration(int sprWeakness)
