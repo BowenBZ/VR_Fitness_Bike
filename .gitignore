@@ -7,6 +7,7 @@
 [Pp]ackages/
 Assets/AssetStoreTools*
 Build.meta
+.vscode
 
 # Visual Studio cache directory
 .vs/
