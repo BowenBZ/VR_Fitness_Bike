@@ -30,15 +30,28 @@ public class pedalControls : MonoBehaviour
 
     //tmp "true" during "in stunt" 
     private bool inStunt = false;
+
+    // The radius of wheel
+    float wheelRadius;
+
+    // The KM/H speed of bike
+    float bikeSpeedKMH;
+
+    // The Cycle per second of bike
+    float bikeSpeedCPS;
+
+    // Rotate angle per second
+    float rotateAnglePS;
+
     void Start()
     {
-
         ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
         linkToBike = transform.root.GetComponent<bicycle_code>();
         linkToRider = transform.root.GetComponentInChildren<biker_logic_mecanim>();
 
+        wheelRadius = transform.root.GetComponentInChildren<WheelCollider>().radius;
     }
 
     void Update()
@@ -73,7 +86,6 @@ public class pedalControls : MonoBehaviour
         {
             StuntManual();
         }
-
     }
 
     void FixedUpdate()
@@ -84,6 +96,12 @@ public class pedalControls : MonoBehaviour
             this.transform.rotation = this.transform.rotation * Quaternion.Euler(linkToBike.bikeSpeed / 4, 0, 0);
             pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / -4, 0, 0);
             pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / 4, 0, 0);
+            bikeSpeedKMH = linkToBike.bikeSpeed;
+            bikeSpeedCPS = bikeSpeedKMH * 10.0f / 36.0f / (2 * Mathf.PI * wheelRadius) *  100;
+            rotateAnglePS = Mathf.PI * bikeSpeedCPS;
+            this.transform.rotation = this.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
+            pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
+            pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-rotateAnglePS * Time.fixedDeltaTime, 0, 0);
             if (energy < 10)
             {
                 energy = energy + 0.01f;
