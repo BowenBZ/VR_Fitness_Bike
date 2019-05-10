@@ -1,8 +1,6 @@
 # VRBike-Display
 
-This repositoriy is used for the VR display part of project Cyclotron.
-
-The master branch is a bike game which includes the bike, biker with animation, well-designed route, map, and terrain, camera switch, udp transit and etc.
+This branch targets on HTC Vive, which includes the bike, biker with animation, well-designed route, map, and terrain, camera switch, udp transit and etc.
 ![scene](https://drive.google.com/uc?id=1pZzUOiI0OdFLFGuyoMzAupS5nFdd_qm5)
 
 ## Functions
@@ -41,7 +39,7 @@ More details are explained as follows.
 	* ControlHub.cs: Contains all the variable which controls movement of bike
 	* UdpControl.cs: Control the receive and send functions of UDP
 	* CamSwitcher.cs: Control different cameras enability
-* Bike
+* ViveBike
 	* Bicycle_code.cs: Handle movement of the bike
 	* Bicycle_body
 		* Ethan
@@ -55,6 +53,7 @@ More details are explained as follows.
 * Route: Saved route
 * Terrain: Designed terrain and other environmental elements.
 * AIBiker
+More items will be included
 
 ## Adopted Assets
 * bicycle_pro_kit
