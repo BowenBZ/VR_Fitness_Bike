@@ -1,8 +1,11 @@
 # VRBike-Display
 
-This repositoriy is used for the VR display part of project Cyclotron. 
+This repositoriy is used for the VR display part of project Cyclotron.
 
-## Insturction
+The master branch is a bike game which includes the bike, biker with animation, well-designed route, map, and terrain, camera switch, udp transit and etc.
+![scene](https://drive.google.com/uc?id=1pZzUOiI0OdFLFGuyoMzAupS5nFdd_qm5)
+
+## Functions
 This project is a simulated bike game. The speed of the bike and the turning can be controled external signal. The game can also be controled by keyboard or game handle(switch handle).
 
 The control method and type are as follows.
@@ -18,33 +21,41 @@ The control method and type are as follows.
 
 When the bike go forward, the speed is fixed, whatever terrain you are in.
 
-## Running Environment
+## Required Environment
 * Unity 2018.3.12f1
-* Visual Studio 2017
+* Visual Studio 2017 or 2019
+
+## Basic Game Logic
+The basic logic of the game targets on the logic of the bike. Where the basic is decribed as follows.
+
+![logic](https://drive.google.com/uc?id=1NahBU1jOIekJhRvOx7mwphfOBmp3SuSq)
 
 ## GameObject and Script Overview
-* Direct Light
+![hierarchy](https://drive.google.com/uc?id=1YPREgnYslNhhZdUbrYb23BWVcnXzp_xw)
+
+More details are explained as follows.
+* Lights
 * Manager
 	* DuplicateRoads.cs: Generate road according to parameters
-	* DuplicateTerrains.cs: Duplicate terrains according to the parameters
 	* KeyboardControls.cs: Detect the input
-	* ControlHub.cs: Contains all the variable related to the movement of bike
+	* ControlHub.cs: Contains all the variable which controls movement of bike
 	* UdpControl.cs: Control the receive and send functions of UDP
-* Road: Unit of road
-* Terrain: Unit of terrain
+	* CamSwitcher.cs: Control different cameras enability
 * Bike
-	* Bicycle_code.cs: Control the movement of the bike
+	* Bicycle_code.cs: Handle movement of the bike
 	* Bicycle_body
-		* char_anim
-			* Biker_logic_mecanim.cs: Control the action of the character
+		* Ethan
+			* Biker_logic_mecanim.cs: Control the action of the biker
 		* bicycle_pedals
 			* PedalControls.cs: Control the action of pedals
-	* FirstView: First view camera 
-* CamBike
-	* CamSwitcher.cs: Control different cameras enability
-	* Back Camera: Third person view camera
-	* Camera: A camera controled by right click of mouse
+	* Cameras
+		* FirstView
+		* ThirdView
+		* AroundView 
+* Route: Saved route
+* Terrain: Designed terrain and other environmental elements.
+* AIBiker
 
 ## Adopted Assets
 * bicycle_pro_kit
-* Mapbox
+* Standard Assets
