@@ -18,11 +18,11 @@ public class controlHub : MonoBehaviour  {//need that for mobile controls
     public bool fullRestartBike { get; set; } //this variable says to bike's script to full 
     public bool reverse { get; set; }//for reverse speed
 
-    public float initialSpeedKM;
+    public float startSpeedKPH;
     public bool MoveByUdp { get; set; } // to detect wether the bike is controled by out input
     public bool TurnByUdp { get; set; } // to detect wether the bike is controled by out input
-    public float VelocityKMSet { get; set; } // Variable to control the speed of the bike
-    public float WheelAngle { get; set; }// The fixed angle turns
+    public float bikeSpeedKPH { get; set; } // Variable to control the speed of the bike
+    public float wheelAngle { get; set; }// The fixed angle turns
 
     public string CurrentRoad { get; set; } // The name of current name road
 
@@ -32,7 +32,7 @@ public class controlHub : MonoBehaviour  {//need that for mobile controls
     {
         MoveByUdp = false;
         TurnByUdp = false;
-        VelocityKMSet = initialSpeedKM;
+        bikeSpeedKPH = startSpeedKPH;
         udpControl = GameObject.FindGameObjectWithTag("manager").GetComponent<UdpControl>();
     }
 
@@ -40,13 +40,13 @@ public class controlHub : MonoBehaviour  {//need that for mobile controls
     {
         if (MoveByUdp)
         {
-            VelocityKMSet = udpControl.LatestSpeed;
-            Vertical = (VelocityKMSet > 0) ? 0.9f : 0;
+            bikeSpeedKPH = udpControl.LatestSpeed;
+            Vertical = (bikeSpeedKPH > 0) ? 0.9f : 0;
         }   
         if (TurnByUdp)
         {
-            WheelAngle = udpControl.LatestAngle;
-            Horizontal = (WheelAngle == 0) ? 0 : WheelAngle / Mathf.Abs(WheelAngle);
+            wheelAngle = udpControl.LatestAngle;
+            Horizontal = (wheelAngle == 0) ? 0 : wheelAngle / Mathf.Abs(wheelAngle);
         }
     }
 }
