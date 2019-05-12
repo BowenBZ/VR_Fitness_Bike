@@ -39,22 +39,22 @@ public class bike_sound : MonoBehaviour
     {
 
         //skids sound
-        if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness < 0.5f && !isSkidingRear && linkToBike.bikeSpeed > 1)
+        if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness < 0.5f && !isSkidingRear && linkToBike.bikeSpeedKPH > 1)
         {
             skidSound.Play();
             isSkidingRear = true;
         }
-        else if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness >= 0.5f && isSkidingRear || linkToBike.bikeSpeed <= 1)
+        else if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness >= 0.5f && isSkidingRear || linkToBike.bikeSpeedKPH <= 1)
         {
             skidSound.Stop();
             isSkidingRear = false;
         }
-        if (linkToBike.coll_frontWheel.brakeTorque >= (linkToBike.frontBrakePower - 10) && !isSkidingFront && linkToBike.bikeSpeed > 1)
+        if (linkToBike.coll_frontWheel.brakeTorque >= (linkToBike.frontBrakePower - 10) && !isSkidingFront && linkToBike.bikeSpeedKPH > 1)
         {
             skidSound.Play();
             isSkidingFront = true;
         }
-        else if (linkToBike.coll_frontWheel.brakeTorque < linkToBike.frontBrakePower && isSkidingFront || linkToBike.bikeSpeed <= 1)
+        else if (linkToBike.coll_frontWheel.brakeTorque < linkToBike.frontBrakePower && isSkidingFront || linkToBike.bikeSpeedKPH <= 1)
         {
             skidSound.Stop();
             isSkidingFront = false;

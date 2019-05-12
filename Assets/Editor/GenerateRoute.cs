@@ -1,30 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class DuplicateRoads : MonoBehaviour
+public class GenerateRoute : MonoBehaviour
 {
-    GameObject route;
-    public GameObject blockPrefab;
-    GameObject preBlock;
-    int cnt = 1;
-    float RoadLength = 1f;
-    int PreAngle = 0;
-    int roadIndex = 0;
+    static GameObject route;
+    static GameObject blockPrefab;
+    static GameObject preBlock;
+    static int cnt = 1;
+    static float RoadLength = 1f;
+    static int PreAngle = 0;
+    static int roadIndex = 0;
 
-    Vector3 AbsLocation = new Vector3(0, 0, 0);
-    Vector3 AbsRotation = new Vector3(0, 0, 0);
-    List<float> DistanceList = new List<float>{ 440, 250, 190, 200, 250, 190, 200, 250, 190, 200,
+    static Vector3 AbsLocation = new Vector3(0, 0, 0);
+    static Vector3 AbsRotation = new Vector3(0, 0, 0);
+    static List<float> DistanceList = new List<float>{ 440, 250, 190, 200, 250, 190, 200, 250, 190, 200,
      250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 250, 190, 200, 750};
-    List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
+    static List<float> DegreeList = new List<float>{ 0, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5,
      15, 0, -5, 15, 0, -5, 15, 0, -5, 15, 0, -5, 0};
-    List<float> TurningList = new List<float> { 0, 15, 15, 30, 30 , 35, 25, -30 ,-35, -30, 10, 10, 10, -30, 26, 15, 15, -40, -35,
+    static List<float> TurningList = new List<float> { 0, 15, 15, 30, 30 , 35, 25, -30 ,-35, -30, 10, 10, 10, -30, 26, 15, 15, -40, -35,
      0, 0, 0, 40, 15, 15, 15, 15, -15, -35, -30};
 
 
-    // Start is called before the first frame update
-    void Start()
+    [MenuItem("Tools/Generate Road")]
+    static void EstablishRoad()
     {
+        // Load prefab
+        blockPrefab = (GameObject)Resources.Load("Block", typeof(GameObject));
         // Create a empty obj for the route
         route = new GameObject();
         // Change name
@@ -52,7 +55,7 @@ public class DuplicateRoads : MonoBehaviour
     }
 
     // Generate several road obj according to the parameters
-    void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
+    static void GenerateRoad(float length, float slopeAngle, float TurningAngle)// For level road use 360 degree instead of 0
     {
         // Record the last obj before turning
         GameObject objBeforeTurn = null;
@@ -119,7 +122,7 @@ public class DuplicateRoads : MonoBehaviour
         }
     }
 
-    void SmoothDegChange(List<float> DisList, List<float> DegList)
+    static void SmoothDegChange(List<float> DisList, List<float> DegList)
     {
         float DegChange = 0;
         int index = 1;
@@ -220,7 +223,7 @@ public class DuplicateRoads : MonoBehaviour
 
 
     // Random generate values to the turning list
-    void RoadTurning()
+    static void RoadTurning()
     {
         int Turingdegree = 0;
 

@@ -22,7 +22,7 @@ public class skidMarks : MonoBehaviour
     void FixedUpdate()
     {
         //skidmarks for rear wheel(braking drifting)
-        if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness < 0.5f && linkToBike.bikeSpeed > 1)
+        if (linkToBike.coll_rearWheel.sidewaysFriction.stiffness < 0.5f && linkToBike.bikeSpeedKPH > 1)
         {
             if (linkToBike.coll_rearWheel.GetGroundHit(out hit))
             {
@@ -39,7 +39,7 @@ public class skidMarks : MonoBehaviour
             }
         }
         //skidmarks for front wheel(braking)
-        if (linkToBike.coll_frontWheel.brakeTorque >= linkToBike.frontBrakePower && linkToBike.bikeSpeed > 1)
+        if (linkToBike.coll_frontWheel.brakeTorque >= linkToBike.frontBrakePower && linkToBike.bikeSpeedKPH > 1)
         {
             if (linkToBike.coll_frontWheel.GetGroundHit(out hit))
             {

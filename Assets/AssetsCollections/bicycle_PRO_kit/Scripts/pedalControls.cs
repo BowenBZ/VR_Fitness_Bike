@@ -31,14 +31,8 @@ public class pedalControls : MonoBehaviour
     //tmp "true" during "in stunt" 
     private bool inStunt = false;
 
-    // The radius of wheel
-    float wheelRadius;
-
-    // The KM/H speed of bike
-    float bikeSpeedKMH;
-
-    // The Cycle per second of bike
-    float bikeSpeedCPS;
+    // Indicate one cycle of wheel equals to how many cycles of pedals
+    public float cycleToPedal = 1.0f;
 
     // Rotate angle per second
     float rotateAnglePS;
@@ -50,8 +44,6 @@ public class pedalControls : MonoBehaviour
 
         linkToBike = transform.root.GetComponent<bicycle_code>();
         linkToRider = transform.root.GetComponentInChildren<biker_logic_mecanim>();
-
-        wheelRadius = transform.root.GetComponentInChildren<WheelCollider>().radius;
     }
 
     void Update()
@@ -93,12 +85,7 @@ public class pedalControls : MonoBehaviour
         //pedals rotation part
         if (outsideControls.Vertical > 0)
         {
-            this.transform.rotation = this.transform.rotation * Quaternion.Euler(linkToBike.bikeSpeed / 4, 0, 0);
-            pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / -4, 0, 0);
-            pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-linkToBike.bikeSpeed / 4, 0, 0);
-            bikeSpeedKMH = linkToBike.bikeSpeed;
-            bikeSpeedCPS = bikeSpeedKMH * 10.0f / 36.0f / (2 * Mathf.PI * wheelRadius) *  100;
-            rotateAnglePS = Mathf.PI * bikeSpeedCPS;
+            rotateAnglePS = 360.0f * linkToBike.bikeSpeedRPS * cycleToPedal;
             this.transform.rotation = this.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
             pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
             pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-rotateAnglePS * Time.fixedDeltaTime, 0, 0);
@@ -137,9 +124,9 @@ public class pedalControls : MonoBehaviour
         if (energy > 0)
         {
             var tmpEnergy = 10 - energy;
-            this.transform.rotation = this.transform.rotation * Quaternion.Euler((linkToBike.bikeSpeed - tmpEnergy) / 4, 0, 0);
-            pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-(linkToBike.bikeSpeed - tmpEnergy) / -4, 0, 0);
-            pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-(linkToBike.bikeSpeed - tmpEnergy) / 4, 0, 0);
+            this.transform.rotation = this.transform.rotation * Quaternion.Euler((linkToBike.bikeSpeedKPH - tmpEnergy) / 4, 0, 0);
+            pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-(linkToBike.bikeSpeedKPH - tmpEnergy) / -4, 0, 0);
+            pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-(linkToBike.bikeSpeedKPH - tmpEnergy) / 4, 0, 0);
             energy = energy - 0.1f;
 
         }

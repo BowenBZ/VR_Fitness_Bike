@@ -73,10 +73,10 @@ public class AIBicycle_code : MonoBehaviour
     public float frontBrakePower = 25; //brake power absract - 100 is good brakes																		
 
     //float LegsPower; // Leg's power to wheels. Abstract it's not HP or KW or so...
-    
+
     // airRes is for wind resistance to large bikes more than small ones
     float airRes; //Air resistant 																										// 1 is neutral
-    
+
     /////////////////////////////////////////////////// BICYCLE CODE ///////////////////////////////////////////////////////
     [HideInInspector]
     public float frontWheelAPD;// usualy 0.05f
@@ -88,6 +88,8 @@ public class AIBicycle_code : MonoBehaviour
     [HideInInspector]
     public float bikeSpeed; //to know bike speed km/h
 
+    public float bikeSpeedRPS { get; set; }
+
     [HideInInspector]
     public bool isReverseOn = false; //to turn On and Off reverse speed
 
@@ -98,6 +100,8 @@ public class AIBicycle_code : MonoBehaviour
     GameObject ctrlHub;// gameobject with script control variables 
     private controlHub outsideControls;// making a link to corresponding bike's script
     public float initialForce; // The initial torque added to the wheel when start
+    float wheelRadius;     // The radius of wheel
+
 
     ////////////////////////////////////////////////  ON SCREEN INFO ///////////////////////////////////////////////////////
     void Start()
@@ -148,6 +152,7 @@ public class AIBicycle_code : MonoBehaviour
         tmpCollRW01.y = coll_rearWheel.transform.localPosition.y - coll_rearWheel.transform.localPosition.y / 20;
         coll_rearWheel.transform.localPosition = tmpCollRW01;
 
+        wheelRadius = transform.root.GetComponentInChildren<WheelCollider>().radius;
     }
 
     void Update()
@@ -194,7 +199,9 @@ public class AIBicycle_code : MonoBehaviour
         }
 
         //determinate the bike speed in km/h
-        bikeSpeed = Mathf.Round((GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10.0f) * 0.1f; //from m/s to km/h
+        bikeSpeed = GetComponent<Rigidbody>().velocity.magnitude * 3.6f; //from m/s to km/h
+
+        bikeSpeedRPS = bikeSpeed / 3.6f / (2 * Mathf.PI * wheelRadius);
 
         ///bicycle code
         coll_frontWheel.forceAppPointDistance = frontWheelAPD - bikeSpeed / 1000;
@@ -352,7 +359,7 @@ public class AIBicycle_code : MonoBehaviour
     {
         var tmpRearSusp = coll_rearWheel.suspensionSpring;
         tmpRearSusp.spring = normalRearSuspSpring;
-        coll_rearWheel.suspensionSpring = tmpRearSusp;   
+        coll_rearWheel.suspensionSpring = tmpRearSusp;
     }
     //need to restore spring power for front suspension after make it weaker for stoppie
     void FrontSuspensionRestoration(int sprWeakness)

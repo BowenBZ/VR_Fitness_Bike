@@ -30,11 +30,11 @@ public class keyboardControls : MonoBehaviour {
 
             // Increase max speed
             if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Joystick1Button1))
-                outsideControls.VelocityKMSet += 0.1f;
+                outsideControls.bikeSpeedKPH += 0.1f;
 
             // Decrease max speed
             if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Joystick1Button0))
-                outsideControls.VelocityKMSet -= 0.1f;
+                outsideControls.bikeSpeedKPH -= 0.1f;
         }
 
         if (!outsideControls.TurnByUdp)
@@ -53,8 +53,8 @@ public class keyboardControls : MonoBehaviour {
             }
             else // Current is controled by udp, then change to keyboard
             {
-                udpControl.LatestSpeed = outsideControls.initialSpeedKM;
-                outsideControls.VelocityKMSet = outsideControls.initialSpeedKM;
+                udpControl.LatestSpeed = outsideControls.startSpeedKPH;
+                outsideControls.bikeSpeedKPH = outsideControls.startSpeedKPH;
             }
 
             outsideControls.MoveByUdp = !outsideControls.MoveByUdp;
@@ -68,7 +68,7 @@ public class keyboardControls : MonoBehaviour {
         // Restart bike
         if (Input.GetKeyDown(KeyCode.R))
         {
-            outsideControls.VelocityKMSet = 25;
+            outsideControls.bikeSpeedKPH = 25;
             outsideControls.restartBike = true;
         }
         else
@@ -79,7 +79,7 @@ public class keyboardControls : MonoBehaviour {
         // RightShift for full restart
         if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Joystick1Button2))
         {
-            outsideControls.VelocityKMSet = outsideControls.initialSpeedKM;
+            outsideControls.bikeSpeedKPH = outsideControls.startSpeedKPH;
             outsideControls.restartBike = true;
             outsideControls.fullRestartBike = true;
         }
