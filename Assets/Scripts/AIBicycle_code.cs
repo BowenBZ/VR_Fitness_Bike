@@ -166,8 +166,6 @@ public class AIBicycle_code : MonoBehaviour
         ApplyLocalPositionToVisuals(coll_frontWheel);
         ApplyLocalPositionToVisuals(coll_rearWheel);
 
-        Debug.Log("AI" + GetComponent<Rigidbody>().velocity.magnitude * 3.6f);
-
         // Don't let the bike lean
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
