@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KeepMoving : MonoBehaviour
+public class AIControl : MonoBehaviour
 { 
     // The speed of AI rider
-    public float speedKM;
+    public float speedKPH;
     // Make the bike attached to road
     RaycastHit hit;
     // Current block
@@ -34,13 +34,13 @@ public class KeepMoving : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, -transform.up, out hit, Mathf.Infinity))
         {
             current_block = hit.transform;
-            GetComponent<Rigidbody>().velocity = speedKM * 1000 / 3600.0f * current_block.forward.normalized;
+            GetComponent<Rigidbody>().velocity = speedKPH / 3.6f * current_block.forward.normalized;
             transform.forward = current_block.forward;
         }
 
@@ -49,7 +49,7 @@ public class KeepMoving : MonoBehaviour
 
     void UpdateHorizontalPosition()
     {
-        if(waitTime++ > 100)
+        if(waitTime++ > 1000)
         {
             moveRange = Random.Range(-1.0f, 1.0f);
             laterPosition = transform.position + moveRange * transform.right;

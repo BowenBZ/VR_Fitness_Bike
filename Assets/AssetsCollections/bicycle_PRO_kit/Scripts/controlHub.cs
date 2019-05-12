@@ -24,7 +24,7 @@ public class controlHub : MonoBehaviour  {//need that for mobile controls
     public float bikeSpeedKPH { get; set; } // Variable to control the speed of the bike
     public float wheelAngle { get; set; }// The fixed angle turns
 
-    public string CurrentRoad { get; set; } // The name of current name road
+    public string CurrentBlock { get; set; } // The name of current name road
 
     UdpControl udpControl;
 

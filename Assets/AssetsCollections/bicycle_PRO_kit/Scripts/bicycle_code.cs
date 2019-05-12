@@ -81,8 +81,8 @@ public class bicycle_code : MonoBehaviour
 
     public float bikeSpeedKPH { get; set; } // bike speed in km/h
     public float bikeSpeedMPS { get; set; } // bike speed in m/s
-    public float bikeSpeedCPS { get; set; } // bike speed in cycle/s
-    public float bikeSpeedCPM { get; set; } // bike speed in cycle/min
+    public float bikeSpeedRPS { get; set; } // bike speed in ring/s
+    public float bikeSpeedRPM { get; set; } // bike speed in ring/min
     float wheelRadius;     // The radius of wheel
 
     // ON SCREEN INFO 
@@ -239,14 +239,13 @@ public class bicycle_code : MonoBehaviour
         }
 
         // Key Control 1: Speed
-        bikeSpeedKPH = 0;
         if (outsideControls.Vertical > 0)
         {
             // Set the spped of the bike
             bikeSpeedKPH = outsideControls.bikeSpeedKPH;
             bikeSpeedMPS = bikeSpeedKPH / 3.6f;
-            bikeSpeedCPS = bikeSpeedMPS / (2 * Mathf.PI * wheelRadius);
-            bikeSpeedCPM = bikeSpeedCPS * 60.0f;
+            bikeSpeedRPS = bikeSpeedMPS / (2 * Mathf.PI * wheelRadius);
+            bikeSpeedRPM = bikeSpeedRPS * 60.0f;
             // This is a old variable, which will be removed in the future
             bikeSpeed = bikeSpeedKPH;
 
@@ -286,10 +285,18 @@ public class bicycle_code : MonoBehaviour
         }
         else if (outsideControls.Vertical == 0 && !isFrontWheelInAir)
         {
+            bikeSpeedKPH = 0;
+            bikeSpeedMPS = 0;
+            bikeSpeedRPS = 0;
+            bikeSpeedRPM = 0;
             GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         }
         else
         {
+            bikeSpeedKPH = 0;
+            bikeSpeedMPS = 0;
+            bikeSpeedRPS = 0;
+            bikeSpeedRPM = 0;
             RearSuspensionRestoration();
         }
 
@@ -387,10 +394,10 @@ public class bicycle_code : MonoBehaviour
             }
             else
             {
-                Vector3 currentRoadPos = GameObject.Find(outsideControls.CurrentRoad).transform.position;
-                Vector3 currentRoadDir = GameObject.Find(outsideControls.CurrentRoad).transform.eulerAngles;
-                transform.position = currentRoadPos + new Vector3(0, 0.5f, 0);
-                transform.eulerAngles = new Vector3(currentRoadDir.x, currentRoadDir.y, 0);
+                Vector3 CurrentBlockPos = GameObject.Find(outsideControls.CurrentBlock).transform.position;
+                Vector3 CurrentBlockDir = GameObject.Find(outsideControls.CurrentBlock).transform.eulerAngles;
+                transform.position = CurrentBlockPos + new Vector3(0, 0.5f, 0);
+                transform.eulerAngles = new Vector3(CurrentBlockDir.x, CurrentBlockDir.y, 0);
             }
             transform.position += new Vector3(0, 0.1f, 0);
             transform.rotation = Quaternion.Euler(0.0f, transform.localEulerAngles.y, 0.0f);
