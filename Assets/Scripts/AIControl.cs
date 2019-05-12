@@ -2,10 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KeepMoving : MonoBehaviour
-{ 
-    // The speed of AI rider
-    public float speedKM;
+public class AIControl : MonoBehaviour
+{
     // Make the bike attached to road
     RaycastHit hit;
     // Current block
@@ -24,6 +22,20 @@ public class KeepMoving : MonoBehaviour
     // right move range bar
     float rightMoveRangeBar;
 
+    float[] requireBikeSpeedRPM = new float[] {
+                                                70, 80, 90, 65, 80,
+                                                90, 65, 80, 90, 65,
+                                                80, 90, 65, 80, 90,
+                                                65, 80, 90, 65, 80,
+                                                90, 65, 80, 90, 65,
+                                                80, 90, 65, 60,
+                                            };
+    // The speed of AI rider
+    [HideInInspector]
+    public float bikeSpeedMPS;
+    controlHub outsideControl;
+    float wheelRadius;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,16 +43,21 @@ public class KeepMoving : MonoBehaviour
         moveRange = 0;
         leftMoveRangeBar = -4.5f - transform.position.x;
         rightMoveRangeBar = 4.5f - transform.position.x;
+        outsideControl = GameObject.FindWithTag("manager").GetComponent<controlHub>();
+        wheelRadius = GetComponentInChildren<WheelCollider>().radius;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
+        bikeSpeedMPS = (requireBikeSpeedRPM[outsideControl.currentSignAI] + 10) / 60.0f * (2 * Mathf.PI * wheelRadius);
+        Debug.Log(outsideControl.currentSignAI);
+        Debug.Log(bikeSpeedMPS);
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, -transform.up, out hit, Mathf.Infinity))
         {
             current_block = hit.transform;
-            GetComponent<Rigidbody>().velocity = speedKM * 1000 / 3600.0f * current_block.forward.normalized;
+            GetComponent<Rigidbody>().velocity = bikeSpeedMPS * current_block.forward.normalized;
             transform.forward = current_block.forward;
         }
 
@@ -49,11 +66,11 @@ public class KeepMoving : MonoBehaviour
 
     void UpdateHorizontalPosition()
     {
-        if(waitTime++ > 100)
+        if (waitTime++ > 1000)
         {
             moveRange = Random.Range(-1.0f, 1.0f);
             laterPosition = transform.position + moveRange * transform.right;
-            if((laterPosition - current_block.position).x > rightMoveRangeBar || 
+            if ((laterPosition - current_block.position).x > rightMoveRangeBar ||
                 (laterPosition - current_block.position).x < leftMoveRangeBar)
             {
                 moveRange = 0;
