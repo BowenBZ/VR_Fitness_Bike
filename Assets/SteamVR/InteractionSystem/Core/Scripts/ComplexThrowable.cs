@@ -46,8 +46,8 @@ namespace Valve.VR.InteractionSystem
 		{
 			for ( int i = 0; i < holdingHands.Count; i++ )
 			{
-                if (holdingHands[i].IsGrabEnding(this.gameObject))
-                {
+				if ( !holdingHands[i].GetStandardInteractionButton() )
+				{
 					PhysicsDetach( holdingHands[i] );
 				}
 			}
@@ -59,9 +59,9 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( holdingHands.IndexOf( hand ) == -1 )
 			{
-				if ( hand.isActive )
+				if ( hand.controller != null )
 				{
-					hand.TriggerHapticPulse( 800 );
+					hand.controller.TriggerHapticPulse( 800 );
 				}
 			}
 		}
@@ -72,9 +72,9 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( holdingHands.IndexOf( hand ) == -1 )
 			{
-				if (hand.isActive)
+				if ( hand.controller != null )
 				{
-					hand.TriggerHapticPulse( 500 );
+					hand.controller.TriggerHapticPulse( 500 );
 				}
 			}
 		}
@@ -83,17 +83,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
 		{
-            GrabTypes startingGrabType = hand.GetGrabStarting();
-
-            if (startingGrabType != GrabTypes.None)
+			if ( hand.GetStandardInteractionButtonDown() )
 			{
-				PhysicsAttach( hand, startingGrabType );
+				PhysicsAttach( hand );
 			}
 		}
 
 
 		//-------------------------------------------------
-		private void PhysicsAttach( Hand hand, GrabTypes startingGrabType )
+		private void PhysicsAttach( Hand hand )
 		{
 			PhysicsDetach( hand );
 
@@ -134,7 +132,7 @@ namespace Valve.VR.InteractionSystem
 			offset = Mathf.Min( offset.magnitude, 1.0f ) * offset.normalized;
 			holdingPoint = holdingBody.transform.InverseTransformPoint( holdingBody.worldCenterOfMass + offset );
 
-			hand.AttachObject( this.gameObject, startingGrabType, attachmentFlags );
+			hand.AttachObject( this.gameObject, attachmentFlags );
 
 			// Update holding list
 			holdingHands.Add( hand );

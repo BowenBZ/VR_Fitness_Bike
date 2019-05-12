@@ -66,7 +66,8 @@ namespace Valve.VR.InteractionSystem
 		public float drawOffset = 0.06f;
 
 		public LinearMapping bowDrawLinearMapping;
-        
+
+		private bool deferNewPoses = false;
 		private Vector3 lateUpdatePos;
 		private Quaternion lateUpdateRot;
 
@@ -87,17 +88,65 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
+		void Awake()
+		{
+			newPosesAppliedAction = SteamVR_Events.NewPosesAppliedAction( OnNewPosesApplied );
+        }
+
+
+		//-------------------------------------------------
+		void OnEnable()
+		{
+			newPosesAppliedAction.enabled = true;
+		}
+
+
+		//-------------------------------------------------
+		void OnDisable()
+		{
+			newPosesAppliedAction.enabled = false;
+		}
+
+
+		//-------------------------------------------------
+		void LateUpdate()
+		{
+			if ( deferNewPoses )
+			{
+				lateUpdatePos = transform.position;
+				lateUpdateRot = transform.rotation;
+			}
+		}
+
+
+		//-------------------------------------------------
+		private void OnNewPosesApplied()
+		{
+			if ( deferNewPoses )
+			{
+				// Set longbow object back to previous pose position to avoid jitter
+				transform.position = lateUpdatePos;
+				transform.rotation = lateUpdateRot;
+
+				deferNewPoses = false;
+			}
+		}
+
+
+		//-------------------------------------------------
 		private void HandAttachedUpdate( Hand hand )
 		{
 			// Reset transform since we cheated it right after getting poses on previous frame
-			//transform.localPosition = Vector3.zero;
-			//transform.localRotation = Quaternion.identity;
+			transform.localPosition = Vector3.zero;
+			transform.localRotation = Quaternion.identity;
 
 			// Update handedness guess
 			EvaluateHandedness();
 
 			if ( nocked )
 			{
+				deferNewPoses = true;
+
 				Vector3 nockToarrowHand = ( arrowHand.arrowNockTransform.parent.position - nockRestTransform.position ); // Vector from bow nock transform to arrowhand nock transform - used to align bow when drawing
 
 				// Align bow
@@ -142,8 +191,8 @@ namespace Valve.VR.InteractionSystem
 					if ( ( nockDistanceTravelled > ( lastTickDistance + hapticDistanceThreshold ) ) || nockDistanceTravelled < ( lastTickDistance - hapticDistanceThreshold ) )
 					{
 						ushort hapticStrength = (ushort)Util.RemapNumber( nockDistanceTravelled, 0, maxPull, bowPullPulseStrengthLow, bowPullPulseStrengthHigh );
-						hand.TriggerHapticPulse( hapticStrength );
-						hand.otherHand.TriggerHapticPulse( hapticStrength );
+						hand.controller.TriggerHapticPulse( hapticStrength );
+						hand.otherHand.controller.TriggerHapticPulse( hapticStrength );
 
 						drawSound.PlayBowTensionClicks( drawTension );
 
@@ -154,8 +203,8 @@ namespace Valve.VR.InteractionSystem
 					{
 						if ( Time.time > nextStrainTick )
 						{
-							hand.TriggerHapticPulse( 400 );
-							hand.otherHand.TriggerHapticPulse( 400 );
+							hand.controller.TriggerHapticPulse( 400 );
+							hand.otherHand.controller.TriggerHapticPulse( 400 );
 
 							drawSound.PlayBowTensionClicks( drawTension );
 
@@ -260,9 +309,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void EvaluateHandedness()
 		{
-            var handType = hand.handType;
+			Hand.HandType handType = hand.GuessCurrentHandType();
 
-			if ( handType == SteamVR_Input_Sources.LeftHand )// Bow hand is further left than arrow hand.
+			if ( handType == Hand.HandType.Left )// Bow hand is further left than arrow hand.
 			{
 				// We were considering a switch, but the current controller orientation matches our currently assigned handedness, so no longer consider a switch
 				if ( possibleHandSwitch && currentHandGuess == Handedness.Left )

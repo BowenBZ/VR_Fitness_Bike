@@ -8,7 +8,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using System.Text;
 
 namespace Valve.VR.InteractionSystem
 {
@@ -19,9 +18,7 @@ namespace Valve.VR.InteractionSystem
 		public Color flashColor = new Color( 1.0f, 0.557f, 0.0f );
 		public GameObject textHintPrefab;
 
-        public SteamVR_Action_Vibration hapticFlash = SteamVR_Input.GetAction<SteamVR_Action_Vibration>("Haptic");
-
-        [Header( "Debug" )]
+		[Header( "Debug" )]
 		public bool debugHints = false;
 
 		private SteamVR_RenderModel renderModel;
@@ -41,7 +38,7 @@ namespace Valve.VR.InteractionSystem
 		}
 
 		//Info for each of the buttons
-		private class ActionHintInfo
+		private class ButtonHintInfo
 		{
 			public string componentName;
 			public List<MeshRenderer> renderers;
@@ -63,8 +60,9 @@ namespace Valve.VR.InteractionSystem
 			public bool textHintActive = false;
 		}
 
-		private Dictionary<ISteamVR_Action_In_Source, ActionHintInfo> actionHintInfos;
+		private Dictionary<EVRButtonId, ButtonHintInfo> buttonHintInfos;
 		private Transform textHintParent;
+		private List<KeyValuePair<string, ulong>> componentButtonMasks = new List<KeyValuePair<string, ulong>>();
 
 		private int colorID;
 
@@ -73,10 +71,9 @@ namespace Valve.VR.InteractionSystem
 
 		SteamVR_Events.Action renderModelLoadedAction;
 
-        protected SteamVR_Input_Sources inputSource;
-
-        //-------------------------------------------------
-        void Awake()
+		
+		//-------------------------------------------------
+		void Awake()
 		{
 			renderModelLoadedAction = SteamVR_Events.RenderModelLoadedAction( OnRenderModelLoaded );
 			colorID = Shader.PropertyToID( "_Color" );
@@ -95,7 +92,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( debugHints )
 			{
-				Debug.Log("<b>[SteamVR Interaction]</b> Hints: " + msg );
+				Debug.Log( "Hints: " + msg );
 			}
 		}
 
@@ -124,29 +121,20 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-        public virtual void SetInputSource(SteamVR_Input_Sources newInputSource)
-        {
-            inputSource = newInputSource;
-            if (renderModel != null)
-                renderModel.SetInputSource(newInputSource);
-        }
-
-        //-------------------------------------------------
-        // Gets called when the hand has been initialized and a render model has been set
-        //-------------------------------------------------
-        private void OnHandInitialized(int deviceIndex)
-        {
+		//-------------------------------------------------
+		// Gets called when the hand has been initialized and a render model has been set
+		//-------------------------------------------------
+		private void OnHandInitialized( int deviceIndex )
+		{
 			//Create a new render model for the controller hints
 			renderModel = new GameObject( "SteamVR_RenderModel" ).AddComponent<SteamVR_RenderModel>();
 			renderModel.transform.parent = transform;
 			renderModel.transform.localPosition = Vector3.zero;
 			renderModel.transform.localRotation = Quaternion.identity;
 			renderModel.transform.localScale = Vector3.one;
+			renderModel.SetDeviceIndex( deviceIndex );
 
-            renderModel.SetInputSource(inputSource);
-            renderModel.SetDeviceIndex(deviceIndex);
-
-            if ( !initialized )
+			if ( !initialized )
 			{
 				//The controller hint render model needs to be active to get accurate transforms for all the individual components
 				renderModel.gameObject.SetActive( true );
@@ -154,154 +142,113 @@ namespace Valve.VR.InteractionSystem
 		}
 
 
-        private Dictionary<string, Transform> componentTransformMap = new Dictionary<string, Transform>();
+		//-------------------------------------------------
+		void OnRenderModelLoaded( SteamVR_RenderModel renderModel, bool succeess )
+		{
+			//Only initialize when the render model for the controller hints has been loaded
+			if ( renderModel == this.renderModel )
+			{
+				textHintParent = new GameObject( "Text Hints" ).transform;
+				textHintParent.SetParent( this.transform );
+				textHintParent.localPosition = Vector3.zero;
+				textHintParent.localRotation = Quaternion.identity;
+				textHintParent.localScale = Vector3.one;
 
-        //-------------------------------------------------
-        void OnRenderModelLoaded(SteamVR_RenderModel renderModel, bool succeess)
-        {
-            //Only initialize when the render model for the controller hints has been loaded
-            if (renderModel == this.renderModel)
-            {
-                //Debug.Log("<b>[SteamVR Interaction]</b> OnRenderModelLoaded: " + this.renderModel.renderModelName);
-                if (initialized)
-                {
-                    Destroy(textHintParent.gameObject);
-                    componentTransformMap.Clear();
-                    flashingRenderers.Clear();
-                }
+				//Get the button mask for each component of the render model
+				using ( var holder = new SteamVR_RenderModel.RenderModelInterfaceHolder() )
+				{
+					var renderModels = holder.instance;
+					if ( renderModels != null )
+					{
+						string renderModelDebug = "Components for render model " + renderModel.index;
+						foreach ( Transform child in renderModel.transform )
+						{
+							ulong buttonMask = renderModels.GetComponentButtonMask( renderModel.renderModelName, child.name );
 
-                renderModel.SetMeshRendererState(false);
+							componentButtonMasks.Add( new KeyValuePair<string, ulong>( child.name, buttonMask ) );
 
-                StartCoroutine(DoInitialize(renderModel));
-            }
-        }
-        private IEnumerator DoInitialize(SteamVR_RenderModel renderModel)
-        {
-            while (renderModel.initializedAttachPoints == false)
-                yield return null;
+							renderModelDebug += "\n\t" + child.name + ": " + buttonMask;
+						}
 
-            textHintParent = new GameObject("Text Hints").transform;
-            textHintParent.SetParent(this.transform);
-            textHintParent.localPosition = Vector3.zero;
-            textHintParent.localRotation = Quaternion.identity;
-            textHintParent.localScale = Vector3.one;
+						//Uncomment to show the button mask for each component of the render model
+						HintDebugLog( renderModelDebug );
+					}
+				}
 
-            //Get the button mask for each component of the render model
-            
-            var renderModels = OpenVR.RenderModels;
-            if (renderModels != null)
-            {
-                string renderModelDebug = "";
+				buttonHintInfos = new Dictionary<EVRButtonId, ButtonHintInfo>();
 
-                if (debugHints)
-                    renderModelDebug = "Components for render model " + renderModel.index;
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_SteamVR_Trigger );
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_ApplicationMenu );
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_System );
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_Grip );
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_SteamVR_Touchpad );
+				CreateAndAddButtonInfo( EVRButtonId.k_EButton_A );
 
-                for (int childIndex = 0; childIndex < renderModel.transform.childCount; childIndex++)
-                {
-                    Transform child = renderModel.transform.GetChild(childIndex);
+				ComputeTextEndTransforms();
 
-                    if (componentTransformMap.ContainsKey(child.name))
-                    {
-                        if (debugHints)
-                            renderModelDebug += "\n\t!    Child component already exists with name: " + child.name;
-                    }
-                    else
-                        componentTransformMap.Add(child.name, child);
+				initialized = true;
 
-                    if (debugHints)
-                        renderModelDebug += "\n\t" + child.name + ".";
-                }
-
-                //Uncomment to show the button mask for each component of the render model
-                HintDebugLog(renderModelDebug);
-            }
-
-            actionHintInfos = new Dictionary<ISteamVR_Action_In_Source, ActionHintInfo>();
-
-            for (int actionIndex = 0; actionIndex < SteamVR_Input.actionsNonPoseNonSkeletonIn.Length; actionIndex++)
-            {
-                ISteamVR_Action_In action = SteamVR_Input.actionsNonPoseNonSkeletonIn[actionIndex];
-
-                if (action.GetActive(inputSource))
-                    CreateAndAddButtonInfo(action, inputSource);
-            }
-
-            ComputeTextEndTransforms();
-
-            initialized = true;
-
-            //Set the controller hints render model to not active
-            renderModel.SetMeshRendererState(true);
-            renderModel.gameObject.SetActive(false);
-        }
+				//Set the controller hints render model to not active
+				renderModel.gameObject.SetActive( false );
+			}
+		}
 
 
 		//-------------------------------------------------
-		private void CreateAndAddButtonInfo(ISteamVR_Action_In action, SteamVR_Input_Sources inputSource)
+		private void CreateAndAddButtonInfo( EVRButtonId buttonID )
 		{
 			Transform buttonTransform = null;
 			List<MeshRenderer> buttonRenderers = new List<MeshRenderer>();
 
-            StringBuilder buttonDebug = new StringBuilder();
-            buttonDebug.Append("Looking for action: ");
+			string buttonDebug = "Looking for button: " + buttonID;
 
-            buttonDebug.AppendLine(action.GetShortName());
-
-            buttonDebug.Append("Action localized origin: ");
-            buttonDebug.AppendLine(action.GetLocalizedOrigin(inputSource));
-
-            string actionComponentName = action.GetRenderModelComponentName(inputSource);
-
-            if (componentTransformMap.ContainsKey(actionComponentName))
-            {
-                buttonDebug.AppendLine(string.Format("Found component: {0} for {1}", actionComponentName, action.GetShortName()));
-                Transform componentTransform = componentTransformMap[actionComponentName];
-
-                buttonTransform = componentTransform;
-
-                buttonDebug.AppendLine(string.Format("Found componentTransform: {0}. buttonTransform: {1}", componentTransform, buttonTransform));
-
-                buttonRenderers.AddRange(componentTransform.GetComponentsInChildren<MeshRenderer>());
-            }
-            else
-            {
-                buttonDebug.AppendLine(string.Format("Can't find component transform for action: {0}. Component name: \"{1}\"", action.GetShortName(), actionComponentName));
-            }
-
-            buttonDebug.AppendLine(string.Format("Found {0} renderers for {1}", buttonRenderers.Count, action.GetShortName()));
-
-			foreach ( MeshRenderer renderer in buttonRenderers )
+			EVRButtonId searchButtonID = buttonID;
+			if ( buttonID == EVRButtonId.k_EButton_Grip && SteamVR.instance.hmd_TrackingSystemName.ToLowerInvariant().Contains( "oculus" ) )
 			{
-                buttonDebug.Append("\t");
-                buttonDebug.AppendLine(renderer.name);
+				searchButtonID = EVRButtonId.k_EButton_Axis2;
+			}
+			ulong buttonMaskForID = ( 1ul << (int)searchButtonID );
+
+			foreach ( KeyValuePair<string, ulong> componentButtonMask in componentButtonMasks )
+			{
+				if ( ( componentButtonMask.Value & buttonMaskForID ) == buttonMaskForID )
+				{
+					buttonDebug += "\nFound component: " + componentButtonMask.Key + " " + componentButtonMask.Value;
+					Transform componentTransform = renderModel.FindComponent( componentButtonMask.Key );
+
+					buttonTransform = componentTransform;
+
+					buttonDebug += "\nFound componentTransform: " + componentTransform + " buttonTransform: " + buttonTransform;
+
+					buttonRenderers.AddRange( componentTransform.GetComponentsInChildren<MeshRenderer>() );
+				}
 			}
 
-			HintDebugLog( buttonDebug.ToString() );
+			buttonDebug += "\nFound " + buttonRenderers.Count + " renderers for " + buttonID;
+			foreach ( MeshRenderer renderer in buttonRenderers )
+			{
+				buttonDebug += "\n\t" + renderer.name;
+			}
+
+			HintDebugLog( buttonDebug );
 
 			if ( buttonTransform == null )
 			{
-				HintDebugLog( "Couldn't find buttonTransform for " + action.GetShortName());
+				HintDebugLog( "Couldn't find buttonTransform for " + buttonID );
 				return;
 			}
 
-			ActionHintInfo hintInfo = new ActionHintInfo();
-			actionHintInfos.Add( action, hintInfo );
+			ButtonHintInfo hintInfo = new ButtonHintInfo();
+			buttonHintInfos.Add( buttonID, hintInfo );
 
 			hintInfo.componentName = buttonTransform.name;
 			hintInfo.renderers = buttonRenderers;
 
 			//Get the local transform for the button
-            for (int childIndex = 0; childIndex < buttonTransform.childCount; childIndex++)
-            {
-                Transform child = buttonTransform.GetChild(childIndex);
-                if (child.name == SteamVR_RenderModel.k_localTransformName)
-                    hintInfo.localTransform = child;
-            }
+			hintInfo.localTransform = buttonTransform.Find( SteamVR_RenderModel.k_localTransformName );
 
 			OffsetType offsetType = OffsetType.Right;
-
-            /*
-            switch ( buttonID )
+			switch ( buttonID )
 			{
 				case EVRButtonId.k_EButton_SteamVR_Trigger:
 					{
@@ -329,10 +276,9 @@ namespace Valve.VR.InteractionSystem
 					}
 					break;
 			}
-            */
 
-            //Offset for the text end transform
-            switch ( offsetType )
+			//Offset for the text end transform
+			switch ( offsetType )
 			{
 				case OffsetType.Forward:
 					hintInfo.textEndOffsetDir = hintInfo.localTransform.forward;
@@ -395,10 +341,10 @@ namespace Valve.VR.InteractionSystem
 			//This is done as a separate step after all the ButtonHintInfos have been initialized
 			//to make the text hints fan out appropriately based on the button's position on the controller.
 
-			centerPosition /= actionHintInfos.Count;
+			centerPosition /= buttonHintInfos.Count;
 			float maxDistanceFromCenter = 0.0f;
 
-			foreach ( var hintInfo in actionHintInfos )
+			foreach ( var hintInfo in buttonHintInfos )
 			{
 				hintInfo.Value.distanceFromCenter = Vector3.Distance( hintInfo.Value.textStartAnchor.position, centerPosition );
 
@@ -408,7 +354,7 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 
-			foreach ( var hintInfo in actionHintInfos )
+			foreach ( var hintInfo in buttonHintInfos )
 			{
 				Vector3 centerToButton = hintInfo.Value.textStartAnchor.position - centerPosition;
 				centerToButton.Normalize();
@@ -423,24 +369,16 @@ namespace Valve.VR.InteractionSystem
 				float endPosOffset = 0.1f;
 
 				Vector3 hintEndPos = hintInfo.Value.textStartAnchor.position + ( hintInfo.Value.textEndOffsetDir * endPosOffset ) + ( centerToButton * scale * 0.1f );
+				hintInfo.Value.textEndAnchor.position = hintEndPos;
 
-                if (SteamVR_Utils.IsValid(hintEndPos))
-                {
-                    hintInfo.Value.textEndAnchor.position = hintEndPos;
-
-                    hintInfo.Value.canvasOffset.position = hintEndPos;
-                }
-                else
-                {
-                    Debug.LogWarning("<b>[SteamVR Interaction]</b> Invalid end position for: " + hintInfo.Value.textStartAnchor.name, hintInfo.Value.textStartAnchor.gameObject);
-                }
+				hintInfo.Value.canvasOffset.position = hintEndPos;
 				hintInfo.Value.canvasOffset.localRotation = Quaternion.identity;
 			}
 		}
 
 
 		//-------------------------------------------------
-		private void ShowButtonHint( params ISteamVR_Action_In_Source[] actions )
+		private void ShowButtonHint( params EVRButtonId[] buttons )
 		{
 			renderModel.gameObject.SetActive( true );
 
@@ -455,11 +393,11 @@ namespace Valve.VR.InteractionSystem
 				renderers[i].material.renderQueue = controllerMaterial.shader.renderQueue;
 			}
 
-			for ( int i = 0; i < actions.Length; i++ )
+			for ( int i = 0; i < buttons.Length; i++ )
 			{
-				if ( actionHintInfos.ContainsKey( actions[i] ) )
+				if ( buttonHintInfos.ContainsKey( buttons[i] ) )
 				{
-					ActionHintInfo hintInfo = actionHintInfos[actions[i]];
+					ButtonHintInfo hintInfo = buttonHintInfos[buttons[i]];
 					foreach ( MeshRenderer renderer in hintInfo.renderers )
 					{
 						if ( !flashingRenderers.Contains( renderer ) )
@@ -480,20 +418,19 @@ namespace Valve.VR.InteractionSystem
 		{
 			Clear();
 
-            if (renderModel != null && renderModel.gameObject != null)
-			    renderModel.gameObject.SetActive( false );
+			renderModel.gameObject.SetActive( false );
 		}
 
 
 		//-------------------------------------------------
-		private void HideButtonHint( params ISteamVR_Action_In_Source[] actions )
+		private void HideButtonHint( params EVRButtonId[] buttons )
 		{
 			Color baseColor = controllerMaterial.GetColor( colorID );
-			for ( int i = 0; i < actions.Length; i++ )
+			for ( int i = 0; i < buttons.Length; i++ )
 			{
-				if ( actionHintInfos.ContainsKey(actions[i] ) )
+				if ( buttonHintInfos.ContainsKey( buttons[i] ) )
 				{
-					ActionHintInfo hintInfo = actionHintInfos[actions[i]];
+					ButtonHintInfo hintInfo = buttonHintInfos[buttons[i]];
 					foreach ( MeshRenderer renderer in hintInfo.renderers )
 					{
 						renderer.material.color = baseColor;
@@ -512,11 +449,11 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private bool IsButtonHintActive(ISteamVR_Action_In_Source action )
+		private bool IsButtonHintActive( EVRButtonId button )
 		{
-			if ( actionHintInfos.ContainsKey(action) )
+			if ( buttonHintInfos.ContainsKey( button ) )
 			{
-				ActionHintInfo hintInfo = actionHintInfos[action];
+				ButtonHintInfo hintInfo = buttonHintInfos[button];
 				foreach ( MeshRenderer buttonRenderer in hintInfo.renderers )
 				{
 					if ( flashingRenderers.Contains( buttonRenderer ) )
@@ -535,16 +472,16 @@ namespace Valve.VR.InteractionSystem
 		{
 			while ( true )
 			{
-                for (int actionIndex = 0; actionIndex < SteamVR_Input.actionsNonPoseNonSkeletonIn.Length; actionIndex++)
-                {
-                    ISteamVR_Action_In action = SteamVR_Input.actionsNonPoseNonSkeletonIn[actionIndex];
-                    if (action.GetActive(inputSource))
-                    {
-                        ShowButtonHint(action);
-                        yield return new WaitForSeconds(1.0f);
-                    }
-                    yield return null;
-                }
+				ShowButtonHint( EVRButtonId.k_EButton_SteamVR_Trigger );
+				yield return new WaitForSeconds( 1.0f );
+				ShowButtonHint( EVRButtonId.k_EButton_ApplicationMenu );
+				yield return new WaitForSeconds( 1.0f );
+				ShowButtonHint( EVRButtonId.k_EButton_System );
+				yield return new WaitForSeconds( 1.0f );
+				ShowButtonHint( EVRButtonId.k_EButton_Grip );
+				yield return new WaitForSeconds( 1.0f );
+				ShowButtonHint( EVRButtonId.k_EButton_SteamVR_Touchpad );
+				yield return new WaitForSeconds( 1.0f );
 			}
 		}
 
@@ -553,17 +490,17 @@ namespace Valve.VR.InteractionSystem
 		private IEnumerator TestTextHints()
 		{
 			while ( true )
-            {
-                for (int actionIndex = 0; actionIndex < SteamVR_Input.actionsNonPoseNonSkeletonIn.Length; actionIndex++)
-                {
-                    ISteamVR_Action_In action = SteamVR_Input.actionsNonPoseNonSkeletonIn[actionIndex];
-                    if (action.GetActive(inputSource))
-                    {
-                        ShowText(action, action.GetShortName());
-                        yield return new WaitForSeconds(3.0f);
-                    }
-                    yield return null;
-                }
+			{
+				ShowText( EVRButtonId.k_EButton_SteamVR_Trigger, "Trigger" );
+				yield return new WaitForSeconds( 3.0f );
+				ShowText( EVRButtonId.k_EButton_ApplicationMenu, "Application" );
+				yield return new WaitForSeconds( 3.0f );
+				ShowText( EVRButtonId.k_EButton_System, "System" );
+				yield return new WaitForSeconds( 3.0f );
+				ShowText( EVRButtonId.k_EButton_Grip, "Grip" );
+				yield return new WaitForSeconds( 3.0f );
+				ShowText( EVRButtonId.k_EButton_SteamVR_Touchpad, "Touchpad" );
+				yield return new WaitForSeconds( 3.0f );
 
 				HideAllText();
 				yield return new WaitForSeconds( 3.0f );
@@ -586,7 +523,11 @@ namespace Valve.VR.InteractionSystem
 				if ( ticks - tickCount > 1.0f )
 				{
 					tickCount += 1.0f;
-                    hapticFlash.Execute(0, 0.005f, 0.005f, 1, inputSource);
+					SteamVR_Controller.Device device = SteamVR_Controller.Input( (int)renderModel.index );
+					if ( device != null )
+					{
+						device.TriggerHapticPulse();
+					}
 				}
 
 				for ( int i = 0; i < flashingRenderers.Count; i++ )
@@ -597,7 +538,7 @@ namespace Valve.VR.InteractionSystem
 
 				if ( initialized )
 				{
-					foreach ( var hintInfo in actionHintInfos )
+					foreach ( var hintInfo in buttonHintInfos )
 					{
 						if ( hintInfo.Value.textHintActive )
 						{
@@ -610,7 +551,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void UpdateTextHint( ActionHintInfo hintInfo )
+		private void UpdateTextHint( ButtonHintInfo hintInfo )
 		{
 			Transform playerTransform = player.hmdTransform;
 			Vector3 vDir = playerTransform.position - hintInfo.canvasOffset.position;
@@ -647,11 +588,11 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void ShowText(ISteamVR_Action_In_Source action, string text, bool highlightButton = true )
-        {
-            if ( actionHintInfos.ContainsKey(action) )
-            {
-                ActionHintInfo hintInfo = actionHintInfos[action];
+		private void ShowText( EVRButtonId button, string text, bool highlightButton = true )
+		{
+			if ( buttonHintInfos.ContainsKey( button ) )
+			{
+				ButtonHintInfo hintInfo = buttonHintInfos[button];
 				hintInfo.textHintObject.SetActive( true );
 				hintInfo.textHintActive = true;
 
@@ -669,7 +610,7 @@ namespace Valve.VR.InteractionSystem
 
 				if ( highlightButton )
 				{
-					ShowButtonHint(action);
+					ShowButtonHint( button );
 				}
 
 				renderModel.gameObject.SetActive( true );
@@ -678,15 +619,15 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void HideText(ISteamVR_Action_In_Source action)
+		private void HideText( EVRButtonId button )
 		{
-			if ( actionHintInfos.ContainsKey(action) )
+			if ( buttonHintInfos.ContainsKey( button ) )
 			{
-				ActionHintInfo hintInfo = actionHintInfos[action];
+				ButtonHintInfo hintInfo = buttonHintInfos[button];
 				hintInfo.textHintObject.SetActive( false );
 				hintInfo.textHintActive = false;
 
-				HideButtonHint(action);
+				HideButtonHint( button );
 			}
 		}
 
@@ -694,26 +635,22 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void HideAllText()
 		{
-            if (actionHintInfos != null)
-            {
+			foreach ( var hintInfo in buttonHintInfos )
+			{
+				hintInfo.Value.textHintObject.SetActive( false );
+				hintInfo.Value.textHintActive = false;
+			}
 
-                foreach (var hintInfo in actionHintInfos)
-                {
-                    hintInfo.Value.textHintObject.SetActive(false);
-                    hintInfo.Value.textHintActive = false;
-                }
-
-                HideAllButtonHints();
-            }
+			HideAllButtonHints();
 		}
 
 
 		//-------------------------------------------------
-		private string GetActiveHintText(ISteamVR_Action_In_Source action )
+		private string GetActiveHintText( EVRButtonId button )
 		{
-			if ( actionHintInfos.ContainsKey(action) )
+			if ( buttonHintInfos.ContainsKey( button ) )
 			{
-				ActionHintInfo hintInfo = actionHintInfos[action];
+				ButtonHintInfo hintInfo = buttonHintInfos[button];
 				if ( hintInfo.textHintActive )
 				{
 					return hintInfo.text.text;
@@ -744,23 +681,23 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public static void ShowButtonHint( Hand hand, params ISteamVR_Action_In_Source[] actions )
+		public static void ShowButtonHint( Hand hand, params EVRButtonId[] buttons )
 		{
 			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				hints.ShowButtonHint( actions );
+				hints.ShowButtonHint( buttons );
 			}
 		}
 
 
 		//-------------------------------------------------
-		public static void HideButtonHint( Hand hand, params ISteamVR_Action_In_Source[] actions )
+		public static void HideButtonHint( Hand hand, params EVRButtonId[] buttons )
 		{
 			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				hints.HideButtonHint( actions );
+				hints.HideButtonHint( buttons );
 			}
 		}
 
@@ -777,12 +714,12 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public static bool IsButtonHintActive( Hand hand, ISteamVR_Action_In_Source action )
+		public static bool IsButtonHintActive( Hand hand, EVRButtonId button )
 		{
 			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				return hints.IsButtonHintActive(action);
+				return hints.IsButtonHintActive( button );
 			}
 
 			return false;
@@ -790,23 +727,23 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public static void ShowTextHint( Hand hand, ISteamVR_Action_In_Source action, string text, bool highlightButton = true )
-        {
-            ControllerButtonHints hints = GetControllerButtonHints( hand );
+		public static void ShowTextHint( Hand hand, EVRButtonId button, string text, bool highlightButton = true )
+		{
+			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				hints.ShowText(action, text, highlightButton );
+				hints.ShowText( button, text, highlightButton );
 			}
 		}
 
 
 		//-------------------------------------------------
-		public static void HideTextHint( Hand hand, ISteamVR_Action_In_Source action)
+		public static void HideTextHint( Hand hand, EVRButtonId button )
 		{
 			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				hints.HideText(action);
+				hints.HideText( button );
 			}
 		}
 
@@ -823,12 +760,12 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		public static string GetActiveHintText( Hand hand, ISteamVR_Action_In_Source action)
+		public static string GetActiveHintText( Hand hand, EVRButtonId button )
 		{
 			ControllerButtonHints hints = GetControllerButtonHints( hand );
 			if ( hints != null )
 			{
-				return hints.GetActiveHintText(action);
+				return hints.GetActiveHintText( button );
 			}
 
 			return string.Empty;

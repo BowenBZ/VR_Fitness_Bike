@@ -32,7 +32,7 @@ Shader "Valve/VR/SeeThru"
 
 			CGPROGRAM
 				#pragma target 5.0
-				#pragma only_renderers d3d11 vulkan glcore
+				#pragma only_renderers d3d11 vulkan
 				#pragma exclude_renderers gles
 
 				#pragma vertex MainVS

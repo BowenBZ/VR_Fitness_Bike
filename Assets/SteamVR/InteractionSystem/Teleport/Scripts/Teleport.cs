@@ -12,10 +12,8 @@ namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	public class Teleport : MonoBehaviour
-    {
-        public SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
-
-        public LayerMask traceLayerMask;
+	{
+		public LayerMask traceLayerMask;
 		public LayerMask floorFixupTraceLayerMask;
 		public float floorFixupMaximumTraceDistance = 1.0f;
 		public Material areaVisibleMaterial;
@@ -141,8 +139,8 @@ namespace Valve.VR.InteractionSystem
 
 		//-------------------------------------------------
 		void Awake()
-        {
-            _instance = this;
+		{
+			_instance = this;
 
 			chaperoneInfoInitializedAction = ChaperoneInfo.InitializedAction( OnChaperoneInfoInitialized );
 
@@ -168,8 +166,8 @@ namespace Valve.VR.InteractionSystem
 
 		//-------------------------------------------------
 		void Start()
-        {
-            teleportMarkers = GameObject.FindObjectsOfType<TeleportMarkerBase>();
+		{
+			teleportMarkers = GameObject.FindObjectsOfType<TeleportMarkerBase>();
 
 			HidePointer();
 
@@ -177,7 +175,7 @@ namespace Valve.VR.InteractionSystem
 
 			if ( player == null )
 			{
-				Debug.LogError("<b>[SteamVR Interaction]</b> Teleport: No Player instance found in map.");
+				Debug.LogError( "Teleport: No Player instance found in map." );
 				Destroy( this.gameObject );
 				return;
 			}
@@ -793,15 +791,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void PlayPointerHaptic( bool validLocation )
 		{
-			if ( pointerHand != null )
+			if ( pointerHand.controller != null )
 			{
 				if ( validLocation )
 				{
-					pointerHand.TriggerHapticPulse( 800 );
+					pointerHand.controller.TriggerHapticPulse( 800 );
 				}
 				else
 				{
-					pointerHand.TriggerHapticPulse( 100 );
+					pointerHand.controller.TriggerHapticPulse( 100 );
 				}
 			}
 		}
@@ -953,9 +951,11 @@ namespace Valve.VR.InteractionSystem
 		public void CancelTeleportHint()
 		{
 			if ( hintCoroutine != null )
-            {
-                ControllerButtonHints.HideTextHint(player.leftHand, teleportAction);
-                ControllerButtonHints.HideTextHint(player.rightHand, teleportAction);
+			{
+				foreach ( Hand hand in player.hands )
+				{
+					ControllerButtonHints.HideTextHint( hand, EVRButtonId.k_EButton_SteamVR_Touchpad );
+				}
 
 				StopCoroutine( hintCoroutine );
 				hintCoroutine = null;
@@ -979,12 +979,12 @@ namespace Valve.VR.InteractionSystem
 				foreach ( Hand hand in player.hands )
 				{
 					bool showHint = IsEligibleForTeleport( hand );
-					bool isShowingHint = !string.IsNullOrEmpty( ControllerButtonHints.GetActiveHintText( hand, teleportAction) );
+					bool isShowingHint = !string.IsNullOrEmpty( ControllerButtonHints.GetActiveHintText( hand, EVRButtonId.k_EButton_SteamVR_Touchpad ) );
 					if ( showHint )
 					{
 						if ( !isShowingHint )
 						{
-							ControllerButtonHints.ShowTextHint( hand, teleportAction, "Teleport" );
+							ControllerButtonHints.ShowTextHint( hand, EVRButtonId.k_EButton_SteamVR_Touchpad, "Teleport" );
 							prevBreakTime = Time.time;
 							prevHapticPulseTime = Time.time;
 						}
@@ -994,12 +994,12 @@ namespace Valve.VR.InteractionSystem
 							//Haptic pulse for a few seconds
 							pulsed = true;
 
-							hand.TriggerHapticPulse( 500 );
+							hand.controller.TriggerHapticPulse( 500 );
 						}
 					}
 					else if ( !showHint && isShowingHint )
 					{
-						ControllerButtonHints.HideTextHint( hand, teleportAction);
+						ControllerButtonHints.HideTextHint( hand, EVRButtonId.k_EButton_SteamVR_Touchpad );
 					}
 				}
 
@@ -1041,7 +1041,7 @@ namespace Valve.VR.InteractionSystem
 
 			if ( hand.noSteamVRFallbackCamera == null )
 			{
-				if ( hand.isActive == false)
+				if ( hand.controller == null )
 				{
 					return false;
 				}
@@ -1088,15 +1088,14 @@ namespace Valve.VR.InteractionSystem
 					return Input.GetKeyUp( KeyCode.T );
 				}
 				else
-                {
-                    return teleportAction.GetStateUp(hand.handType);
-
-                    //return hand.controller.GetPressUp( SteamVR_Controller.ButtonMask.Touchpad );
-                }
+				{
+					return hand.controller.GetPressUp( SteamVR_Controller.ButtonMask.Touchpad );
+				}
 			}
 
 			return false;
 		}
+
 
 		//-------------------------------------------------
 		private bool IsTeleportButtonDown( Hand hand )
@@ -1108,8 +1107,8 @@ namespace Valve.VR.InteractionSystem
 					return Input.GetKey( KeyCode.T );
 				}
 				else
-                {
-                    return teleportAction.GetState(hand.handType);
+				{
+					return hand.controller.GetPress( SteamVR_Controller.ButtonMask.Touchpad );
 				}
 			}
 
@@ -1127,10 +1126,8 @@ namespace Valve.VR.InteractionSystem
 					return Input.GetKeyDown( KeyCode.T );
 				}
 				else
-                {
-                    return teleportAction.GetStateDown(hand.handType);
-
-                    //return hand.controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad );
+				{
+					return hand.controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad );
 				}
 			}
 
@@ -1147,7 +1144,7 @@ namespace Valve.VR.InteractionSystem
 			}
 			else
 			{
-				return hand.transform;
+				return pointerHand.GetAttachmentTransform( "Attach_ControllerTip" );
 			}
 		}
 	}

@@ -37,12 +37,13 @@ namespace Valve.VR.InteractionSystem
 		private bool useFadedPreview = false;
 		private GameObject previewObject;
 
-		public bool requireGrabActionToTake = false;
-		public bool requireReleaseActionToReturn = false;
+		public bool requireTriggerPressToTake = false;
+		public bool requireTriggerPressToReturn = false;
 		public bool showTriggerHint = false;
 
 		[EnumFlags]
 		public Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags;
+		public string attachmentPoint;
 
 		public bool takeBackItem = false; // if a hand enters this trigger and has the item this spawner dispenses at the top of the stack, remove it from the stack
 
@@ -121,7 +122,7 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void ItemPackageNotValid()
 		{
-			Debug.LogError("<b>[SteamVR Interaction]</b> ItemPackage assigned to " + gameObject.name + " is not valid. Destroying this game object." );
+			Debug.LogError( "ItemPackage assigned to " + gameObject.name + " is not valid. Destroying this game object." );
 			Destroy( gameObject );
 		}
 
@@ -163,20 +164,20 @@ namespace Valve.VR.InteractionSystem
 
 			if ( currentAttachedItemPackage == itemPackage ) // the item at the top of the hand's stack has an associated ItemPackage
 			{
-				if ( takeBackItem && !requireReleaseActionToReturn ) // if we want to take back matching items and aren't waiting for a trigger press
+				if ( takeBackItem && !requireTriggerPressToReturn ) // if we want to take back matching items and aren't waiting for a trigger press
 				{
 					TakeBackItem( hand );
 				}
 			}
 
-			if (!requireGrabActionToTake) // we don't require trigger press for pickup. Spawn and attach object.
+			if ( !requireTriggerPressToTake ) // we don't require trigger press for pickup. Spawn and attach object.
 			{
-				SpawnAndAttachObject( hand, GrabTypes.Scripted );
+				SpawnAndAttachObject( hand );
 			}
 
-			if (requireGrabActionToTake && showTriggerHint )
+			if ( requireTriggerPressToTake && showTriggerHint )
 			{
-                hand.ShowGrabHint("PickUp");
+				ControllerButtonHints.ShowTextHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger, "PickUp" );
 			}
 		}
 
@@ -218,12 +219,12 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
 		{
-			if ( takeBackItem && requireReleaseActionToReturn )
+			if ( takeBackItem && requireTriggerPressToReturn )
 			{
-                if (hand.isActive)
+				if ( hand.controller != null && hand.controller.GetHairTriggerDown() )
 				{
 					ItemPackage currentAttachedItemPackage = GetAttachedItemPackage( hand );
-                    if (currentAttachedItemPackage == itemPackage && hand.IsGrabEnding(currentAttachedItemPackage.gameObject))
+					if ( currentAttachedItemPackage == itemPackage )
 					{
 						TakeBackItem( hand );
 						return; // So that we don't pick up an ItemPackage the same frame that we return it
@@ -231,13 +232,11 @@ namespace Valve.VR.InteractionSystem
 				}
 			}
 
-			if ( requireGrabActionToTake )
+			if ( requireTriggerPressToTake )
 			{
-                GrabTypes startingGrab = hand.GetGrabStarting();
-
-				if (startingGrab != GrabTypes.None)
+				if ( hand.controller != null && hand.controller.GetHairTriggerDown() )
 				{
-					SpawnAndAttachObject( hand, GrabTypes.Scripted);
+					SpawnAndAttachObject( hand );
 				}
 			}
 		}
@@ -246,9 +245,9 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandHoverEnd( Hand hand )
 		{
-			if ( !justPickedUpItem && requireGrabActionToTake && showTriggerHint )
+			if ( !justPickedUpItem && requireTriggerPressToTake && showTriggerHint )
 			{
-                hand.HideGrabHint();
+				ControllerButtonHints.HideTextHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
 			}
 
 			justPickedUpItem = false;
@@ -258,9 +257,6 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void RemoveMatchingItemsFromHandStack( ItemPackage package, Hand hand )
 		{
-            if (hand == null)
-                return;
-
 			for ( int i = 0; i < hand.AttachedObjects.Count; i++ )
 			{
 				ItemPackageReference packageReference = hand.AttachedObjects[i].attachedObject.GetComponent<ItemPackageReference>();
@@ -296,7 +292,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void SpawnAndAttachObject( Hand hand, GrabTypes grabType )
+		private void SpawnAndAttachObject( Hand hand )
 		{
 			if ( hand.otherHand != null )
 			{
@@ -310,15 +306,15 @@ namespace Valve.VR.InteractionSystem
 
 			if ( showTriggerHint )
 			{
-                hand.HideGrabHint();
+				ControllerButtonHints.HideTextHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
 			}
 
 			if ( itemPackage.otherHandItemPrefab != null )
 			{
 				if ( hand.otherHand.hoverLocked )
 				{
-                    Debug.Log( "<b>[SteamVR Interaction]</b> Not attaching objects because other hand is hoverlocked and we can't deliver both items." );
-                    return;
+					//Debug.Log( "Not attaching objects because other hand is hoverlocked and we can't deliver both items." );
+					return;
 				}
 			}
 
@@ -341,13 +337,13 @@ namespace Valve.VR.InteractionSystem
 
 			spawnedItem = GameObject.Instantiate( itemPackage.itemPrefab );
 			spawnedItem.SetActive( true );
-			hand.AttachObject( spawnedItem, grabType, attachmentFlags );
+			hand.AttachObject( spawnedItem, attachmentFlags, attachmentPoint );
 
-			if ( ( itemPackage.otherHandItemPrefab != null ) && ( hand.otherHand.isActive ) )
+			if ( ( itemPackage.otherHandItemPrefab != null ) && ( hand.otherHand.controller != null ) )
 			{
 				GameObject otherHandObjectToAttach = GameObject.Instantiate( itemPackage.otherHandItemPrefab );
 				otherHandObjectToAttach.SetActive( true );
-				hand.otherHand.AttachObject( otherHandObjectToAttach, grabType, attachmentFlags );
+				hand.otherHand.AttachObject( otherHandObjectToAttach, attachmentFlags );
 			}
 
 			itemIsSpawned = true;

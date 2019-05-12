@@ -101,9 +101,7 @@ namespace Valve.VR.InteractionSystem
 		private Vector3 frozenHandWorldPos = new Vector3( 0.0f, 0.0f, 0.0f );
 		private Vector2 frozenSqDistanceMinMaxThreshold = new Vector2( 0.0f, 0.0f );
 
-		private Hand handHoverLocked = null;
-
-        private Interactable interactable;
+		Hand handHoverLocked = null;
 
 		//-------------------------------------------------
 		private void Freeze( Hand hand )
@@ -123,13 +121,9 @@ namespace Valve.VR.InteractionSystem
 			frozenHandWorldPos.Set( 0.0f, 0.0f, 0.0f );
 		}
 
-        private void Awake()
-        {
-            interactable = this.GetComponent<Interactable>();
-        }
 
-        //-------------------------------------------------
-        private void Start()
+		//-------------------------------------------------
+		void Start()
 		{
 			if ( childCollider == null )
 			{
@@ -187,29 +181,25 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( handHoverLocked )
 			{
-                handHoverLocked.HideGrabHint();
-				handHoverLocked.HoverUnlock(interactable);
+				ControllerButtonHints.HideButtonHint( handHoverLocked, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
+				handHoverLocked.HoverUnlock( GetComponent<Interactable>() );
 				handHoverLocked = null;
 			}
 		}
 
 
 		//-------------------------------------------------
-		private IEnumerator HapticPulses( Hand hand, float flMagnitude, int nCount )
+		private IEnumerator HapticPulses( SteamVR_Controller.Device controller, float flMagnitude, int nCount )
 		{
-			if ( hand != null )
+			if ( controller != null )
 			{
 				int nRangeMax = (int)Util.RemapNumberClamped( flMagnitude, 0.0f, 1.0f, 100.0f, 900.0f );
 				nCount = Mathf.Clamp( nCount, 1, 10 );
 
-                //float hapticDuration = nRangeMax * nCount;
-
-                //hand.TriggerHapticPulse(hapticDuration, nRangeMax, flMagnitude);
-
 				for ( ushort i = 0; i < nCount; ++i )
 				{
 					ushort duration = (ushort)Random.Range( 100, nRangeMax );
-					hand.TriggerHapticPulse( duration );
+					controller.TriggerHapticPulse( duration );
 					yield return new WaitForSeconds( .01f );
 				}
 			}
@@ -219,41 +209,36 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandHoverBegin( Hand hand )
 		{
-            hand.ShowGrabHint();
+			ControllerButtonHints.ShowButtonHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
 		}
 
 
 		//-------------------------------------------------
 		private void OnHandHoverEnd( Hand hand )
 		{
-            hand.HideGrabHint();
+			ControllerButtonHints.HideButtonHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
 
-			if ( driving && hand )
+			if ( driving && hand.GetStandardInteractionButton() )
 			{
-                //hand.TriggerHapticPulse() //todo: fix
-				StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
+				StartCoroutine( HapticPulses( hand.controller, 1.0f, 10 ) );
 			}
 
 			driving = false;
 			handHoverLocked = null;
 		}
 
-        private GrabTypes grabbedWithType;
+
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
-        {
-            GrabTypes startingGrabType = hand.GetGrabStarting();
-            bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
-
-            if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
-            {
-                grabbedWithType = startingGrabType;
-                // Trigger was just pressed
-                lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
+		{
+			if ( hand.GetStandardInteractionButtonDown() )
+			{
+				// Trigger was just pressed
+				lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
 
 				if ( hoverLock )
 				{
-					hand.HoverLock(interactable);
+					hand.HoverLock( GetComponent<Interactable>() );
 					handHoverLocked = hand;
 				}
 
@@ -262,22 +247,18 @@ namespace Valve.VR.InteractionSystem
 				ComputeAngle( hand );
 				UpdateAll();
 
-                hand.HideGrabHint();
+				ControllerButtonHints.HideButtonHint( hand, Valve.VR.EVRButtonId.k_EButton_SteamVR_Trigger );
 			}
-            else if (grabbedWithType != GrabTypes.None && isGrabEnding)
+			else if ( hand.GetStandardInteractionButtonUp() )
 			{
 				// Trigger was just released
 				if ( hoverLock )
 				{
-					hand.HoverUnlock(interactable);
+					hand.HoverUnlock( GetComponent<Interactable>() );
 					handHoverLocked = null;
 				}
-
-                driving = false;
-                grabbedWithType = GrabTypes.None;
-            }
-
-            if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
+			}
+			else if ( driving && hand.GetStandardInteractionButton() && hand.hoveringInteractable == GetComponent<Interactable>() )
 			{
 				ComputeAngle( hand );
 				UpdateAll();
@@ -298,8 +279,8 @@ namespace Valve.VR.InteractionSystem
 			}
 			else
 			{
-				Debug.LogFormat("<b>[SteamVR Interaction]</b> The collider needs to be a minimum distance away from the CircularDrive GameObject {0}", gameObject.ToString() );
-				Debug.Assert( false, string.Format("<b>[SteamVR Interaction]</b> The collider needs to be a minimum distance away from the CircularDrive GameObject {0}", gameObject.ToString() ) );
+				Debug.LogFormat( "The collider needs to be a minimum distance away from the CircularDrive GameObject {0}", gameObject.ToString() );
+				Debug.Assert( false, string.Format( "The collider needs to be a minimum distance away from the CircularDrive GameObject {0}", gameObject.ToString() ) );
 			}
 
 			if ( debugPath && dbgPathLimit > 0 )
@@ -464,11 +445,11 @@ namespace Valve.VR.InteractionSystem
 							float magnitude = Util.RemapNumberClamped( frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f );
 							if ( magnitude > 0 )
 							{
-								StartCoroutine( HapticPulses( hand, magnitude, 10 ) );
+								StartCoroutine( HapticPulses( hand.controller, magnitude, 10 ) );
 							}
 							else
 							{
-								StartCoroutine( HapticPulses( hand, 0.5f, 10 ) );
+								StartCoroutine( HapticPulses( hand.controller, 0.5f, 10 ) );
 							}
 
 							if ( frozenSqDist >= frozenSqDistanceMinMaxThreshold.y )

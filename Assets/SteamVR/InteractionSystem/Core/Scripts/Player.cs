@@ -37,9 +37,6 @@ namespace Valve.VR.InteractionSystem
 		[Tooltip( "The audio listener for this player" )]
 		public Transform audioListener;
 
-        [Tooltip("This action lets you know when the player has placed the headset on their head")]
-        public SteamVR_Action_Boolean headsetOnHead = SteamVR_Input.GetBooleanAction("HeadsetOnHead");
-
 		public bool allowToggleTo2D = true;
 
 
@@ -119,7 +116,7 @@ namespace Valve.VR.InteractionSystem
 						continue;
 					}
 
-					if ( hands[j].handType != SteamVR_Input_Sources.LeftHand)
+					if ( hands[j].GuessCurrentHandType() != Hand.HandType.Left )
 					{
 						continue;
 					}
@@ -144,7 +141,7 @@ namespace Valve.VR.InteractionSystem
 						continue;
 					}
 
-					if ( hands[j].handType != SteamVR_Input_Sources.RightHand)
+					if ( hands[j].GuessCurrentHandType() != Hand.HandType.Right )
 					{
 						continue;
 					}
@@ -156,34 +153,49 @@ namespace Valve.VR.InteractionSystem
 			}
 		}
 
-        //-------------------------------------------------
-        // Get Player scale. Assumes it is scaled equally on all axes.
-        //-------------------------------------------------
 
-        public float scale
-        {
-            get
-            {
-                return transform.lossyScale.x;
-            }
-        }
-
-
-        //-------------------------------------------------
-        // Get the HMD transform. This might return the fallback camera transform if SteamVR is unavailable or disabled.
-        //-------------------------------------------------
-        public Transform hmdTransform
+		//-------------------------------------------------
+		public SteamVR_Controller.Device leftController
 		{
 			get
 			{
-                if (hmdTransforms != null)
-                {
-                    for (int i = 0; i < hmdTransforms.Length; i++)
-                    {
-                        if (hmdTransforms[i].gameObject.activeInHierarchy)
-                            return hmdTransforms[i];
-                    }
-                }
+				Hand h = leftHand;
+				if ( h )
+				{
+					return h.controller;
+				}
+				return null;
+			}
+		}
+
+
+		//-------------------------------------------------
+		public SteamVR_Controller.Device rightController
+		{
+			get
+			{
+				Hand h = rightHand;
+				if ( h )
+				{
+					return h.controller;
+				}
+				return null;
+			}
+		}
+
+
+		//-------------------------------------------------
+		// Get the HMD transform. This might return the fallback camera transform if SteamVR is unavailable or disabled.
+		//-------------------------------------------------
+		public Transform hmdTransform
+		{
+			get
+			{
+				for ( int i = 0; i < hmdTransforms.Length; i++ )
+				{
+					if ( hmdTransforms[i].gameObject.activeInHierarchy )
+						return hmdTransforms[i];
+				}
 				return null;
 			}
 		}
@@ -250,7 +262,7 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private void Awake()
+		void Awake()
 		{
 			if ( trackingOriginTransform == null )
 			{
@@ -260,12 +272,9 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private IEnumerator Start()
+		void OnEnable()
 		{
 			_instance = this;
-
-            while (SteamVR.initializedState == SteamVR.InitializedStates.None || SteamVR.initializedState == SteamVR.InitializedStates.Initializing)
-                yield return null;
 
 			if ( SteamVR.instance != null )
 			{
@@ -277,25 +286,8 @@ namespace Valve.VR.InteractionSystem
 				ActivateRig( rig2DFallback );
 #endif
 			}
-        }
+		}
 
-        protected virtual void Update()
-        {
-            if (SteamVR.initializedState != SteamVR.InitializedStates.InitializeSuccess)
-                return;
-
-            if (headsetOnHead != null)
-            {
-                if (headsetOnHead.GetStateDown(SteamVR_Input_Sources.Head))
-                {
-                    Debug.Log("<b>SteamVR Interaction System</b> Headset placed on head");
-                }
-                else if (headsetOnHead.GetStateUp(SteamVR_Input_Sources.Head))
-                {
-                    Debug.Log("<b>SteamVR Interaction System</b> Headset removed");
-                }
-            }
-        }
 
 		//-------------------------------------------------
 		void OnDrawGizmos()
@@ -331,18 +323,17 @@ namespace Valve.VR.InteractionSystem
 			{
 				Hand hand = GetHand( i );
 
-				if ( hand.handType == SteamVR_Input_Sources.LeftHand)
+				if ( hand.startingHandType == Hand.HandType.Left )
 				{
 					Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_left_hand.png" );
 				}
-				else if ( hand.handType == SteamVR_Input_Sources.RightHand)
+				else if ( hand.startingHandType == Hand.HandType.Right )
 				{
 					Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_right_hand.png" );
 				}
 				else
 				{
-                    /*
-					Hand.HandType guessHandType = hand.currentHandType;
+					Hand.HandType guessHandType = hand.GuessCurrentHandType();
 
 					if ( guessHandType == Hand.HandType.Left )
 					{
@@ -356,7 +347,6 @@ namespace Valve.VR.InteractionSystem
 					{
 						Gizmos.DrawIcon( hand.transform.position, "vr_interaction_system_unknown_hand.png" );
 					}
-                    */
 				}
 			}
 		}
