@@ -224,24 +224,14 @@ public class biker_logic_mecanim : MonoBehaviour
         {//no reverse speed
             reverseSpeed = 0.0f;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);
-
-            if (bikeRideOn.transform.localEulerAngles.z <= 15 || bikeRideOn.transform.localEulerAngles.z >= 345)
-            {
-                if (bikeRideOn.transform.localEulerAngles.x <= 10 || bikeRideOn.transform.localEulerAngles.x >= 350)
-                {
-                    legOffValue = (5 - (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f)) / 5;//need to define right speed to begin put down leg(s)
-                    myAnimator.SetLayerWeight(3, legOffValue);//leg is no layer 3 in animator
-                    IK_rightLegWeight = 0;
-                }
-            }
-
+            legOffValue = bikeStatusCrashed.bikeSpeedKPH / 5;//need to define right speed to begin put down leg(s)
+            myAnimator.SetLayerWeight(3, legOffValue);//leg is no layer 3 in animator
+            IK_rightLegWeight = 0;
         }
         else
         {
-            if (IK_rightLegWeight < 1)
-            {
-                IK_rightLegWeight = IK_rightLegWeight + 0.01f;
-            }
+            myAnimator.SetLayerWeight(3, legOffValue);
+            IK_rightLegWeight = 1;
         }
         /* 
         //when using reverse speed
