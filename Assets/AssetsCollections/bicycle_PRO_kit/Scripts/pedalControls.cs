@@ -31,6 +31,9 @@ public class pedalControls : MonoBehaviour
     //tmp "true" during "in stunt" 
     private bool inStunt = false;
 
+    // Indicate one cycle of wheel equals to how many cycles of pedals
+    public float cycleToPedal = 1.0f;
+
     // Rotate angle per second
     float rotateAnglePS;
 
@@ -83,7 +86,7 @@ public class pedalControls : MonoBehaviour
         //pedals rotation part
         if (outsideControls.Vertical > 0)
         {
-            rotateAnglePS = 360.0f * linkToBike.bikeSpeedCPS;
+            rotateAnglePS = 360.0f * linkToBike.bikeSpeedRPS * cycleToPedal;
             this.transform.rotation = this.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
             pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
             pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-rotateAnglePS * Time.fixedDeltaTime, 0, 0);
