@@ -85,7 +85,7 @@ public class bicycle_code : MonoBehaviour
     private pedalControls linkToStunt;
     private bool rearPend;
 
-    [HideInInspector]
+    // [HideInInspector]
     public float bikeSpeed; //to know bike speed km/h
 
     [HideInInspector]
