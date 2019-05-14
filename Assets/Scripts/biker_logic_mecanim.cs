@@ -220,30 +220,20 @@ public class biker_logic_mecanim : MonoBehaviour
 
         // pull leg(s) down when bike stopped
         float legOffValue = 0.0f;
-        if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f <= 5 && !bikeStatusCrashed.isReverseOn)
+        if (bikeStatusCrashed.bikeSpeedKPH <= 0)
         {//no reverse speed
             reverseSpeed = 0.0f;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);
-
-            if (bikeRideOn.transform.localEulerAngles.z <= 15 || bikeRideOn.transform.localEulerAngles.z >= 345)
-            {
-                if (bikeRideOn.transform.localEulerAngles.x <= 10 || bikeRideOn.transform.localEulerAngles.x >= 350)
-                {
-                    legOffValue = (5 - (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f)) / 5;//need to define right speed to begin put down leg(s)
-                    myAnimator.SetLayerWeight(3, legOffValue);//leg is no layer 3 in animator
-                    IK_rightLegWeight = 0;
-                }
-            }
-
+            legOffValue = bikeStatusCrashed.bikeSpeedKPH / 5;//need to define right speed to begin put down leg(s)
+            myAnimator.SetLayerWeight(3, legOffValue);//leg is no layer 3 in animator
+            IK_rightLegWeight = 0;
         }
         else
         {
-
-            if (IK_rightLegWeight < 1)
-            {
-                IK_rightLegWeight = IK_rightLegWeight + 0.01f;
-            }
+            myAnimator.SetLayerWeight(3, legOffValue);
+            IK_rightLegWeight = 1;
         }
+        /* 
         //when using reverse speed
         if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f <= 5 && bikeStatusCrashed.isReverseOn)
         {//reverse speed
@@ -255,7 +245,7 @@ public class biker_logic_mecanim : MonoBehaviour
             IK_rightLegWeight = 0;
             IK_leftLegWeight = 0;
 
-            reverseSpeed = bikeStatusCrashed.bikeSpeed / 3;
+            reverseSpeed = bikeStatusCrashed.bikeSpeedKPH / 3;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);
             if (reverseSpeed >= 1.0f)
             {
@@ -264,8 +254,7 @@ public class biker_logic_mecanim : MonoBehaviour
 
             myAnimator.speed = reverseSpeed;
         }
-        else
-        if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f > 0)
+        else if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f > 0)
         {
             reverseSpeed = 0.0f;
             myAnimator.SetFloat("reverseSpeed", reverseSpeed);
@@ -277,7 +266,7 @@ public class biker_logic_mecanim : MonoBehaviour
             IK_rightLegWeight = 1;
             IK_leftLegWeight = 1;
         }
-
+            */
 
     }
 

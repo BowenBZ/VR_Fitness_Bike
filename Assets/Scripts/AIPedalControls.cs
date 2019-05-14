@@ -30,6 +30,11 @@ public class AIPedalControls : MonoBehaviour
 
     //tmp "true" during "in stunt" 
     private bool inStunt = false;
+
+    public float cycleToPedal = 1.0f;
+    float rotateAnglePS;
+
+
     void Start()
     {
 
@@ -45,11 +50,11 @@ public class AIPedalControls : MonoBehaviour
     void FixedUpdate()
     {
         //pedals rotation part
-        float bikeSpeed = transform.root.GetComponent<KeepMoving>().speedKM;
-        this.transform.rotation = this.transform.rotation * Quaternion.Euler(bikeSpeed / 4, 0, 0);
+        rotateAnglePS = 360.0f * linkToBike.bikeSpeedRPS * cycleToPedal;
+        this.transform.rotation = this.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
         //Debug.Log("AIBikeSpeed:" + linkToBike.bikeSpeed);
-        pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(-bikeSpeed / -4, 0, 0);
-        pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-bikeSpeed / 4, 0, 0);
+        pedalRight.transform.rotation = pedalRight.transform.rotation * Quaternion.Euler(rotateAnglePS * Time.fixedDeltaTime, 0, 0);
+        pedalLeft.transform.rotation = pedalLeft.transform.rotation * Quaternion.Euler(-rotateAnglePS * Time.fixedDeltaTime, 0, 0);
         if (energy < 10)
         {
             energy = energy + 0.01f;
