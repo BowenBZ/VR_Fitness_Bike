@@ -7,6 +7,8 @@ public class RoadSign : MonoBehaviour
 {
 
     controlHub outsideControls;
+    Sound[] sounds;
+    Sound s;
 
     void Start()
     {
@@ -17,7 +19,14 @@ public class RoadSign : MonoBehaviour
     {
         if (collision.gameObject.name == "collider_01")
         {
+            // trigger sound
+            sounds = GameObject.Find("Audio_Manager").GetComponent<AudioManager>().sounds;
+            s = Array.Find(sounds, sound => sound.name == "signSound");
+            s.source.Play();
+            // Debug.Log("boom, collider hit!");
+
             outsideControls.currentSignUser = Int32.Parse(gameObject.name.Split('_')[1]);
+
         }
         else if (collision.gameObject.name == "AIcollider_01")
         {
