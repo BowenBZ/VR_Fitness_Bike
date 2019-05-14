@@ -163,7 +163,7 @@ public class AIBiker_logic_mecanim : MonoBehaviour
         // pull leg(s) down when bike stopped
         float legOffValue = 0.0f;
         //if (Mathf.Round((bikeRideOn.GetComponent<Rigidbody>().velocity.magnitude * 3.6f) * 10) * 0.1f <= 5 && !bikeStatusCrashed.isReverseOn)
-        float speedKM = transform.root.GetComponent<KeepMoving>().speedKM;
+        float speedKM = transform.root.GetComponent<AIControl>().bikeSpeedMPS * 3.6f;
         if (speedKM <= 5 && !bikeStatusCrashed.isReverseOn)
         {//no reverse speed
             reverseSpeed = 0.0f;
