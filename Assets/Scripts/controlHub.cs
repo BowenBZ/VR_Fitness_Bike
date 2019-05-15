@@ -20,6 +20,7 @@ public class controlHub : MonoBehaviour
     public bool reverse { get; set; }//for reverse speed
 
     public float startSpeedKPH;
+    public bool UDPControlDefault;
     public bool MoveByUdp { get; set; } // to detect wether the bike is controled by out input
     public bool TurnByUdp { get; set; } // to detect wether the bike is controled by out input
     public float bikeSpeedKPH { get; set; } // Variable to control the speed of the bike
@@ -33,8 +34,17 @@ public class controlHub : MonoBehaviour
 
     void Start()
     {
-        MoveByUdp = false;
-        TurnByUdp = false;
+        if (UDPControlDefault)
+        {
+            MoveByUdp = true;
+            TurnByUdp = true;
+        }
+        else
+        {
+            MoveByUdp = false;
+            TurnByUdp = false;
+        }
+
         bikeSpeedKPH = startSpeedKPH;
         udpControl = transform.GetComponent<UdpControl>();
         currentSignUser = 0;

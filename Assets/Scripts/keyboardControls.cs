@@ -94,50 +94,8 @@ public class keyboardControls : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F2) || Input.GetKeyDown(KeyCode.Joystick1Button5))
             cameraSwitch.firstView = !cameraSwitch.firstView;
 
-
-        //////////////////////////////////// Rider's mass translate ////////////////////////////////////////////////////////////
-        //this strings controls pilot's mass shift along bike(vertical)
-        //      if (Input.GetKey (KeyCode.F)) {
-        //	outsideControls.VerticalMassShift = outsideControls.VerticalMassShift += 0.1f;
-        //	if (outsideControls.VerticalMassShift > 1.0f) outsideControls.VerticalMassShift = 1.0f;
-        //}
-
-        //if (Input.GetKey(KeyCode.V)){
-        //	outsideControls.VerticalMassShift = outsideControls.VerticalMassShift -= 0.1f;
-        //	if (outsideControls.VerticalMassShift < -1.0f) outsideControls.VerticalMassShift = -1.0f;
-        //}
-        //if(!Input.GetKey(KeyCode.F) && !Input.GetKey(KeyCode.V)) outsideControls.VerticalMassShift = 0;
-
-        ////this strings controls pilot's mass shift across bike(horizontal)
-        //if (Input.GetKey(KeyCode.E)){
-        //	outsideControls.HorizontalMassShift = outsideControls.HorizontalMassShift += 0.1f;
-        //	if (outsideControls.HorizontalMassShift >1.0f) outsideControls.HorizontalMassShift = 1.0f;
-        //}
-
-        //if (Input.GetKey(KeyCode.Q)){
-        //	outsideControls.HorizontalMassShift = outsideControls.HorizontalMassShift -= 0.1f;
-        //	if (outsideControls.HorizontalMassShift < -1.0f) outsideControls.HorizontalMassShift = -1.0f;
-        //}
-        //if(!Input.GetKey(KeyCode.E) && !Input.GetKey(KeyCode.Q)) outsideControls.HorizontalMassShift = 0;
-
-
-        ////////////////////////////////////// Rear Brake ////////////////////////////////////////////////////////////////
-        //// Rear Brake
-        //if (Input.GetKey (KeyCode.X)) {
-        //	outsideControls.rearBrakeOn = true;
-        //}
-        //      else
-        //      {
-        //          outsideControls.rearBrakeOn = false;
-        //      }
-
-        //// Restart & full restart
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    outsideControls.reverse = true;
-        //}
-        //else outsideControls.reverse = false;
-        /////
-
+        // Exit the game
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 }
