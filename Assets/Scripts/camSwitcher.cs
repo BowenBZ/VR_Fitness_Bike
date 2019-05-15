@@ -5,93 +5,111 @@ using System.Collections;
 
 public class camSwitcher : MonoBehaviour
 {
-    public Camera firstViewCamera;
-    public Camera thirdViewCamera;
-    public Camera aroundCamera;
+    public GameObject cameras;
+    Camera firstViewCamera;
+    Camera thirdViewCamera;
+    Camera aroundCamera;
+    public bool firstView = false;
     public Transform cameraTarget;
 
     Camera currentCamera;
 
     //////////////////// for back Camera 
     float dist = 3.0f;
-	float height = 1.0f;
+    float height = 1.0f;
 
-	//////////////////// for around Camera
-	private float distance = 3.0f;
-	private float xSpeed = 10.0f;
-	private float ySpeed = 10.0f;
-	
-	private float yMinLimit = -90;
-	private float yMaxLimit = 90;
-	
-	private float distanceMin = 2;
-	private float distanceMax = 10;
-	
-	private float x = 0.0f;
-	private float y = 0.0f;
-	
-	private float smoothTime = 0.2f;
-	
-	private float xSmooth = 0.0f;
-	private float ySmooth = 0.0f; 
-	private float xVelocity = 0.0f;
-	private float yVelocity = 0.0f;
+    //////////////////// for around Camera
+    private float distance = 3.0f;
+    private float xSpeed = 10.0f;
+    private float ySpeed = 10.0f;
 
-	//new camera behaviour
-	private float currentTargetAngle;
-	
-	private GameObject ctrlHub;// gameobject with script control variables 
-	private controlHub outsideControls;// making a link to corresponding bike's script
+    private float yMinLimit = -90;
+    private float yMaxLimit = 90;
 
-    [HideInInspector]
-    public bool firstView = false;
+    private float distanceMin = 2;
+    private float distanceMax = 10;
 
+    private float x = 0.0f;
+    private float y = 0.0f;
+
+    private float smoothTime = 0.2f;
+
+    private float xSmooth = 0.0f;
+    private float ySmooth = 0.0f;
+    private float xVelocity = 0.0f;
+    private float yVelocity = 0.0f;
+
+    //new camera behaviour
+    private float currentTargetAngle;
+
+    private GameObject ctrlHub;// gameobject with script control variables 
+    private controlHub outsideControls;// making a link to corresponding bike's script
+
+  
     // Use this for initialization
-    void Start ()
-	{
-		ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
-		outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
+    void Start()
+    {
+        ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
+        outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        // Enable the third view camera
-        firstViewCamera.enabled = false;
-        thirdViewCamera.enabled = true;
-        aroundCamera.enabled = false;
-        currentCamera = thirdViewCamera;
+        // Find camera
+        firstViewCamera = cameras.transform.Find("FirstView").GetComponent<Camera>();
+        thirdViewCamera = cameras.transform.Find("ThirdView").GetComponent<Camera>();
+        aroundCamera = cameras.transform.Find("AroundView").GetComponent<Camera>();
 
-        if (GetComponent<Rigidbody> ()) GetComponent<Rigidbody> ().freezeRotation = true;
-	
+        if (firstView)
+        {
+            // Enable the first view camera
+            firstViewCamera.enabled = true;
+            thirdViewCamera.enabled = false;
+            aroundCamera.enabled = false;
+            currentCamera = firstViewCamera;
+        }
+        else
+        {
+            // Enable the third view camera
+            firstViewCamera.enabled = false;
+            thirdViewCamera.enabled = true;
+            aroundCamera.enabled = false;
+            currentCamera = thirdViewCamera;
+        }
+
+
+        if (GetComponent<Rigidbody>()) GetComponent<Rigidbody>().freezeRotation = true;
+
         // Get the current rotation of bike
-		currentTargetAngle = cameraTarget.transform.eulerAngles.z;
-	}
+        currentTargetAngle = cameraTarget.transform.eulerAngles.z;
+    }
 
-	// Update is called once per frame
-	void LateUpdate ()
-	{
-		if (Input.GetMouseButton (1)) {
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        if (Input.GetMouseButton(1))
+        {
 
             // Disable the currentCamera
             currentCamera.enabled = false;
             currentCamera.gameObject.SetActive(false);
             // Enable the around camera
             aroundCamera.enabled = true;
-			aroundCamera.gameObject.SetActive (true);
+            aroundCamera.gameObject.SetActive(true);
             // Update currentCamera
-			currentCamera = aroundCamera;
-			
-			x += Input.GetAxis ("Mouse X") * xSpeed;
-			y -= Input.GetAxis ("Mouse Y") * ySpeed;
-			
-			y = Mathf.Clamp (y, yMinLimit, yMaxLimit);
-			
-			xSmooth = Mathf.SmoothDamp (xSmooth, x, ref xVelocity, smoothTime);
-			ySmooth = Mathf.SmoothDamp (ySmooth, y, ref yVelocity, smoothTime);
-			
-			distance = Mathf.Clamp (distance + Input.GetAxis ("Mouse ScrollWheel") * distance, distanceMin, distanceMax);
-			
-			currentCamera.transform.localRotation = Quaternion.Euler (ySmooth, xSmooth, 0);
-			currentCamera.transform.position = currentCamera.transform.rotation * new Vector3 (0.0f, 0.0f, -distance) + cameraTarget.position;
+            currentCamera = aroundCamera;
 
-		}
+            x += Input.GetAxis("Mouse X") * xSpeed;
+            y -= Input.GetAxis("Mouse Y") * ySpeed;
+
+            y = Mathf.Clamp(y, yMinLimit, yMaxLimit);
+
+            xSmooth = Mathf.SmoothDamp(xSmooth, x, ref xVelocity, smoothTime);
+            ySmooth = Mathf.SmoothDamp(ySmooth, y, ref yVelocity, smoothTime);
+
+            distance = Mathf.Clamp(distance + Input.GetAxis("Mouse ScrollWheel") * distance, distanceMin, distanceMax);
+
+            currentCamera.transform.localRotation = Quaternion.Euler(ySmooth, xSmooth, 0);
+            currentCamera.transform.position = currentCamera.transform.rotation * new Vector3(0.0f, 0.0f, -distance) + cameraTarget.position;
+
+        }
         else
         {
 
@@ -170,5 +188,5 @@ public class camSwitcher : MonoBehaviour
                 currentCamera = firstViewCamera;
             }
         }
-	}
+    }
 }
