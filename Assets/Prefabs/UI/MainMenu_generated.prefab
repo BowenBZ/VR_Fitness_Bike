@@ -5860,6 +5860,7 @@ GameObject:
   - component: {fileID: 285522058424337479}
   - component: {fileID: 1415593673129036406}
   - component: {fileID: 2406462197448399113}
+  - component: {fileID: 8909732524353714847}
   m_Layer: 5
   m_Name: Course-HIT
   m_TagString: Untagged
@@ -5965,6 +5966,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clickOnPointerCollision: 0
   autoActivateWithinDistance: 0
+--- !u!114 &8909732524353714847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7363534484263348989}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53de2aca36a35f4458e2684733b4fff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7544795093592835529
 GameObject:
   m_ObjectHideFlags: 0
@@ -6841,6 +6854,17 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2967944964326597249}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8909732524353714847}
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
