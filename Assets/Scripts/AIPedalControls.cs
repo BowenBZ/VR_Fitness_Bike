@@ -41,8 +41,8 @@ public class AIPedalControls : MonoBehaviour
         ctrlHub = GameObject.FindGameObjectWithTag("manager");//link to GameObject with script "controlHub"
         outsideControls = ctrlHub.GetComponent<controlHub>();//to connect c# mobile control script to this one
 
-        linkToBike = transform.root.GetComponent<AIBicycle_code>();
-        linkToRider = transform.root.GetComponentInChildren<biker_logic_mecanim>();
+        linkToBike = transform.GetComponentInParent<AIBicycle_code>();
+        linkToRider = transform.parent.GetComponentInChildren<biker_logic_mecanim>();
 
     }
 
