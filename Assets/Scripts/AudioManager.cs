@@ -35,7 +35,7 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
-        float speedScaler = GameObject.Find("BikerEthan").GetComponent<bicycle_code>().bikeSpeedKPH;
+        float speedScaler = GameObject.Find("ViveBike").GetComponent<bicycle_code>().bikeSpeedKPH;
 
         foreach (Sound s in sounds)
         {
