@@ -128,59 +128,60 @@ public class biker_logic_mecanim : MonoBehaviour
         }
         else return;
 
+        // For vive branch, we don't need to let the animator do the movements
         //the character should play animations when player press control keys
         //horizontal movement
-        if (outsideControls.Horizontal < 0 && bikerLeanAngle > -1.0f)
-        {
-            bikerLeanAngle = bikerLeanAngle -= 8 * Time.deltaTime;//8 - "magic number" of speed of pilot's body movement across. Just 8 - face it :)
-            if (bikerLeanAngle < outsideControls.Horizontal) bikerLeanAngle = outsideControls.Horizontal;//this string seems strange but it's necessary for mobile version
-            myAnimator.SetFloat("lean", bikerLeanAngle);//the character play animation "lean" for bikerLeanAngle more and more
-        }
-        if (outsideControls.Horizontal > 0 && bikerLeanAngle < 1.0f)
-        {
-            bikerLeanAngle = bikerLeanAngle += 8 * Time.deltaTime;
-            if (bikerLeanAngle > outsideControls.Horizontal) bikerLeanAngle = outsideControls.Horizontal;
-            myAnimator.SetFloat("lean", bikerLeanAngle);
-        }
-        //vertical movement
-        if (outsideControls.Vertical > 0 && bikerMoveAlong < 1.0f)
-        {
-            bikerMoveAlong = bikerMoveAlong += 3 * Time.deltaTime;
-            if (bikerMoveAlong > outsideControls.Vertical) bikerMoveAlong = outsideControls.Vertical;
-            myAnimator.SetFloat("moveAlong", bikerMoveAlong);
-        }
-        if (outsideControls.Vertical < 0 && bikerMoveAlong > -1.0f)
-        {
-            bikerMoveAlong = bikerMoveAlong -= 3 * Time.deltaTime;
-            if (bikerMoveAlong < outsideControls.Vertical) bikerMoveAlong = outsideControls.Vertical;
-            myAnimator.SetFloat("moveAlong", bikerMoveAlong);
-        }
+        // if (outsideControls.Horizontal < 0 && bikerLeanAngle > -1.0f)
+        // {
+        //     bikerLeanAngle = bikerLeanAngle -= 8 * Time.deltaTime;//8 - "magic number" of speed of pilot's body movement across. Just 8 - face it :)
+        //     if (bikerLeanAngle < outsideControls.Horizontal) bikerLeanAngle = outsideControls.Horizontal;//this string seems strange but it's necessary for mobile version
+        //     myAnimator.SetFloat("lean", bikerLeanAngle);//the character play animation "lean" for bikerLeanAngle more and more
+        // }
+        // if (outsideControls.Horizontal > 0 && bikerLeanAngle < 1.0f)
+        // {
+        //     bikerLeanAngle = bikerLeanAngle += 8 * Time.deltaTime;
+        //     if (bikerLeanAngle > outsideControls.Horizontal) bikerLeanAngle = outsideControls.Horizontal;
+        //     myAnimator.SetFloat("lean", bikerLeanAngle);
+        // }
+        // //vertical movement
+        // if (outsideControls.Vertical > 0 && bikerMoveAlong < 1.0f)
+        // {
+        //     bikerMoveAlong = bikerMoveAlong += 3 * Time.deltaTime;
+        //     if (bikerMoveAlong > outsideControls.Vertical) bikerMoveAlong = outsideControls.Vertical;
+        //     myAnimator.SetFloat("moveAlong", bikerMoveAlong);
+        // }
+        // if (outsideControls.Vertical < 0 && bikerMoveAlong > -1.0f)
+        // {
+        //     bikerMoveAlong = bikerMoveAlong -= 3 * Time.deltaTime;
+        //     if (bikerMoveAlong < outsideControls.Vertical) bikerMoveAlong = outsideControls.Vertical;
+        //     myAnimator.SetFloat("moveAlong", bikerMoveAlong);
+        // }
 
-        //pilot's mass tranform movement
-        if (outsideControls.HorizontalMassShift < 0 && bikerLeanAngle > -1.0f)
-        {
-            bikerLeanAngle = bikerLeanAngle -= 6 * Time.deltaTime;
-            if (bikerLeanAngle < outsideControls.HorizontalMassShift) bikerLeanAngle = outsideControls.HorizontalMassShift;
-            myAnimator.SetFloat("lean", bikerLeanAngle);
-        }
-        if (outsideControls.HorizontalMassShift > 0 && bikerLeanAngle < 1.0f)
-        {
-            bikerLeanAngle = bikerLeanAngle += 6 * Time.deltaTime;
-            if (bikerLeanAngle > outsideControls.HorizontalMassShift) bikerLeanAngle = outsideControls.HorizontalMassShift;
-            myAnimator.SetFloat("lean", bikerLeanAngle);
-        }
-        if (outsideControls.VerticalMassShift > 0 && bikerMoveAlong < 1.0f)
-        {
-            bikerMoveAlong = bikerMoveAlong += 3 * Time.deltaTime;
-            if (bikerLeanAngle > outsideControls.VerticalMassShift) bikerLeanAngle = outsideControls.VerticalMassShift;
-            myAnimator.SetFloat("moveAlong", bikerMoveAlong);
-        }
-        if (outsideControls.VerticalMassShift < 0 && bikerMoveAlong > -1.0f)
-        {
-            bikerMoveAlong = bikerMoveAlong -= 3 * Time.deltaTime;
-            if (bikerLeanAngle < outsideControls.VerticalMassShift) bikerLeanAngle = outsideControls.VerticalMassShift;
-            myAnimator.SetFloat("moveAlong", bikerMoveAlong);
-        }
+        // //pilot's mass tranform movement
+        // if (outsideControls.HorizontalMassShift < 0 && bikerLeanAngle > -1.0f)
+        // {
+        //     bikerLeanAngle = bikerLeanAngle -= 6 * Time.deltaTime;
+        //     if (bikerLeanAngle < outsideControls.HorizontalMassShift) bikerLeanAngle = outsideControls.HorizontalMassShift;
+        //     myAnimator.SetFloat("lean", bikerLeanAngle);
+        // }
+        // if (outsideControls.HorizontalMassShift > 0 && bikerLeanAngle < 1.0f)
+        // {
+        //     bikerLeanAngle = bikerLeanAngle += 6 * Time.deltaTime;
+        //     if (bikerLeanAngle > outsideControls.HorizontalMassShift) bikerLeanAngle = outsideControls.HorizontalMassShift;
+        //     myAnimator.SetFloat("lean", bikerLeanAngle);
+        // }
+        // if (outsideControls.VerticalMassShift > 0 && bikerMoveAlong < 1.0f)
+        // {
+        //     bikerMoveAlong = bikerMoveAlong += 3 * Time.deltaTime;
+        //     if (bikerLeanAngle > outsideControls.VerticalMassShift) bikerLeanAngle = outsideControls.VerticalMassShift;
+        //     myAnimator.SetFloat("moveAlong", bikerMoveAlong);
+        // }
+        // if (outsideControls.VerticalMassShift < 0 && bikerMoveAlong > -1.0f)
+        // {
+        //     bikerMoveAlong = bikerMoveAlong -= 3 * Time.deltaTime;
+        //     if (bikerLeanAngle < outsideControls.VerticalMassShift) bikerLeanAngle = outsideControls.VerticalMassShift;
+        //     myAnimator.SetFloat("moveAlong", bikerMoveAlong);
+        // }
 
         //in a case of restart
         if (outsideControls.restartBike)
