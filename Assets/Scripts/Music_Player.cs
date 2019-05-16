@@ -5,19 +5,15 @@ using UnityEngine;
 public class Music_Player : MonoBehaviour
 {
     public AudioClip[] clips;
-    private AudioSource audioSource;
-    private AudioSource audioSource2;
+    public AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
         audioSource = FindObjectOfType<AudioSource>();
         audioSource.loop = false;
-        audioSource.clip = GetRandomClip();
-        audioSource.Play();
-
     }
 
-    private AudioClip GetRandomClip()
+    public AudioClip GetRandomClip()
     {
         return clips[Random.Range(0,clips.Length)];
     }

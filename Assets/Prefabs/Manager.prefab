@@ -58,7 +58,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c183f392535d1b4997a2bb2704b84c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSpeedKPH: 0
+  startSpeedKPH: 8
+  UDPControlDefault: 0
 --- !u!114 &2658625193382177006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,7 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e14dd4ccd8ce3004f8bcbb1db8275d82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  piIP: 192.168.1.9
+  piIP: 127.0.0.1
 --- !u!114 &2658625193382177007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,8 +85,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 206be553407a5424b87fd4205885189e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstViewCamera: {fileID: 0}
-  thirdViewCamera: {fileID: 0}
-  aroundCamera: {fileID: 0}
+  cameras: {fileID: 0}
+  firstView: 1
   cameraTarget: {fileID: 0}
-  firstView: 0
