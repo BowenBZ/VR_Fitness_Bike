@@ -114,18 +114,18 @@ public class bicycle_code : MonoBehaviour
         string mode = (outsideControls.MoveByUdp) ? "UDP" : "Keyboard";
         GUI.Box(new Rect(Screen.width * 0.885f, 10, 180, 40), mode, middleText);
 
-        //GUI.Box(new Rect(10, 40, 120, 20), "X - rear brake", smallerText);
-        //GUI.Box(new Rect(10, 55, 320, 20), "Q,E,F,V - shift center of mass of biker", smallerText);
-        //GUI.Box(new Rect(10, 70, 320, 20), "R - restart / RightShift+R - full restart", smallerText);
-        //GUI.Box(new Rect(10, 85, 180, 20), "RMB - rotate camera around", smallerText);
-        //GUI.Box(new Rect(10, 115, 320, 20), "C - toggle reverse", smallerText);
+        GUI.Box(new Rect(10, 55, 320, 20), "W,A,S,D - Move bike", smallerText);
+        GUI.Box(new Rect(10, 70, 320, 20), "F2 - Switch view", smallerText);
+        GUI.Box(new Rect(10, 85, 320, 20), "Right click - Rotate view", smallerText);
+        GUI.Box(new Rect(10, 100, 320, 20), "UpArrow - Increase Speed", smallerText);
+        GUI.Box(new Rect(10, 115, 320, 20), "DownArrow - Decrease Speed", smallerText);
 
-        //GUI.Box(new Rect(10, 130, 320, 20), "Space - bunnyhop", smallerText);
-        //GUI.Box(new Rect(10, 145, 320, 20), "M - turn left 180", smallerText);
-        //GUI.Box(new Rect(10, 160, 320, 20), "N - backflip 360", smallerText);
-        //GUI.Box(new Rect(10, 175, 220, 20), "2 - manual", smallerText);
-        //GUI.Box(new Rect(10, 190, 220, 20), "B - bunny jump right", smallerText);
-        //GUI.Box(new Rect(10, 205, 220, 20), "/ - 1 hard clutch for half second", smallerText);
+        GUI.Box(new Rect(10, 145, 320, 20), "RightShift - Full restart", smallerText);
+        GUI.Box(new Rect(10, 160, 180, 20), "R - Restart", smallerText);
+
+        // GUI.Box(new Rect(10, 175, 220, 20), "2 - manual", smallerText);
+        // GUI.Box(new Rect(10, 190, 220, 20), "B - bunny jump right", smallerText);
+        // GUI.Box(new Rect(10, 205, 220, 20), "/ - 1 hard clutch for half second", smallerText);
 
 
         //GUI.Box(new Rect(10, 220, 320, 20), "Esc - return to main menu", smallerText);

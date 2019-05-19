@@ -43,24 +43,6 @@ public class keyboardControls : MonoBehaviour {
             outsideControls.Horizontal = Input.GetAxis("Horizontal");
         }
 
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            // Current is controled by keyboard, then change to udp
-            if (!outsideControls.MoveByUdp)
-            {
-                udpControl.LatestSpeed = 0;
-                udpControl.LatestAngle = 0;
-            }
-            else // Current is controled by udp, then change to keyboard
-            {
-                udpControl.LatestSpeed = outsideControls.startSpeedKPH;
-                outsideControls.bikeSpeedKPH = outsideControls.startSpeedKPH;
-            }
-
-            outsideControls.MoveByUdp = !outsideControls.MoveByUdp;
-            outsideControls.TurnByUdp = !outsideControls.TurnByUdp;
-        }
-
         // Test udp send
         if (Input.GetKeyDown(KeyCode.P))
             gameObject.GetComponent<UdpControl>().SendData(5);
