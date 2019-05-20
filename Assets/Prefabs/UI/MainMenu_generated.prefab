@@ -308,7 +308,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Selecting Course
+  m_Text: Select Course
 --- !u!1 &1029137066806462580
 GameObject:
   m_ObjectHideFlags: 0
