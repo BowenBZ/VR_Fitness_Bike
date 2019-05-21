@@ -1,11 +1,6 @@
 # VRBike-Display
 
-This repositoriy is used for the VR display part of project Cyclotron.
-
-The master branch is a bike game which includes the bike, biker with animation, well-designed route, map, and terrain, and other interactivate functions including camera switch, udp transit and etc.
-![scene](https://drive.google.com/uc?id=1pZzUOiI0OdFLFGuyoMzAupS5nFdd_qm5)
-
-![Dashboard](https://drive.google.com/uc?id=1VSPMChB04vy0rmi-NIXQ__eFBeACfcnB)
+This web branch is a WebGL version of game. You can find the deployed version from [here](http://students.washington.edu/zbw18/).
 
 ## Functions
 This project is a simulated bike game. The speed of the bike and the turning can be controled external signal. The game can also be controled by keyboard or game handle(switch handle).
