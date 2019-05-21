@@ -394,12 +394,13 @@ public class bicycle_code : MonoBehaviour
             else
             {
                 Vector3 CurrentBlockPos = GameObject.Find(outsideControls.CurrentBlock).transform.position;
-                Vector3 CurrentBlockDir = GameObject.Find(outsideControls.CurrentBlock).transform.eulerAngles;
-                transform.position = CurrentBlockPos + new Vector3(0, 0.5f, 0);
-                transform.eulerAngles = new Vector3(CurrentBlockDir.x, CurrentBlockDir.y, 0);
+                Quaternion CurrentBlockDir = GameObject.Find(outsideControls.CurrentBlock).transform.rotation;
+                transform.position = CurrentBlockPos + GameObject.Find(outsideControls.CurrentBlock).transform.up * 0.5f;
+                transform.rotation = CurrentBlockDir;
             }
-            transform.position += new Vector3(0, 0.1f, 0);
-            transform.rotation = Quaternion.Euler(0.0f, transform.localEulerAngles.y, 0.0f);
+            //transform.position += new Vector3(0, 0.1f, 0);
+            //transform.rotation = Quaternion.Euler(0.0f, transform.localEulerAngles.y, 0.0f);
+            outsideControls.bikeSpeedKPH = outsideControls.startSpeedKPH;
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
             var tmp_cs26 = CoM.localPosition;
