@@ -51,8 +51,8 @@ public class AIControl : MonoBehaviour
     void FixedUpdate()
     {
         bikeSpeedMPS = (requireBikeSpeedRPM[outsideControl.currentSignAI] + 10) / 60.0f * (2 * Mathf.PI * wheelRadius);
-        Debug.Log(outsideControl.currentSignAI);
-        Debug.Log(bikeSpeedMPS);
+        //Debug.Log(outsideControl.currentSignAI);
+        //Debug.Log(bikeSpeedMPS);
         // Does the ray intersect any objects excluding the player layer
         if (Physics.Raycast(transform.position, -transform.up, out hit, Mathf.Infinity))
         {

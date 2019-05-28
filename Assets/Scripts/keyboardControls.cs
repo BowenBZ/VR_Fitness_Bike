@@ -9,6 +9,9 @@ public class keyboardControls : MonoBehaviour {
     bicycle_code bike;
     UdpControl udpControl;
     camSwitcher cameraSwitch;
+    public bool headSteer = true;
+    GameObject FirstView;
+    float rotation;
 
     // Use this for initialization
     void Start () {
@@ -17,12 +20,13 @@ public class keyboardControls : MonoBehaviour {
         bike = GameObject.FindGameObjectWithTag("bike").GetComponent<bicycle_code>();
         udpControl = GetComponent<UdpControl>();
         cameraSwitch = GetComponent<camSwitcher>();
+        FirstView = GameObject.Find("FirstView"); 
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        // If haven't been controled by udp
+        // If haven't been controlled by udp
         if (!outsideControls.MoveByUdp)
         {
             // Accerelate
@@ -37,15 +41,38 @@ public class keyboardControls : MonoBehaviour {
                 outsideControls.bikeSpeedKPH -= 0.1f;
         }
 
-        if (!outsideControls.TurnByUdp)
+
+        if (!outsideControls.TurnByUdp && !headSteer)
         {
-            // Turn
+            // Turn with keyboard control
             outsideControls.Horizontal = Input.GetAxis("Horizontal");
+            Debug.Log("Horizontal Axis is: " + outsideControls.Horizontal);
+            Debug.Log("Input.GetAxis(Horizontal) is: " + Input.GetAxis("Horizontal"));
+
+            
+        }
+
+        // steering with only headset
+        if (!outsideControls.TurnByUdp && headSteer)
+        {
+            rotation = FirstView.GetComponent<Transform>().rotation.eulerAngles.z;
+
+            if (rotation > 0 && rotation < 180)
+            {
+                rotation = rotation / 30.0f;
+            }
+            else if (rotation > 180 && rotation < 360)
+            {
+                rotation = (rotation - 360.0f) / 30.0f;
+            }
+            rotation = Mathf.Clamp(rotation, -1.0f, 1.0f);
+            outsideControls.Horizontal = rotation * -1.0f;
+
         }
 
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            // Current is controled by keyboard, then change to udp
+            // Current is controlled by keyboard, then change to udp
             if (!outsideControls.MoveByUdp)
             {
                 udpControl.LatestSpeed = 0;
