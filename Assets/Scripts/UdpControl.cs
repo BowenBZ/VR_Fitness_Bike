@@ -82,7 +82,7 @@ public class UdpControl : MonoBehaviour
                 piData = JsonUtility.FromJson<PiData>(text);
 
                 LatestSpeed = piData.speed;
-                LatestAngle = piData.angle;
+                LatestAngle = -1 * piData.angle;
 
                 //Show the result
                 //Debug.Log("speed: " + piData.speed);

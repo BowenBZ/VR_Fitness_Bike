@@ -42,19 +42,24 @@ public class keyboardControls : MonoBehaviour {
         }
 
 
-        if (!outsideControls.TurnByUdp && !headSteer)
+        if (!outsideControls.MoveByUdp && !headSteer)
         {
             // Turn with keyboard control
             outsideControls.Horizontal = Input.GetAxis("Horizontal");
             Debug.Log("Horizontal Axis is: " + outsideControls.Horizontal);
             Debug.Log("Input.GetAxis(Horizontal) is: " + Input.GetAxis("Horizontal"));
-
-            
         }
 
-        // steering with only headset
-        if (!outsideControls.TurnByUdp && headSteer)
+        // steering with UDP
+        if (!headSteer)
         {
+            outsideControls.TurnByUdp = true;
+        }
+        
+        // steering with only headset
+        if (headSteer)
+        {
+            outsideControls.TurnByUdp = false;
             rotation = FirstView.GetComponent<Transform>().rotation.eulerAngles.z;
 
             if (rotation > 0 && rotation < 180)

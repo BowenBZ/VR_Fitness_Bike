@@ -27,6 +27,8 @@ public class RoadSign : MonoBehaviour
             ChangeMusic();
 
             outsideControls.currentSignUser = Int32.Parse(gameObject.name.Split('_')[1]);
+            // Debug.Log(outsideControls.currentSignUser);
+            
 
         }
         else if (collision.gameObject.name == "AIcollider_01")

@@ -37,7 +37,7 @@ public class controlHub : MonoBehaviour
         if (UDPControlDefault)
         {
             MoveByUdp = true;
-            TurnByUdp = true;
+            TurnByUdp = false;
         }
         else
         {
