@@ -1,6 +1,6 @@
 # VRBike-Display
 
-This repositoriy is used for the VR display part of project Cyclotron.
+This repositoriy is used for the VR display part of project Cyclotron. It gets data from the sensor via Raspberry Pi and Arduino. The monitor part for Arduino and Raspberry Pi can be found [here](https://github.com/BerwinZ/VR-Fitness-Bike-Monitor).
 
 The master branch is a bike game which includes the bike, biker with animation, well-designed route, map, and terrain, and other interactivate functions including camera switch, udp transit and etc.
 ![scene](https://drive.google.com/uc?id=1pZzUOiI0OdFLFGuyoMzAupS5nFdd_qm5)
