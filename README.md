@@ -3,9 +3,20 @@
 This repositoriy is used for the VR display part of VR Fitness Bike. It gets data from the sensor via Raspberry Pi and Arduino. The monitor part for Arduino and Raspberry Pi can be found [here](https://github.com/BerwinZ/VR-Fitness-Bike-Hardware-Controller).
 
 The master branch is a bike game which includes the bike, biker with animation, well-designed route, map, and terrain, and other interactivate functions including camera switch, udp transit and etc.
-![scene](https://drive.google.com/uc?id=1pZzUOiI0OdFLFGuyoMzAupS5nFdd_qm5)
 
-![Dashboard](https://drive.google.com/uc?id=1VSPMChB04vy0rmi-NIXQ__eFBeACfcnB)
+Looking from a 3rd prespective is like following.
+
+<img src="HelperImages/demo.gif" width="600"/>
+
+Other images about this repo. 
+
+* Top left: first prespective in VR
+* Top middle: wheel encoder for speed info
+* Right: automatic resistance module for bike
+* Bottom left: handle bar sensor for rotation info
+* Bottom middle: third prespective
+
+![](HelperImages/overview.png)
 
 ## Functions
 This project is a simulated bike game. The speed of the bike and the turning can be controled external signal. The game can also be controled by keyboard or game handle(switch handle).
@@ -28,14 +39,14 @@ When the bike go forward, the speed is fixed, whatever terrain you are in.
 * Visual Studio 2017 or 2019
 
 ## Basic Game Logic
-The basic logic of the game targets on the logic of the bike. Where the basic is decribed as follows.
 
-![logic](https://drive.google.com/uc?id=1NahBU1jOIekJhRvOx7mwphfOBmp3SuSq)
+<p float="left">
+  <img src="HelperImages/hardware.png" width="300"/>
+  <img src="HelperImages/software.png" width="320"/>
+</p>
 
 ## GameObject and Script Overview
-![hierarchy](https://drive.google.com/uc?id=1YPREgnYslNhhZdUbrYb23BWVcnXzp_xw)
 
-More details are explained as follows.
 * Lights
 * Manager
 	* DuplicateRoads.cs: Generate road according to parameters
